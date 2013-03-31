@@ -1,5 +1,12 @@
 -- NB: Replace `eve-dump` with the database of your eve dump
 
+-- Clear out the schema first (this is the reverse order that these objects are defined in this file)
+DROP VIEW IF EXISTS invBlueprintTypes, invCategories, invGroups, invTypes, BlueprintSummary, BlueprintCosts, BlueprintTypeCosts;
+DROP TABLE IF EXISTS Type;
+DROP VIEW IF EXISTS BlueprintTypes, BlueprintSubTypeRequirements;
+DROP TABLE IF EXISTS Blueprint;
+DROP FUNCTION IF EXISTS calculate_materials;
+
 delimiter $$
 CREATE FUNCTION calculate_materials (materialAmount INT(11), baseWasteFactor INT(11), materialEfficiency INT(11))
   RETURNS INT(11) DETERMINISTIC
