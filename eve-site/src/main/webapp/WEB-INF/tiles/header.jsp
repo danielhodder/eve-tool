@@ -9,19 +9,58 @@
 					<span class="icon-bar"></span> 
 					<span class="icon-bar"></span>
 			</a> 
-			<a class="brand" href="#">Demo project</a>
+			<a class="brand" href="#">EVE Blueprint Tool</a>
 			<div class="nav-collapse collapse">
 				<ul class="nav">
-					<li class="active"><a href='<s:url value="/"></s:url>'>Home</a></li>					
-					<security:authorize access="!isAuthenticated()">
-						<li><a href='<s:url value="/signin"></s:url>'>Sign in</a></li>
-					</security:authorize>
-					<security:authorize access="isAuthenticated()">
-						<li><a href='<s:url value="/logout"></s:url>'>Logout</a></li>
-					</security:authorize>
+					<li class="active"><a href='<s:url value="/" />'>Home</a></li>					
+					
+					<!-- Blueprint menu items -->
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href='<s:url value="/blueprints" />'>Blueprints <b class="caret"></b></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href='<s:url value="/blueprints" />'>List Blueprints</a></li>
+							<li><a href='<s:url value="/blueprints/new" />'>Add a blueprint</a></li>
+						</ul>
+					</li>
+					
+					<!-- Minerals and components -->
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href='<s:url value="/parts" />'>Parts <b class="caret"></b></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href='<s:url value="/parts" />'>List Parts</a></li>
+							<li><a href='<s:url value="/parts/new" />'>Add a part</a></li>
+						</ul>
+					</li>
 				</ul>
+				
+				<!-- Object Search -->
+				<form class="navbar-search pull-right">
+					<input type="text" class="search-query" autocomplete="off" data-provide="typeahead" placeholder="Object Name" />
+				</form>
 			</div>
 			<!--/.nav-collapse -->
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(function () {
+		$('.navbar .search-query').typeahead({
+			source: ['Sabre Blueprint',
+			         'EMP L',
+			         'Station Container',
+			         'Tritatium',
+			         'Morphoite',
+			         'Noxium',
+			         'Construction Blocks',
+			         'Deflection Shield Emmitter',
+			         'Plasma Thruster'],
+			         
+			updater: function (item) {
+				$('.navbar .search-query').parents('form').submit();
+				
+				return item;
+			}
+		});
+	});
+</script>
