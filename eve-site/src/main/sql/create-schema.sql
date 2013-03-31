@@ -104,7 +104,7 @@ CREATE VIEW BlueprintCosts AS
     bp.blueprintTypeID AS blueprintTypeID,
     btc.blueprintName AS blueprintName,
     sum(btc.cost) AS materialCost,
-    (((ral.costPerHour * bp.hours) + ral.costInstall) / bp.numberPerRun) AS otherCost
+    cast((((ral.costPerHour * bp.hours) + ral.costInstall) / bp.numberPerRun) as decimal(65,2)) AS otherCost
   from Blueprint bp
     left join BlueprintTypeCosts btc on btc.blueprintTypeID = bp.blueprintTypeID
     JOIN `eve-dump`.ramAssemblyLines ral ON ral.assemblyLineID = 1 # They're all the same!
@@ -115,6 +115,8 @@ CREATE VIEW BlueprintSummary AS
   select
     bp.blueprintTypeID AS blueprintTypeID,
     bc.blueprintName AS blueprintName,
+    bc.materialCost AS materialCost,
+    bc.otherCost AS otherCost,
     cast((bc.materialCost + bc.otherCost) as decimal(65,2)) AS cost,
     bp.saleValue AS saleValue,
     cast((bp.saleValue - (bc.materialCost + bc.otherCost)) as decimal(65,2)) AS profit,
@@ -124,4 +126,14 @@ CREATE VIEW BlueprintSummary AS
   group by bp.blueprintTypeID;
 
 
+CREATE VIEW invTypes AS
+  SELECT * FROM `eve-dump`.invTypes;
 
+CREATE VIEW invGroups AS
+  SELECT * FROM `eve-dump`.invGroups;
+
+CREATE VIEW invCategories AS
+  SELECT * FROM `eve-dump`.invCategories;
+
+CREATE VIEW invBlueprintTypes AS
+  SELECT * FROM `eve-dump`.invBlueprintTypes;
