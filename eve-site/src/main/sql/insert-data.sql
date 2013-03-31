@@ -1,4 +1,4 @@
--- Test data, run after 
+-- Test data, run after create-schema.sql
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -9,17 +9,17 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-INSERT INTO `Blueprint` (`id`, `blueprintTypeID`, `numberPerRun`, `hours`, `saleValue`, `materialEfficiency`) VALUES
-(1, 22457, 1, 26, 41500000.00, -4);
+INSERT INTO `Blueprint` (`blueprintTypeID`, `numberPerRun`, `hours`, `saleValue`, `materialEfficiency`) VALUES
+(22457, 1, 26, 41500000.00, -4);
 
-INSERT INTO `Type` (`id`, `typeID`, `cost`) VALUES
-(1, 3828, 8450.00),
-(2, 11555, 19560.00),
-(3, 11551, 39500.00),
-(4, 11542, 7950.00),
-(5, 11536, 19800.00),
-(6, 11399, 6701.21),
-(7, 11538, 36550.00),
-(8, 11548, 48000.00),
-(9, 11530, 17000.00),
-(10, 11478, 90000.00);
+INSERT INTO `Type` (`typeID`, `cost`) VALUES
+(3828, 8450.00),
+(11555, 19560.00),
+(11551, 39500.00),
+(11542, 7950.00),
+(11536, 19800.00),
+(11399, 6701.21),
+(11538, 36550.00),
+(11548, 48000.00),
+(11530, 17000.00),
+(11478, 90000.00);
