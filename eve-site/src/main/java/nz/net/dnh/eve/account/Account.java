@@ -5,7 +5,6 @@ import javax.persistence.*;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 @SuppressWarnings("serial")
-@Entity
 @Table(name = "account")
 public class Account implements java.io.Serializable {
 	@Id

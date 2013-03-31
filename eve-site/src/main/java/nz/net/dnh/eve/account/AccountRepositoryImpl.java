@@ -4,8 +4,10 @@ import javax.persistence.*;
 import javax.inject.Inject;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 
-public class AccountRepositoryImpl implements AccountRepositoryCustom {
+@Repository
+public class AccountRepositoryImpl implements AccountRepository {
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -16,7 +18,11 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 	@Override
 	public Account save(Account account) {
 		account.setPassword(this.passwordEncoder.encode(account.getPassword()));
-		this.entityManager.persist(account);
 		return account;
+	}
+
+	@Override
+	public Account findByUsername(String username) {
+		return null;
 	}
 }
