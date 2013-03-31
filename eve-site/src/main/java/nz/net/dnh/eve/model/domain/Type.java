@@ -2,6 +2,7 @@ package nz.net.dnh.eve.model.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Entity;
@@ -29,6 +30,9 @@ public class Type implements Serializable {
 	@NotNull
 	private BigDecimal cost;
 
+	@NotNull
+	private Timestamp lastUpdated;
+
 	@OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
 	private Collection<BlueprintRequiredType> requiredBy;
 
@@ -46,6 +50,14 @@ public class Type implements Serializable {
 
 	public void setCost(BigDecimal cost) {
 		this.cost = cost;
+	}
+
+	public Timestamp getLastUpdated() {
+		return this.lastUpdated;
+	}
+
+	public void setLastUpdated(Timestamp lastUpdated) {
+		this.lastUpdated = lastUpdated;
 	}
 
 	public InventoryType getType() {
@@ -72,7 +84,8 @@ public class Type implements Serializable {
 	@Override
 	public String toString() {
 		return "Type [typeID=" + this.typeID + ", type=" + this.type
-				+ ", cost=" + this.cost + "]";
+				+ ", cost=" + this.cost + ", lastUpdated=" + this.lastUpdated
+				+ "]";
 	}
 
 	@Override

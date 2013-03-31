@@ -2,6 +2,7 @@ package nz.net.dnh.eve.model.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Entity;
@@ -34,6 +35,9 @@ public class Blueprint implements Serializable {
 
 	@NotNull
 	private BigDecimal saleValue;
+
+	@NotNull
+	private Timestamp lastUpdated;
 
 	@NotNull
 	private int materialEfficiency;
@@ -77,6 +81,14 @@ public class Blueprint implements Serializable {
 		return this.saleValue;
 	}
 
+	public Timestamp getLastUpdated() {
+		return this.lastUpdated;
+	}
+
+	public void setLastUpdated(Timestamp lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
 	public void setMaterialEfficiency(int materialEfficiency) {
 		this.materialEfficiency = materialEfficiency;
 	}
@@ -117,9 +129,9 @@ public class Blueprint implements Serializable {
 		return "Blueprint [blueprintTypeID=" + this.blueprintTypeID
 				+ ", blueprintType=" + this.blueprintType + ", numberPerRun="
 				+ this.numberPerRun + ", hours=" + this.hours + ", saleValue="
-				+ this.saleValue + ", materialEfficiency="
-				+ this.materialEfficiency + ", costSummary=" + this.costSummary
-				+ "]";
+				+ this.saleValue + ", lastUpdated=" + this.lastUpdated
+				+ ", materialEfficiency=" + this.materialEfficiency
+				+ ", costSummary=" + this.costSummary + "]";
 	}
 
 	@Override

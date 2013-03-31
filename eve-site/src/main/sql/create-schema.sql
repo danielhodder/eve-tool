@@ -29,6 +29,7 @@ CREATE TABLE Blueprint (
   hours int(11) NOT NULL,
   saleValue decimal(65,2) NOT NULL,
   materialEfficiency int(11) NOT NULL,
+  lastUpdated TIMESTAMP NOT NULL,
   PRIMARY KEY (blueprintTypeID)
 ) ENGINE=InnoDB;
 
@@ -88,6 +89,7 @@ CREATE VIEW BlueprintTypes AS
 CREATE TABLE Type (
   typeID int(11) NOT NULL,
   cost decimal(65,2) NOT NULL,
+  lastUpdated TIMESTAMP NOT NULL,
   PRIMARY KEY (typeID)
 ) ENGINE=InnoDB;
 

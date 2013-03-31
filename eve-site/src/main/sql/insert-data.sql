@@ -9,17 +9,17 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-INSERT INTO `Blueprint` (`blueprintTypeID`, `numberPerRun`, `hours`, `saleValue`, `materialEfficiency`) VALUES
-(22457, 1, 26, 41500000.00, -4);
+INSERT INTO `Blueprint` (`blueprintTypeID`, `numberPerRun`, `hours`, `saleValue`, `lastUpdated`, `materialEfficiency`) VALUES
+(22457, 1, 26, 41500000.00, NOW(), -4);
 
-INSERT INTO `Type` (`typeID`, `cost`) VALUES
-(3828, 8450.00),
-(11555, 19560.00),
-(11551, 39500.00),
-(11542, 7950.00),
-(11536, 19800.00),
-(11399, 6701.21),
-(11538, 36550.00),
-(11548, 48000.00),
-(11530, 17000.00),
-(11478, 90000.00);
+INSERT INTO `Type` (`typeID`, `cost`, `lastUpdated`) VALUES
+(3828, 8450.00, NOW()),
+(11555, 19560.00, NOW()),
+(11551, 39500.00, DATE_SUB(NOW(), INTERVAL 7 DAY)),
+(11542, 7950.00, DATE_SUB(NOW(), INTERVAL 57 HOUR)),
+(11536, 19800.00, DATE_SUB(NOW(), INTERVAL 30 DAY)),
+(11399, 6701.21, NOW()),
+(11538, 36550.00, NOW()),
+(11548, 48000.00, NOW()),
+(11530, 17000.00, NOW()),
+(11478, 90000.00, NOW());
