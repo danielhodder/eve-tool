@@ -12,3 +12,5 @@ target
 .classpath
 .project
 
+# Local property overrides
+eve-site/src/main/resources/local.properties
