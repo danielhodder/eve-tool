@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.TransactionManagementConfigure
 
 @Configuration
 @EnableTransactionManagement
+@EnableJpaRepositories(basePackages="nz.net.dnh.eve")
 public class PersistenceConfig implements TransactionManagementConfigurer {
 	
 	@Value("${dataSource.driverClassName}")
@@ -43,7 +45,7 @@ public class PersistenceConfig implements TransactionManagementConfigurer {
 	}
 	
 	@Bean
-	public LocalContainerEntityManagerFactoryBean configureEntityManagerFactory() {
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactoryBean.setDataSource(configureDataSource());
 		entityManagerFactoryBean.setPackagesToScan("nz.net.dnh.eve");
@@ -57,7 +59,7 @@ public class PersistenceConfig implements TransactionManagementConfigurer {
 		return entityManagerFactoryBean;
 	}
 
-	@Bean	
+	@Bean(name="transactionManager")
 	@Override
 	public PlatformTransactionManager annotationDrivenTransactionManager() {
 		return new JpaTransactionManager();
