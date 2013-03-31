@@ -81,10 +81,12 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 	private static class UserDetailsHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
+		@Override
 		public boolean supportsParameter(MethodParameter parameter) {
 			return UserDetails.class.isAssignableFrom(parameter.getParameterType());
 		}
 
+		@Override
 		public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 			Authentication auth = (Authentication) webRequest.getUserPrincipal();
 			return auth != null && auth.getPrincipal() instanceof UserDetails ? auth.getPrincipal() : null;
