@@ -29,8 +29,8 @@ public class SignupController {
 			return null;
 		}
 		
-		Account account = accountRepository.save(signupForm.createAccount());
-		userService.signin(account);
+		Account account = this.accountRepository.save(signupForm.createAccount());
+		this.userService.signin(account);
 		
 		return "redirect:/";
 	}

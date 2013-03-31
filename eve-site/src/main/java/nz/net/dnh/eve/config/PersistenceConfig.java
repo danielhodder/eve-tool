@@ -35,10 +35,10 @@ public class PersistenceConfig implements TransactionManagementConfigurer {
 	@Bean
 	public DataSource configureDataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(driver);
-		dataSource.setUrl(url);
-		dataSource.setUsername(username);
-		dataSource.setPassword(password);
+		dataSource.setDriverClassName(this.driver);
+		dataSource.setUrl(this.url);
+		dataSource.setUsername(this.username);
+		dataSource.setPassword(this.password);
 		return dataSource;
 	}
 	
@@ -50,8 +50,8 @@ public class PersistenceConfig implements TransactionManagementConfigurer {
 		entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		
 		Properties jpaProperties = new Properties();
-		jpaProperties.put(org.hibernate.cfg.Environment.DIALECT, dialect);
-		jpaProperties.put(org.hibernate.cfg.Environment.HBM2DDL_AUTO, hbm2ddlAuto);
+		jpaProperties.put(org.hibernate.cfg.Environment.DIALECT, this.dialect);
+		jpaProperties.put(org.hibernate.cfg.Environment.HBM2DDL_AUTO, this.hbm2ddlAuto);
 		entityManagerFactoryBean.setJpaProperties(jpaProperties);
 		
 		return entityManagerFactoryBean;

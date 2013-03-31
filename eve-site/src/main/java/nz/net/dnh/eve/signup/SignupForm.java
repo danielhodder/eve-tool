@@ -18,7 +18,7 @@ public class SignupForm {
 	private String password;
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -26,7 +26,7 @@ public class SignupForm {
 	}
 
 	public String getEmail() {
-		return email;
+		return this.email;
 	}
 
 	public void setEmail(String email) {
@@ -34,7 +34,7 @@ public class SignupForm {
 	}
 
 	public String getPassword() {
-		return password;
+		return this.password;
 	}
 
 	public void setPassword(String password) {

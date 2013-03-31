@@ -18,13 +18,13 @@ public class UserService implements UserDetailsService {
 	
 	@PostConstruct	
 	protected void initialize() {
-		accountRepository.save(new Account("user", "demo", "ROLE_USER"));
-		accountRepository.save(new Account("admin", "admin", "ROLE_ADMIN"));
+		this.accountRepository.save(new Account("user", "demo", "ROLE_USER"));
+		this.accountRepository.save(new Account("admin", "admin", "ROLE_ADMIN"));
 	}
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountRepository.findByUsername(username);
+		Account account = this.accountRepository.findByUsername(username);
 		if(account == null) {
 			throw new UsernameNotFoundException("user not found");
 		}

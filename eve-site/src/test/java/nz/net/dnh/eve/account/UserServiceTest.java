@@ -32,30 +32,30 @@ public class UserServiceTest {
 	@Test
 	public void shouldInitializeWithTwoDemoUsers() {
 		// act
-		userService.initialize();
+		this.userService.initialize();
 		// assert
-		verify(accountRepositoryMock, times(2)).save(any(Account.class));
+		verify(this.accountRepositoryMock, times(2)).save(any(Account.class));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenUserNotFound() {
 		// arrange
-		thrown.expect(UsernameNotFoundException.class);
-		thrown.expectMessage("user not found");
+		this.thrown.expect(UsernameNotFoundException.class);
+		this.thrown.expectMessage("user not found");
 
-		when(accountRepositoryMock.findByUsername("user")).thenReturn(null);
+		when(this.accountRepositoryMock.findByUsername("user")).thenReturn(null);
 		// act
-		userService.loadUserByUsername("user");
+		this.userService.loadUserByUsername("user");
 	}
 
 	@Test
 	public void shouldReturnUserDetails() {
 		// arrange
 		Account demoUser = new Account("user", "demo", "ROLE_USER");
-		when(accountRepositoryMock.findByUsername("user")).thenReturn(demoUser);
+		when(this.accountRepositoryMock.findByUsername("user")).thenReturn(demoUser);
 
 		// act
-		UserDetails userDetails = userService.loadUserByUsername("user");
+		UserDetails userDetails = this.userService.loadUserByUsername("user");
 
 		// assert
 		assertEquals(demoUser.getUsername(), userDetails.getUsername());
