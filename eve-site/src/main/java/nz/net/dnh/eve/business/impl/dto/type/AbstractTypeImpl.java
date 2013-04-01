@@ -14,12 +14,22 @@ public abstract class AbstractTypeImpl implements AbstractType {
 		public MineralImpl(Type type) {
 			super(type);
 		}
+
+		@Override
+		public String toString() {
+			return "Mineral " + super.toString();
+		}
 	}
 
 	public static class ComponentImpl extends AbstractTypeImpl implements
 			Component {
 		public ComponentImpl(Type type) {
 			super(type);
+		}
+
+		@Override
+		public String toString() {
+			return "Component " + super.toString();
 		}
 	}
 
@@ -42,6 +52,23 @@ public abstract class AbstractTypeImpl implements AbstractType {
 	@Override
 	public Date getCostLastUpdated() {
 		return this.type.getLastUpdated();
+	}
+
+	@Override
+	public String toString() {
+		return "[name=" + getName() + ", cost=" + getCost()
+				+ ", costLastUpdated=" + getCostLastUpdated() + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof AbstractTypeImpl
+				&& this.type.equals(((AbstractTypeImpl) obj).type);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.type.hashCode();
 	}
 
 }

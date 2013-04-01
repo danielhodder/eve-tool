@@ -14,12 +14,22 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 		public MissingMineralImpl(InventoryType inventoryType) {
 			super(inventoryType);
 		}
+
+		@Override
+		public String toString() {
+			return "Mineral " + super.toString();
+		}
 	}
 
 	public static class MissingComponentImpl extends AbstractMissingTypeImpl
 			implements Component {
 		public MissingComponentImpl(InventoryType inventoryType) {
 			super(inventoryType);
+		}
+
+		@Override
+		public String toString() {
+			return "Component " + super.toString();
 		}
 	}
 
@@ -42,6 +52,23 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 	@Override
 	public Date getCostLastUpdated() {
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "(Missing) [name=" + getName() + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return this.inventoryType.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof AbstractMissingTypeImpl
+				&& this.inventoryType
+						.equals(((AbstractMissingTypeImpl) obj).inventoryType);
 	}
 
 }
