@@ -7,13 +7,21 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "invTypes")
+@NamedQueries({
+		@NamedQuery(name = "InventoryType.findUnknownTypesForBlueprint", query = InventoryType.UNKNOWN_TYPES_SQL
+				+ " AND brt.blueprint = :blueprint"),
+		@NamedQuery(name = "InventoryType.findUnknownTypes", query = InventoryType.UNKNOWN_TYPES_SQL) })
 public class InventoryType implements Serializable {
+	public static final String UNKNOWN_TYPES_SQL = "SELECT brt.inventoryType FROM BlueprintRequiredType brt LEFT OUTER JOIN brt.type t WHERE t.cost IS NULL";
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -60,6 +68,10 @@ public class InventoryType implements Serializable {
 
 	public InventoryGroup getGroup() {
 		return this.group;
+	}
+
+	public boolean isMineral() {
+		return this.group.isMineral();
 	}
 
 	public String getTypeName() {

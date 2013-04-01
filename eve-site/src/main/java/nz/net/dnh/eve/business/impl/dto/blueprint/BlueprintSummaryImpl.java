@@ -1,4 +1,4 @@
-package nz.net.dnh.eve.business.impl;
+package nz.net.dnh.eve.business.impl.dto.blueprint;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,6 +12,10 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 
 	public BlueprintSummaryImpl(Blueprint blueprint) {
 		this.blueprint = blueprint;
+	}
+
+	public Blueprint toBlueprint() {
+		return this.blueprint;
 	}
 
 	@Override

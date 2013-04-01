@@ -9,13 +9,21 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
+import nz.net.dnh.eve.model.raw.InventoryGroup;
 import nz.net.dnh.eve.model.raw.InventoryType;
 
 @Entity
+@NamedQueries({
+		@NamedQuery(name = "Type.findAllMinerals", query = "select t from Type t where t.type.group.groupName = '"
+				+ InventoryGroup.MINERAL_GROUP + "'"),
+		@NamedQuery(name = "Type.findAllComponents", query = "select t from Type t where t.type.group.groupName != '"
+				+ InventoryGroup.MINERAL_GROUP + "'") })
 public class Type implements Serializable {
 	private static final long serialVersionUID = 1L;
 

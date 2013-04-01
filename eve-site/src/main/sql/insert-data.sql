@@ -10,7 +10,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 INSERT INTO `Blueprint` (`blueprintTypeID`, `numberPerRun`, `hours`, `saleValue`, `lastUpdated`, `materialEfficiency`) VALUES
-(22457, 1, 26, 41500000.00, NOW(), -4);
+(22457, 1, 26, 41500000.00, NOW(), -4),
+(16243, 440, 719, 1160000.00, NOW(), 30);
 
 INSERT INTO `Type` (`typeID`, `cost`, `lastUpdated`) VALUES
 (3828, 8450.00, NOW()),
@@ -22,4 +23,11 @@ INSERT INTO `Type` (`typeID`, `cost`, `lastUpdated`) VALUES
 (11538, 36550.00, NOW()),
 (11548, 48000.00, NOW()),
 (11530, 17000.00, NOW()),
-(11478, 90000.00, NOW());
+(11478, 90000.00, NOW()),
+(37, 142.06, NOW()),
+(40, 2100.10, NOW()),
+(36, 51.61, NOW()),
+(38, 761.82, NOW()),
+(35, 14.45, NOW()),
+(34, 5.70, NOW()),
+(39, 805.50, NOW());

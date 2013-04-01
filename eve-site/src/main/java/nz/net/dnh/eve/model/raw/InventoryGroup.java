@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "invGroups")
 public class InventoryGroup implements Serializable {
+	public static final String MINERAL_GROUP = "Mineral";
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -125,6 +126,10 @@ public class InventoryGroup implements Serializable {
 
 	public void setPublished(Integer published) {
 		this.published = published;
+	}
+
+	public boolean isMineral() {
+		return MINERAL_GROUP.equals(this.groupName);
 	}
 
 	@Override

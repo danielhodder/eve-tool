@@ -3,7 +3,7 @@ package nz.net.dnh.eve.business;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public interface BlueprintSummary {
+public interface BlueprintSummary extends BlueprintReference {
 	public String getName();
 
 	public BigDecimal getMaterialCost();

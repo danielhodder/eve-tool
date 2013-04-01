@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import nz.net.dnh.eve.model.raw.InventoryType;
+
 /**
  * Represents a type required to build a blueprint
  */
@@ -26,6 +28,10 @@ public class BlueprintRequiredType implements Serializable {
 	@JoinColumn(name = "materialTypeID")
 	private Type type;
 
+	@ManyToOne
+	@JoinColumn(name = "materialTypeID", insertable = false, updatable = false)
+	private InventoryType inventoryType;
+
 	private int units;
 
 	public Blueprint getBlueprint() {
@@ -42,6 +48,10 @@ public class BlueprintRequiredType implements Serializable {
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+
+	public InventoryType getInventoryType() {
+		return this.inventoryType;
 	}
 
 	public int getUnits() {
