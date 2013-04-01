@@ -33,5 +33,14 @@
 			<td>???</td>
 			<td>Never</td>
 		</tr>
+		
+		<tiles:importAttribute name="types" />
+		<c:forEach var="type" items="${types}">
+			<tr>
+				<td><c:out value="${type.name}" /></td>
+				<td><c:out value="${currencyFormatter.format(type.cost)}" /></td>
+				<td><c:out value="${type.costLastUpdated}" /></td>
+			</tr>
+		</c:forEach>
 	</tbody>
 </table>
