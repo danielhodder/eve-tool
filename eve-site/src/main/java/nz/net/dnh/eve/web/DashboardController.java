@@ -1,12 +1,12 @@
 package nz.net.dnh.eve.web;
 
-import java.text.NumberFormat;
-import java.util.Collections;
 import java.util.List;
 
 import nz.net.dnh.eve.business.BlueprintService;
 import nz.net.dnh.eve.business.BlueprintSummary;
-import nz.net.dnh.eve.model.domain.Type;
+import nz.net.dnh.eve.business.Component;
+import nz.net.dnh.eve.business.Mineral;
+import nz.net.dnh.eve.business.TypeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,24 +20,24 @@ public final class DashboardController {
 	private BlueprintService blueprintService;
 
 	@Autowired
-	private NumberFormat currencyFormatter;
+	private TypeService typeService;
 
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public ModelAndView dashboard() {
 		return new ModelAndView("dashboard", "view", new DashboardView(
 				this.blueprintService.listSummaries(),
-				Collections.<Type> emptyList(),
-				Collections.<Type> emptyList()));
+				this.typeService.listMinerals(),
+				this.typeService.listComponents()));
 	}
 
 	public class DashboardView {
 		private final List<BlueprintSummary> blueprints;
-		private final List<Type> minerals;
-		private final List<Type> components;
+		private final List<Mineral> minerals;
+		private final List<Component> components;
 
 		public DashboardView(final List<BlueprintSummary> blueprints,
-				             final List<Type> minerals,
-				             final List<Type> components) {
+				             final List<Mineral> minerals,
+				             final List<Component> components) {
 			this.blueprints = blueprints;
 			this.minerals = minerals;
 			this.components = components;
@@ -50,14 +50,14 @@ public final class DashboardController {
 		/**
 		 * @return the minerals
 		 */
-		public List<Type> getMinerals() {
+		public List<Mineral> getMinerals() {
 			return this.minerals;
 		}
 
 		/**
 		 * @return the components
 		 */
-		public List<Type> getComponents() {
+		public List<Component> getComponents() {
 			return this.components;
 		}
 	}

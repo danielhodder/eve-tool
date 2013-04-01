@@ -15,6 +15,5 @@ public interface TypeService {
 
 	public List<? extends AbstractType> listMissingTypes();
 
-	public List<? extends AbstractType> listMissingTypes(
-			BlueprintReference blueprint);
+	public List<? extends AbstractType> listMissingTypes(BlueprintReference blueprint);
 }
