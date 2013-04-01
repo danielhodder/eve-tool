@@ -8,7 +8,9 @@
 
 <div class="row">
 	<div class="span12">
-		<tiles:insertTemplate template="_blueprint_list.jsp" />
+		<tiles:insertTemplate template="_blueprint_list.jsp">
+			<tiles:putAttribute name="blueprints" value="${view.blueprints}" />
+		</tiles:insertTemplate>
 	</div>
 </div>
 
@@ -18,6 +20,7 @@
 		
 		<tiles:insertTemplate template="_type_list.jsp">
 			<tiles:putAttribute name="typeName" value="Minerals" />
+			<tiles:putAttribute name="types" value="${view.minerals}" />
 		</tiles:insertTemplate>
 	</div>
 	
@@ -26,6 +29,7 @@
 		
 		<tiles:insertTemplate template="_type_list.jsp">
 			<tiles:putAttribute name="typeName" value="Components" />
+			<tiles:putAttribute name="types" value="${view.components}" />
 		</tiles:insertTemplate>
 	</div>
 </div>

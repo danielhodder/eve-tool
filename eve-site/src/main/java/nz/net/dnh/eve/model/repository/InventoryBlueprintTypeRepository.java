@@ -11,5 +11,5 @@ public interface InventoryBlueprintTypeRepository extends
 
 	// TODO figure out what the right way to do paging and named queries is to
 	// remove the warning
-	public Page<InventoryBlueprintType> findUnknownBlueprints(Pageable pageable);
+	public Page<InventoryBlueprintType> findUnknownBlueprints(final Pageable pageable);
 }
