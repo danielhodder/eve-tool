@@ -11,7 +11,7 @@
 	<input type="text" class="input-block-level" placeholder="Email address" name="j_username" /> 
 	<input type="password" class="input-block-level" placeholder="Password" name="j_password" />
 	<label class="checkbox">
-		<input type="checkbox" name="_spring_security_remember_me">Remember me</input>
+		<input type="checkbox" name="_spring_security_remember_me" /> Remember me
 	</label>
 	<button class="btn btn-large btn-primary" type="submit">Sign In</button>
 	<p class="form-text">New here? <a href='<s:url value="/signup"/>'>Sign Up.</a></p>

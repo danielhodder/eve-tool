@@ -18,16 +18,21 @@
 	<tbody>
 		<tiles:importAttribute name="types" />
 		<c:forEach var="type" items="${types}">
+			<c:set var="class_name">
 			<c:choose>
 				<c:when test="${dashboardViewHelper.isTypeDataOld(type)}">
-					<tr class="warning" data-toggle="tooltip" title="This data is old and may not be reliable">
+					<c:set var="display_class_name" value="warning" />
+					<c:set var="data_toggle" value="tooltip" />
+					<c:set var="title" value="This data is old and may not be reliable" />
 				</c:when>
-
-				<c:otherwise>
-					<tr>
-				</c:otherwise>
 			</c:choose>
+			</c:set>
 			
+			<tr 
+					class="<c:out value="${display_class_name}" />" 
+					data-toggle="<c:out value="${data_toggle}" />" 
+					title="<c:out value="${title}" />"
+			>
 				<td><c:out value="${type.name}" /></td>
 				<td><c:out value="${currencyFormatter.format(type.cost)}" /></td>
 				<td><c:out value="${type.costLastUpdated}" /></td>
