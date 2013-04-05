@@ -53,6 +53,11 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 	public Date getCostLastUpdated() {
 		return null;
 	}
+	
+	@Override
+	public boolean isMissing() {
+		return true;
+	}
 
 	@Override
 	public String toString() {

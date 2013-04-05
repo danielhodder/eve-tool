@@ -112,7 +112,8 @@ CREATE VIEW BlueprintCosts AS
   select
     bp.blueprintTypeID AS blueprintTypeID,
     btc.blueprintName AS blueprintName,
-    sum(btc.cost) AS materialCost,
+    # This makes my head hurt, MySQL doesn't return null if there are null values present, so we need to do it ourselves
+    if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,
     cast((((ral.costPerHour * bp.hours) + ral.costInstall) / bp.numberPerRun) as decimal(65,2)) AS otherCost
   from Blueprint bp
     left join BlueprintTypeCosts btc on btc.blueprintTypeID = bp.blueprintTypeID

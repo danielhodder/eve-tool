@@ -31,52 +31,68 @@ public class TypeServiceImpl implements TypeService {
 	private InventoryTypeRepository inventoryTypeRepository;
 
 	@Override
-	public List<Mineral> listMinerals() {
+	public List<Mineral> listMinerals(boolean includeMissing) {
 		List<Type> allTypes = this.typeRepository.findAllMinerals();
 		List<Mineral> minerals = new ArrayList<>(allTypes.size());
 		for (Type type : allTypes) {
 			minerals.add(new MineralImpl(type));
 		}
+		if (includeMissing) {
+			addMissingMinerals(minerals);
+		}
 		return minerals;
 	}
 
 	@Override
-	public List<Component> listComponents() {
+	public List<Component> listComponents(boolean includeMissing) {
 		List<Type> allTypes = this.typeRepository.findAllComponents();
 		List<Component> components = new ArrayList<>(allTypes.size());
 		for (Type type : allTypes) {
 			components.add(new ComponentImpl(type));
 		}
+		if (includeMissing) {
+			addMissingComponents(components);
+		}
 		return components;
+	}
+
+	private void addMissingComponents(List<? super Component> components) {
+		addComponents(this.inventoryTypeRepository.findUnknownComponents(), components);
+	}
+
+	private void addMissingMinerals(List<? super Mineral> missingTypes) {
+		addMinerals(this.inventoryTypeRepository.findUnknownMinerals(), missingTypes);
 	}
 
 	@Override
 	public List<? extends AbstractType> listMissingTypes() {
-		List<InventoryType> unknownTypes = this.inventoryTypeRepository
-				.findUnknownTypes();
-		return toTypes(unknownTypes);
-	}
-
-	private static List<? extends AbstractType> toTypes(
-			List<InventoryType> unknownTypes) {
-		List<AbstractType> missingTypes = new ArrayList<>(unknownTypes.size());
-		for (InventoryType type : unknownTypes) {
-			if (type.isMineral()) {
-				missingTypes.add(new MissingMineralImpl(type));
-			} else {
-				missingTypes.add(new MissingComponentImpl(type));
-			}
-		}
+		List<AbstractType> missingTypes = new ArrayList<>();
+		addMissingMinerals(missingTypes);
+		addMissingComponents(missingTypes);
 		return missingTypes;
 	}
 
+	private static void addMinerals(List<InventoryType> unknownTypes, List<? super Mineral> missingMinerals) {
+		for (InventoryType type : unknownTypes) {
+			assert type.isMineral();
+			missingMinerals.add(new MissingMineralImpl(type));
+		}
+	}
+
+	private static void addComponents(List<InventoryType> unknownTypes, List<? super Component> missingComponents) {
+		for (InventoryType type : unknownTypes) {
+			assert !type.isMineral();
+			missingComponents.add(new MissingComponentImpl(type));
+		}
+	}
+
 	@Override
-	public List<? extends AbstractType> listMissingTypes(
-			BlueprintReference blueprintRef) {
+	public List<? extends AbstractType> listMissingTypes(BlueprintReference blueprintRef) {
 		Blueprint blueprint = BlueprintReferenceUtil.toBlueprint(blueprintRef);
-		List<InventoryType> unknownTypes = this.inventoryTypeRepository
-				.findUnknownTypesForBlueprint(blueprint);
-		return toTypes(unknownTypes);
+		List<AbstractType> missingTypes = new ArrayList<>();
+		addMinerals(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(blueprint), missingTypes);
+		addComponents(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(blueprint), missingTypes);
+		return missingTypes;
 	}
 
 }

@@ -11,23 +11,43 @@ import org.springframework.data.repository.query.Param;
 public interface InventoryTypeRepository extends
 		JpaRepository<InventoryType, Integer> {
 	/**
-	 * List the types that are required for the given blueprint but not present
+	 * List the minerals that are required for the given blueprint but not present
 	 * in our system.
 	 * 
 	 * @param blueprint
-	 *            The blueprint to retrieve unknown types for
-	 * @return The list of raw types required by the blueprint that are not
+	 *            The blueprint to retrieve unknown minerals for
+	 * @return The list of raw minerals required by the blueprint that are not
 	 *         known to our system
 	 */
-	public List<InventoryType> findUnknownTypesForBlueprint(
+	public List<InventoryType> findUnknownMineralsForBlueprint(
 			@Param("blueprint") Blueprint blueprint);
 
 	/**
-	 * List the types that are required by any blueprint but not present in our
+	 * List the minerals that are required by any blueprint but not present in our
 	 * system.
 	 * 
-	 * @return The list of raw types required by any blueprint that are not
+	 * @return The list of raw minerals required by any blueprint that are not
 	 *         known to our system
 	 */
-	public List<InventoryType> findUnknownTypes();
+	public List<InventoryType> findUnknownMinerals();
+	/**
+	 * List the components that are required for the given blueprint but not present
+	 * in our system.
+	 * 
+	 * @param blueprint
+	 *            The blueprint to retrieve unknown components for
+	 * @return The list of raw components required by the blueprint that are not
+	 *         known to our system
+	 */
+	public List<InventoryType> findUnknownComponentsForBlueprint(
+			@Param("blueprint") Blueprint blueprint);
+
+	/**
+	 * List the components that are required by any blueprint but not present in our
+	 * system.
+	 * 
+	 * @return The list of raw components required by any blueprint that are not
+	 *         known to our system
+	 */
+	public List<InventoryType> findUnknownComponents();
 }

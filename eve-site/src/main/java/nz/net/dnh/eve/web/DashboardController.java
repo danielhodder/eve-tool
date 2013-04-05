@@ -26,8 +26,8 @@ public final class DashboardController {
 	public ModelAndView dashboard() {
 		return new ModelAndView("dashboard", "view", new DashboardView(
 				this.blueprintService.listSummaries(),
-				this.typeService.listMinerals(),
-				this.typeService.listComponents()));
+				this.typeService.listMinerals(true),
+				this.typeService.listComponents(true)));
 	}
 
 	public class DashboardView {

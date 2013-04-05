@@ -1,17 +1,23 @@
 package nz.net.dnh.eve.business.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
+import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.Mineral;
 import nz.net.dnh.eve.model.domain.Type;
+import nz.net.dnh.eve.model.raw.InventoryType;
 import nz.net.dnh.eve.model.repository.InventoryTypeRepository;
 import nz.net.dnh.eve.model.repository.TypeRepository;
 
@@ -23,16 +29,26 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TypeServiceTest {
+	private static final Timestamp LAST_UPDATED_2 = new Timestamp(11111111);
+	private static final Timestamp LAST_UPDATED_1 = new Timestamp(1000);
+	private static final BigDecimal COST_2 = new BigDecimal(40);
+	private static final BigDecimal COST_1 = new BigDecimal(15);
 	private static final Type TYPE_1 = mock(Type.class);
 	private static final Type TYPE_2 = mock(Type.class);
+	private static final InventoryType COMPONENT_1 = mock(InventoryType.class);
+	private static final InventoryType MINERAL_1 = mock(InventoryType.class);
 
 	static {
 		when(TYPE_1.getTypeName()).thenReturn("Type 1");
 		when(TYPE_2.getTypeName()).thenReturn("Type 2");
-		when(TYPE_1.getCost()).thenReturn(new BigDecimal(15));
-		when(TYPE_2.getCost()).thenReturn(new BigDecimal(40));
-		when(TYPE_1.getLastUpdated()).thenReturn(new Timestamp(1000));
-		when(TYPE_2.getLastUpdated()).thenReturn(new Timestamp(11111111));
+		when(TYPE_1.getCost()).thenReturn(COST_1);
+		when(TYPE_2.getCost()).thenReturn(COST_2);
+		when(TYPE_1.getLastUpdated()).thenReturn(LAST_UPDATED_1);
+		when(TYPE_2.getLastUpdated()).thenReturn(LAST_UPDATED_2);
+		when(COMPONENT_1.getTypeName()).thenReturn("Component 1");
+		when(COMPONENT_1.isMineral()).thenReturn(false);
+		when(MINERAL_1.getTypeName()).thenReturn("Mineral 1");
+		when(MINERAL_1.isMineral()).thenReturn(true);
 	}
 
 	@InjectMocks
@@ -44,43 +60,79 @@ public class TypeServiceTest {
 	@Mock
 	private InventoryTypeRepository inventoryTypeRepository;
 
+	private static void assertComponent(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing) {
+		assertTrue(type instanceof Component);
+		assertType(type, name, cost, lastUpdated, missing);
+	}
+
+	private static void assertMineral(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing) {
+		assertTrue(type instanceof Mineral);
+		assertType(type, name, cost, lastUpdated, missing);
+	}
+
+	private static void assertType(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing) {
+		assertEquals(name, type.getName());
+		assertEquals(cost, type.getCost());
+		assertEquals(lastUpdated, type.getCostLastUpdated());
+		assertEquals(missing, type.isMissing());
+	}
+
 	@Test
 	public void testListComponents() {
 		when(this.typeRepository.findAllComponents()).thenReturn(
 				Arrays.asList(TYPE_1, TYPE_2));
+		when(this.inventoryTypeRepository.findUnknownComponents()).thenReturn(Arrays.asList(COMPONENT_1));
 
-		List<Component> components = this.typeService.listComponents();
+		List<Component> components = this.typeService.listComponents(false);
 
 		assertEquals(2, components.size());
+		assertComponent(components.get(0), "Type 1", COST_1, LAST_UPDATED_1, false);
+		assertComponent(components.get(1), "Type 2", COST_2, LAST_UPDATED_2, false);
 
-		Component component1 = components.get(0);
-		assertEquals("Type 1", component1.getName());
-		assertEquals(new BigDecimal(15), component1.getCost());
-		assertEquals(new Timestamp(1000), component1.getCostLastUpdated());
+		components = this.typeService.listComponents(true);
 
-		Component component2 = components.get(1);
-		assertEquals("Type 2", component2.getName());
-		assertEquals(new BigDecimal(40), component2.getCost());
-		assertEquals(new Timestamp(11111111), component2.getCostLastUpdated());
+		assertEquals(3, components.size());
+		assertComponent(components.get(0), "Type 1", COST_1, LAST_UPDATED_1, false);
+		assertComponent(components.get(1), "Type 2", COST_2, LAST_UPDATED_2, false);
+		assertComponent(components.get(2), "Component 1", null, null, true);
 	}
 
 	@Test
 	public void testListMinerals() {
 		when(this.typeRepository.findAllMinerals()).thenReturn(
 				Arrays.asList(TYPE_2, TYPE_1));
+		when(this.inventoryTypeRepository.findUnknownMinerals()).thenReturn(Arrays.asList(MINERAL_1));
 
-		List<Mineral> minerals = this.typeService.listMinerals();
+		List<Mineral> minerals = this.typeService.listMinerals(false);
 
 		assertEquals(2, minerals.size());
+		assertMineral(minerals.get(0), "Type 2", COST_2, LAST_UPDATED_2, false);
+		assertMineral(minerals.get(1), "Type 1", COST_1, LAST_UPDATED_1, false);
 
-		Mineral mineral1 = minerals.get(0);
-		assertEquals("Type 2", mineral1.getName());
-		assertEquals(new BigDecimal(40), mineral1.getCost());
-		assertEquals(new Timestamp(11111111), mineral1.getCostLastUpdated());
+		minerals = this.typeService.listMinerals(true);
 
-		Mineral mineral2 = minerals.get(1);
-		assertEquals("Type 1", mineral2.getName());
-		assertEquals(new BigDecimal(15), mineral2.getCost());
-		assertEquals(new Timestamp(1000), mineral2.getCostLastUpdated());
+		assertEquals(3, minerals.size());
+		assertMineral(minerals.get(0), "Type 2", COST_2, LAST_UPDATED_2, false);
+		assertMineral(minerals.get(1), "Type 1", COST_1, LAST_UPDATED_1, false);
+		assertMineral(minerals.get(2), "Mineral 1", null, null, true);
+	}
+
+	@Test
+	public void testListUnknownTypes() {
+		when(this.inventoryTypeRepository.findUnknownComponents()).thenReturn(Arrays.asList(COMPONENT_1));
+		when(this.inventoryTypeRepository.findUnknownMinerals()).thenReturn(Arrays.asList(MINERAL_1));
+
+		List<? extends AbstractType> types = this.typeService.listMissingTypes();
+
+		assertEquals(2, types.size());
+		Collections.sort(types, new Comparator<AbstractType>() {
+
+			@Override
+			public int compare(AbstractType o1, AbstractType o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		assertComponent(types.get(0), "Component 1", null, null, true);
+		assertMineral(types.get(1), "Mineral 1", null, null, true);
 	}
 }
