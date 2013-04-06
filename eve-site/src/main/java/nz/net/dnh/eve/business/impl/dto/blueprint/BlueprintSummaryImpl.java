@@ -59,6 +59,26 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 	}
 
 	@Override
+	public int getId() {
+		return this.blueprint.getBlueprintTypeID();
+	}
+
+	@Override
+	public int getHours() {
+		return this.blueprint.getHours();
+	}
+
+	@Override
+	public int getNumberPerRun() {
+		return this.blueprint.getNumberPerRun();
+	}
+
+	@Override
+	public int getMaterialEfficiency() {
+		return this.blueprint.getMaterialEfficiency();
+	}
+
+	@Override
 	public String toString() {
 		return "Blueprint Summary (" + this.blueprint + ")";
 	}

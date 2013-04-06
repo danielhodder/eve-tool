@@ -45,4 +45,19 @@ public interface BlueprintSummary extends BlueprintReference {
 	 * @return The profit from selling the blueprint, as a percentage of the sale value. May be null if the cost is unknown
 	 */
 	public BigDecimal getProfitPercentage();
+
+	/**
+	 * @return The number produced in a single run
+	 */
+	public int getNumberPerRun();
+
+	/**
+	 * @return The time for a single run, in hours
+	 */
+	public int getHours();
+
+	/**
+	 * @return The material efficiency magical value
+	 */
+	public int getMaterialEfficiency();
 }
