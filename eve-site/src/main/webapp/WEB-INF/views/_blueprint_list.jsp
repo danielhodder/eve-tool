@@ -38,12 +38,17 @@
 			</c:set>
 			
 			<tr class="<c:out value="${class_name}" />">
-				<td><c:out value="${blueprint.name}" /></td>
+				<td><a><c:out value="${blueprint.name}" /></a></td>
 				<td><c:out value="${currencyFormatter.format(blueprint.totalCost)}" /></td>
 				<td><c:out value="${currencyFormatter.format(blueprint.saleValue)}" /></td>
 				<td>
 					<span class="absolute"><c:out value="${currencyFormatter.format(blueprint.profit)}" /></span> 
 					<span class="percent">(<c:out value="${percentageFormatter.format(blueprint.profitPercentage)}" /> %)</span>
+				</td>
+				<td class="hidden">
+					<div class="popover-html">
+						<img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.id, 64)}" />" />
+					</div>
 				</td>
 			</tr>
 		</c:forEach>
@@ -59,6 +64,15 @@
 		$.each(tooltips, function(identifier, tooltip) {
 			$(identifier, $('.blueprints')).tooltip({
 				'title': tooltip
+			});
+		});
+		
+		$('.blueprints tr td a').each(function () {
+			$(this).popover({
+				'html' : 'true',
+				'content' : $('.popover-html', $(this).parents('tr')).html(),
+				'placement' : 'left',
+				'trigger' : 'hover'
 			});
 		});
 	});
