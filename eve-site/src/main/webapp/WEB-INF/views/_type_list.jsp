@@ -6,7 +6,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles-extras" prefix="tilesx"%>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 
-<table class="table table-striped table-hover">
+<table class="table table-striped table-hover types">
 	<thead>
 		<tr>
 			<th><tiles:getAsString name="typeName" /></th>
@@ -18,16 +18,19 @@
 	<tbody>
 		<tiles:importAttribute name="types" />
 		<c:forEach var="type" items="${types}">
-			<c:choose>
-				<c:when test="${dashboardViewHelper.isTypeDataOld(type)}">
-					<tr class="warning" data-toggle="tooltip" title="This data is old and may not be reliable">
-				</c:when>
-
-				<c:otherwise>
-					<tr>
-				</c:otherwise>
-			</c:choose>
+			<c:set var="class_name">
+				<c:choose>
+					<c:when test="${type.cost == null}">
+						error missing-data
+					</c:when>
+					
+					<c:when test="${dashboardViewHelper.isTypeDataOld(type)}">
+						warning old-data
+					</c:when>
+				</c:choose>
+			</c:set>
 			
+			<tr class="<c:out value="${class_name}" />" >
 				<td><c:out value="${type.name}" /></td>
 				<td><c:out value="${currencyFormatter.format(type.cost)}" /></td>
 				<td><c:out value="${type.costLastUpdated}" /></td>
@@ -35,3 +38,18 @@
 		</c:forEach>
 	</tbody>
 </table>
+
+<script type="text/javascript">
+	$(function () {
+		var tooltips = {
+				'.old-data' : 'This data is old and may not be reliable',
+				'.missing-data' : 'This blueprint is missing some pricing information'
+		}
+		
+		$.each(tooltips, function(identifier, tooltip) {
+			$(identifier, $('.types')).tooltip({
+				'title': tooltip
+			});
+		});
+	});
+</script>
