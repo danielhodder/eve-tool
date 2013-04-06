@@ -4,7 +4,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles-extras" prefix="tilesx"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
-<table class="table table-striped table-hover">
+<table class="table table-striped table-hover blueprints">
 	<thead>
 		<tr>
 			<th>Blueprint Name</th>
@@ -19,6 +19,10 @@
 		<c:forEach var="blueprint" items="${blueprints}">
 			<c:set var="class_name">
 				<c:choose>
+					<c:when test="${blueprint.totalCost == null}">
+						info missing-data
+					</c:when>
+					
 					<c:when test="${blueprint.profitPercentage > 15}">
 						success
 					</c:when>
@@ -45,3 +49,17 @@
 		</c:forEach>
 	</tbody>
 </table>
+
+<script type="text/javascript">
+	$(function () {
+		var tooltips = {
+				'.missing-data' : 'This blueprint is missing some pricing information'
+		}
+		
+		$.each(tooltips, function(identifier, tooltip) {
+			$(identifier, $('.blueprints')).tooltip({
+				'title': tooltip
+			});
+		});
+	});
+</script>
