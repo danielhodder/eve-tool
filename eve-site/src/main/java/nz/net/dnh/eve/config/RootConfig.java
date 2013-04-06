@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import nz.net.dnh.eve.web.ImageURILocater;
+import nz.net.dnh.eve.web.NumberFormatter;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +35,7 @@ public class RootConfig {
 	}
 
 	@Bean
-	public static NumberFormat currencyFormatter() {
+	public static NumberFormatter currencyFormatter() {
 		final DecimalFormat formatter = (DecimalFormat) NumberFormat.getCurrencyInstance();
 
 		formatter.setPositivePrefix("");
@@ -42,7 +43,7 @@ public class RootConfig {
 		formatter.setNegativePrefix("-");
 		formatter.setNegativeSuffix(" ISK");
 
-		return formatter;
+		return new NumberFormatter(formatter, "??? ISK");
 	}
 
 	@Bean
