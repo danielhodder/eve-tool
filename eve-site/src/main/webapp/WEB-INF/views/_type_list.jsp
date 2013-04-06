@@ -31,9 +31,16 @@
 			</c:set>
 			
 			<tr class="<c:out value="${class_name}" />" >
-				<td><c:out value="${type.name}" /></td>
+				<td><a><c:out value="${type.name}" /></a></td>
 				<td><c:out value="${currencyFormatter.format(type.cost)}" /></td>
 				<td><c:out value="${type.costLastUpdated}" /></td>
+				<td class="hidden">
+					<div class="popover-html">
+						<img src="<c:out value="${imageURILocator.getUriForTypeID(type.id, 64)}" />" />
+						
+						
+					</div>
+				</td>
 			</tr>
 		</c:forEach>
 	</tbody>
@@ -49,6 +56,15 @@
 		$.each(tooltips, function(identifier, tooltip) {
 			$(identifier, $('.types')).tooltip({
 				'title': tooltip
+			});
+		});
+		
+		$('.types tr td a').each(function () {
+			$(this).popover({
+				'html' : 'true',
+				'content' : $('.popover-html', $(this).parents('tr')).html(),
+				'placement' : 'left',
+				'trigger' : 'hover'
 			});
 		});
 	});

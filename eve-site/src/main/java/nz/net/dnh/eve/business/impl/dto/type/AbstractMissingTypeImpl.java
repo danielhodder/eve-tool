@@ -11,7 +11,7 @@ import nz.net.dnh.eve.model.raw.InventoryType;
 public abstract class AbstractMissingTypeImpl implements AbstractType {
 	public static class MissingMineralImpl extends AbstractMissingTypeImpl
 			implements Mineral {
-		public MissingMineralImpl(InventoryType inventoryType) {
+		public MissingMineralImpl(final InventoryType inventoryType) {
 			super(inventoryType);
 		}
 
@@ -23,7 +23,7 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 
 	public static class MissingComponentImpl extends AbstractMissingTypeImpl
 			implements Component {
-		public MissingComponentImpl(InventoryType inventoryType) {
+		public MissingComponentImpl(final InventoryType inventoryType) {
 			super(inventoryType);
 		}
 
@@ -35,8 +35,13 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 
 	private final InventoryType inventoryType;
 
-	public AbstractMissingTypeImpl(InventoryType inventoryType) {
+	public AbstractMissingTypeImpl(final InventoryType inventoryType) {
 		this.inventoryType = inventoryType;
+	}
+
+	@Override
+	public long getId() {
+		return this.inventoryType.getTypeID();
 	}
 
 	@Override
@@ -53,7 +58,7 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 	public Date getCostLastUpdated() {
 		return null;
 	}
-	
+
 	@Override
 	public boolean isMissing() {
 		return true;
@@ -70,7 +75,7 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return obj instanceof AbstractMissingTypeImpl
 				&& this.inventoryType
 						.equals(((AbstractMissingTypeImpl) obj).inventoryType);

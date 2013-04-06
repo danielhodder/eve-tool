@@ -11,7 +11,7 @@ import nz.net.dnh.eve.model.domain.Type;
 public abstract class AbstractTypeImpl implements AbstractType {
 
 	public static class MineralImpl extends AbstractTypeImpl implements Mineral {
-		public MineralImpl(Type type) {
+		public MineralImpl(final Type type) {
 			super(type);
 		}
 
@@ -23,7 +23,7 @@ public abstract class AbstractTypeImpl implements AbstractType {
 
 	public static class ComponentImpl extends AbstractTypeImpl implements
 			Component {
-		public ComponentImpl(Type type) {
+		public ComponentImpl(final Type type) {
 			super(type);
 		}
 
@@ -35,8 +35,13 @@ public abstract class AbstractTypeImpl implements AbstractType {
 
 	private final Type type;
 
-	protected AbstractTypeImpl(Type type) {
+	protected AbstractTypeImpl(final Type type) {
 		this.type = type;
+	}
+
+	@Override
+	public long getId() {
+		return this.type.getTypeID();
 	}
 
 	@Override
@@ -53,7 +58,7 @@ public abstract class AbstractTypeImpl implements AbstractType {
 	public Date getCostLastUpdated() {
 		return this.type.getLastUpdated();
 	}
-	
+
 	@Override
 	public boolean isMissing() {
 		return false;
@@ -66,7 +71,7 @@ public abstract class AbstractTypeImpl implements AbstractType {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return obj instanceof AbstractTypeImpl
 				&& this.type.equals(((AbstractTypeImpl) obj).type);
 	}
@@ -75,5 +80,4 @@ public abstract class AbstractTypeImpl implements AbstractType {
 	public int hashCode() {
 		return this.type.hashCode();
 	}
-
 }

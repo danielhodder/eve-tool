@@ -48,6 +48,8 @@
 				<td class="hidden">
 					<div class="popover-html">
 						<img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.id, 64)}" />" />
+						
+						
 					</div>
 				</td>
 			</tr>

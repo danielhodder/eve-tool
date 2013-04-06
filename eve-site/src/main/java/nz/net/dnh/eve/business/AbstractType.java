@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * A type required to build a blueprint
- * 
+ *
  * @see Component
  * @see Mineral
  */
@@ -24,9 +24,14 @@ public interface AbstractType {
 	 * @return The date and time the cost was last updated. May be null if the type does not exist in the database
 	 */
 	public Date getCostLastUpdated();
-	
+
 	/**
 	 * @return True if the type is missing from the database
 	 */
 	public boolean isMissing();
+
+	/**
+	 * @return The id of the type
+	 */
+	public long getId();
 }
