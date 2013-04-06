@@ -1,7 +1,7 @@
-package nz.net.dnh.eve.business.impl;
+package nz.net.dnh.eve.business;
 
 
-public interface BlueprintInformation {
+public interface BlueprintInformation extends BlueprintReference {
 	/**
 	 * @return The name of the blueprint
 	 */

@@ -42,14 +42,18 @@ public class TypeServiceTest {
 	private static final InventoryType MINERAL_1 = mock(InventoryType.class);
 
 	static {
+		when(TYPE_1.getTypeID()).thenReturn(1);
+		when(TYPE_2.getTypeID()).thenReturn(2);
 		when(TYPE_1.getTypeName()).thenReturn("Type 1");
 		when(TYPE_2.getTypeName()).thenReturn("Type 2");
 		when(TYPE_1.getCost()).thenReturn(COST_1);
 		when(TYPE_2.getCost()).thenReturn(COST_2);
 		when(TYPE_1.getLastUpdated()).thenReturn(LAST_UPDATED_1);
 		when(TYPE_2.getLastUpdated()).thenReturn(LAST_UPDATED_2);
+		when(COMPONENT_1.getTypeID()).thenReturn(11);
 		when(COMPONENT_1.getTypeName()).thenReturn("Component 1");
 		when(COMPONENT_1.isMineral()).thenReturn(false);
+		when(MINERAL_1.getTypeID()).thenReturn(12);
 		when(MINERAL_1.getTypeName()).thenReturn("Mineral 1");
 		when(MINERAL_1.isMineral()).thenReturn(true);
 	}
@@ -66,17 +70,18 @@ public class TypeServiceTest {
 	@Mock
 	private BlueprintResolverService blueprintResolverService;
 
-	private static void assertComponent(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing) {
+	private static void assertComponent(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing, int id) {
 		assertTrue(type instanceof Component);
-		assertType(type, name, cost, lastUpdated, missing);
+		assertType(type, name, cost, lastUpdated, missing, id);
 	}
 
-	private static void assertMineral(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing) {
+	private static void assertMineral(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing, int id) {
 		assertTrue(type instanceof Mineral);
-		assertType(type, name, cost, lastUpdated, missing);
+		assertType(type, name, cost, lastUpdated, missing, id);
 	}
 
-	private static void assertType(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing) {
+	private static void assertType(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing, int id) {
+		assertEquals(id, type.getId());
 		assertEquals(name, type.getName());
 		assertEquals(cost, type.getCost());
 		assertEquals(lastUpdated, type.getCostLastUpdated());
@@ -92,15 +97,15 @@ public class TypeServiceTest {
 		List<Component> components = this.typeService.listComponents(false);
 
 		assertEquals(2, components.size());
-		assertComponent(components.get(0), "Type 1", COST_1, LAST_UPDATED_1, false);
-		assertComponent(components.get(1), "Type 2", COST_2, LAST_UPDATED_2, false);
+		assertComponent(components.get(0), "Type 1", COST_1, LAST_UPDATED_1, false, 1);
+		assertComponent(components.get(1), "Type 2", COST_2, LAST_UPDATED_2, false, 2);
 
 		components = this.typeService.listComponents(true);
 
 		assertEquals(3, components.size());
-		assertComponent(components.get(0), "Type 1", COST_1, LAST_UPDATED_1, false);
-		assertComponent(components.get(1), "Type 2", COST_2, LAST_UPDATED_2, false);
-		assertComponent(components.get(2), "Component 1", null, null, true);
+		assertComponent(components.get(0), "Type 1", COST_1, LAST_UPDATED_1, false, 1);
+		assertComponent(components.get(1), "Type 2", COST_2, LAST_UPDATED_2, false, 2);
+		assertComponent(components.get(2), "Component 1", null, null, true, 11);
 	}
 
 	@Test
@@ -112,15 +117,15 @@ public class TypeServiceTest {
 		List<Mineral> minerals = this.typeService.listMinerals(false);
 
 		assertEquals(2, minerals.size());
-		assertMineral(minerals.get(0), "Type 2", COST_2, LAST_UPDATED_2, false);
-		assertMineral(minerals.get(1), "Type 1", COST_1, LAST_UPDATED_1, false);
+		assertMineral(minerals.get(0), "Type 2", COST_2, LAST_UPDATED_2, false, 2);
+		assertMineral(minerals.get(1), "Type 1", COST_1, LAST_UPDATED_1, false, 1);
 
 		minerals = this.typeService.listMinerals(true);
 
 		assertEquals(3, minerals.size());
-		assertMineral(minerals.get(0), "Type 2", COST_2, LAST_UPDATED_2, false);
-		assertMineral(minerals.get(1), "Type 1", COST_1, LAST_UPDATED_1, false);
-		assertMineral(minerals.get(2), "Mineral 1", null, null, true);
+		assertMineral(minerals.get(0), "Type 2", COST_2, LAST_UPDATED_2, false, 2);
+		assertMineral(minerals.get(1), "Type 1", COST_1, LAST_UPDATED_1, false, 1);
+		assertMineral(minerals.get(2), "Mineral 1", null, null, true, 12);
 	}
 
 	@Test
@@ -132,8 +137,8 @@ public class TypeServiceTest {
 
 		assertEquals(2, types.size());
 		sortTypesByName(types);
-		assertComponent(types.get(0), "Component 1", null, null, true);
-		assertMineral(types.get(1), "Mineral 1", null, null, true);
+		assertComponent(types.get(0), "Component 1", null, null, true, 11);
+		assertMineral(types.get(1), "Mineral 1", null, null, true, 12);
 	}
 
 	private static void sortTypesByName(List<? extends AbstractType> types) {
@@ -158,7 +163,7 @@ public class TypeServiceTest {
 
 		assertEquals(2, types.size());
 		sortTypesByName(types);
-		assertComponent(types.get(0), "Component 1", null, null, true);
-		assertMineral(types.get(1), "Mineral 1", null, null, true);
+		assertComponent(types.get(0), "Component 1", null, null, true, 11);
+		assertMineral(types.get(1), "Mineral 1", null, null, true, 12);
 	}
 }

@@ -44,9 +44,9 @@ import org.springframework.data.domain.Sort.Direction;
 @RunWith(MockitoJUnitRunner.class)
 public class BlueprintServiceTest {
 	private static final MockBlueprint BLUEPRINT_1 = new MockBlueprint(3, 4, 5, new BigDecimal(6), 7, "Blueprint 1", new BigDecimal(8),
-			new BigDecimal(9), new BigDecimal(10), new BigDecimal(11), new BigDecimal(12));
+			new BigDecimal(9), new BigDecimal(10), new BigDecimal(11), new BigDecimal(12), 99);
 	private static final MockBlueprint BLUEPRINT_2 = new MockBlueprint(13, 14, 15, new BigDecimal(16), 17, "Blueprint 2",
-			new BigDecimal(18), new BigDecimal(19), new BigDecimal(20), new BigDecimal(21), new BigDecimal(22));
+			new BigDecimal(18), new BigDecimal(19), new BigDecimal(20), new BigDecimal(21), new BigDecimal(22), 98);
 	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_1 = mock(InventoryBlueprintType.class);
 	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_2 = mock(InventoryBlueprintType.class);
 
@@ -55,11 +55,13 @@ public class BlueprintServiceTest {
 		when(productType.getTypeName()).thenReturn("Inventory blueprint type");
 		when(INVENTORY_BLUEPRINT_1.getBlueprintTypeID()).thenReturn(985);
 		when(INVENTORY_BLUEPRINT_1.getProductType()).thenReturn(productType);
+		when(INVENTORY_BLUEPRINT_1.getProductTypeID()).thenReturn(17);
 
 		InventoryType productType2 = mock(InventoryType.class);
 		when(productType2.getTypeName()).thenReturn("Inventory blueprint type 2");
 		when(INVENTORY_BLUEPRINT_2.getBlueprintTypeID()).thenReturn(985);
 		when(INVENTORY_BLUEPRINT_2.getProductType()).thenReturn(productType2);
+		when(INVENTORY_BLUEPRINT_2.getProductTypeID()).thenReturn(18);
 	}
 
 	@InjectMocks
@@ -75,17 +77,18 @@ public class BlueprintServiceTest {
 	private InventoryBlueprintTypeRepository inventoryBlueprintTypeRepository;
 
 	private static void assertBlueprintSummary(BlueprintSummary summary, MockBlueprint blueprint) {
-		assertBlueprintSummary(summary, blueprint.getTypeName(), blueprint.getBlueprintTypeID(), blueprint.getHours(),
-				blueprint.getNumberPerRun(), blueprint.getMaterialEfficiency(), blueprint.getMaterialCost(), blueprint.getProfit(),
-				blueprint.getProfitPercentage(), blueprint.getOtherCost(), blueprint.getTotalCost(), blueprint.getSaleValue(),
-				blueprint.getLastUpdated());
+		assertBlueprintSummary(summary, blueprint.getTypeName(), blueprint.getBlueprintTypeID(), blueprint.getProducedTypeId(),
+				blueprint.getHours(), blueprint.getNumberPerRun(), blueprint.getMaterialEfficiency(), blueprint.getMaterialCost(),
+				blueprint.getProfit(), blueprint.getProfitPercentage(), blueprint.getOtherCost(), blueprint.getTotalCost(),
+				blueprint.getSaleValue(), blueprint.getLastUpdated());
 	}
 
-	private static void assertBlueprintSummary(BlueprintSummary summary, String name, int id, int hours, int numberPerRun,
+	private static void assertBlueprintSummary(BlueprintSummary summary, String name, int id, int producedTypeId, int hours, int numberPerRun,
 			int materialEfficiency, BigDecimal materialCost, BigDecimal profit, BigDecimal profitPercentage, BigDecimal runningCost,
 			BigDecimal totalCost, BigDecimal saleValue, Timestamp saleValueLastUpdated) {
 		assertEquals(hours, summary.getHours());
 		assertEquals(id, summary.getId());
+		assertEquals(producedTypeId, summary.getProducedTypeID());
 		assertEquals(materialCost, summary.getMaterialCost());
 		assertEquals(materialEfficiency, summary.getMaterialEfficiency());
 		assertEquals(name, summary.getName());
@@ -99,11 +102,13 @@ public class BlueprintServiceTest {
 	}
 
 	private static void assertCandidateBlueprint(CandidateBlueprint blueprint, InventoryBlueprintType inventoryBlueprint) {
-		assertCandidateBlueprint(blueprint, inventoryBlueprint.getBlueprintTypeID(), inventoryBlueprint.getProductType().getTypeName());
+		assertCandidateBlueprint(blueprint, inventoryBlueprint.getBlueprintTypeID(), inventoryBlueprint.getProductTypeID(),
+				inventoryBlueprint.getProductType().getTypeName());
 	}
 
-	private static void assertCandidateBlueprint(CandidateBlueprint blueprint, int id, String name) {
+	private static void assertCandidateBlueprint(CandidateBlueprint blueprint, int id, int producedTypeId, String name) {
 		assertEquals(id, blueprint.getId());
+		assertEquals(producedTypeId, blueprint.getProducedTypeID());
 		assertEquals(name, blueprint.getName());
 	}
 

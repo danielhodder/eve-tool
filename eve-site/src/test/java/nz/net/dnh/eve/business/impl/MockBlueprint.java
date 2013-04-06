@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintCostSummary;
+import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 
 public class MockBlueprint extends Blueprint {
 	private static final long serialVersionUID = 1L;
@@ -13,10 +14,11 @@ public class MockBlueprint extends Blueprint {
 	private final BigDecimal profit;
 	private final BigDecimal profitPercentage;
 	private final BigDecimal totalCost;
+	private final int producedTypeId;
 
 	public MockBlueprint(final int blueprintTypeID, final int numberPerRun, final int hours, final BigDecimal saleValue,
 			final int materialEfficiency, final String typeName, final BigDecimal materialCost, final BigDecimal otherCost,
-			final BigDecimal profit, final BigDecimal profitPercentage, final BigDecimal totalCost) {
+			final BigDecimal profit, final BigDecimal profitPercentage, final BigDecimal totalCost, int producedTypeId) {
 		super(blueprintTypeID, numberPerRun, hours, saleValue, materialEfficiency);
 		this.typeName = typeName;
 		this.materialCost = materialCost;
@@ -24,6 +26,7 @@ public class MockBlueprint extends Blueprint {
 		this.profit = profit;
 		this.profitPercentage = profitPercentage;
 		this.totalCost = totalCost;
+		this.producedTypeId = producedTypeId;
 	}
 
 	@Override
@@ -49,6 +52,22 @@ public class MockBlueprint extends Blueprint {
 
 	public BigDecimal getTotalCost() {
 		return this.totalCost;
+	}
+
+	public int getProducedTypeId() {
+		return this.producedTypeId;
+	}
+
+	@Override
+	public InventoryBlueprintType getBlueprintType() {
+		return new InventoryBlueprintType() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Integer getProductTypeID() {
+				return MockBlueprint.this.producedTypeId;
+			}
+		};
 	}
 
 	@Override

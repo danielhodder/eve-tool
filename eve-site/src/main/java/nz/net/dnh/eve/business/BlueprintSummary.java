@@ -3,9 +3,8 @@ package nz.net.dnh.eve.business;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import nz.net.dnh.eve.business.impl.BlueprintInformation;
 
-public interface BlueprintSummary extends BlueprintReference, BlueprintInformation {
+public interface BlueprintSummary extends BlueprintInformation {
 	/**
 	 * @return The cost of the materials used to build the blueprint. May be null if the cost is unknown
 	 */
