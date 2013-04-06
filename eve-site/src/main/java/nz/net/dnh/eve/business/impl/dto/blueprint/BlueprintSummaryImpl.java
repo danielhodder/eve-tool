@@ -10,7 +10,7 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 
 	private final Blueprint blueprint;
 
-	public BlueprintSummaryImpl(Blueprint blueprint) {
+	public BlueprintSummaryImpl(final Blueprint blueprint) {
 		this.blueprint = blueprint;
 	}
 
@@ -27,12 +27,12 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 	public BigDecimal getTotalCost() {
 		return this.blueprint.getCostSummary().getTotalCost();
 	}
-	
+
 	@Override
 	public BigDecimal getMaterialCost() {
 		return this.blueprint.getCostSummary().getMaterialCost();
 	}
-	
+
 	@Override
 	public BigDecimal getRunningCost() {
 		return this.blueprint.getCostSummary().getOtherCost();
@@ -84,7 +84,7 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return obj instanceof BlueprintSummaryImpl
 				&& this.blueprint
 						.equals(((BlueprintSummaryImpl) obj).blueprint);
@@ -93,6 +93,11 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 	@Override
 	public int hashCode() {
 		return this.blueprint.hashCode();
+	}
+
+	@Override
+	public int getProducedTypeID() {
+		return this.blueprint.getBlueprintType().getProductTypeID();
 	}
 
 }

@@ -36,7 +36,7 @@
 				<td><c:out value="${type.costLastUpdated}" /></td>
 				<td class="hidden">
 					<div class="popover-html">
-						<img src="<c:out value="${imageURILocator.getUriForTypeID(type.id, 64)}" />" />
+						<img src="<c:out value="${imageURILocator.getUriForType(type, 64)}" />" />
 						
 						
 					</div>

@@ -3,12 +3,9 @@ package nz.net.dnh.eve.business;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public interface BlueprintSummary extends BlueprintReference {
-	/**
-	 * @return The name of the blueprint
-	 */
-	public String getName();
+import nz.net.dnh.eve.business.impl.BlueprintInformation;
 
+public interface BlueprintSummary extends BlueprintReference, BlueprintInformation {
 	/**
 	 * @return The cost of the materials used to build the blueprint. May be null if the cost is unknown
 	 */
@@ -21,7 +18,7 @@ public interface BlueprintSummary extends BlueprintReference {
 
 	/**
 	 * Convenience method which returns the sum of material and running costs
-	 * 
+	 *
 	 * @return The total cost of building the blueprint, in Isk. May be null if the cost is unknown
 	 */
 	public BigDecimal getTotalCost();

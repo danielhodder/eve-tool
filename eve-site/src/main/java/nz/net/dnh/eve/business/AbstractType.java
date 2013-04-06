@@ -33,5 +33,5 @@ public interface AbstractType {
 	/**
 	 * @return The id of the type
 	 */
-	public long getId();
+	public int getId();
 }

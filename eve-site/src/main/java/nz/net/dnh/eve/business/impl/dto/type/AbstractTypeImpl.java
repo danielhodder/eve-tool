@@ -40,7 +40,7 @@ public abstract class AbstractTypeImpl implements AbstractType {
 	}
 
 	@Override
-	public long getId() {
+	public int getId() {
 		return this.type.getTypeID();
 	}
 

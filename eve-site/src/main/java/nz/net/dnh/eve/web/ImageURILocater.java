@@ -1,7 +1,7 @@
 package nz.net.dnh.eve.web;
 
-import nz.net.dnh.eve.model.domain.Blueprint;
-import nz.net.dnh.eve.model.domain.Type;
+import nz.net.dnh.eve.business.AbstractType;
+import nz.net.dnh.eve.business.BlueprintReference;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -9,28 +9,16 @@ public final class ImageURILocater {
 	@Value("${eve.imageBaseURI}")
 	private String baseLocatorURI;
 
-	public String getUriForType(final Type type, final int size) {
-		return getUriForTypeID(type.getTypeID(), Size.fromSize(size));
+	public String getUriForType(final AbstractType type, final long size) {
+		return getUriForTypeID(type.getId(), size);
 	}
 
-	public String getUriForType(final Type type, final Size size) {
-		return getUriForTypeID(type.getTypeID(), size);
+	public String getUriForBlueprint(final BlueprintReference blueprint, final long size) {
+		return getUriForTypeID(blueprint.getId(), size);
 	}
 
-	public String getUriForType(final Blueprint blueprint, final int size) {
-		return getUriForTypeID(blueprint.getBlueprintTypeID(), Size.fromSize(size));
-	}
-
-	public String getUriForType(final Blueprint blueprint, final Size size) {
-		return getUriForTypeID(blueprint.getBlueprintTypeID(), size);
-	}
-
-	public String getUriForTypeID(final long id, final int size) {
+	public String getUriForTypeID(final int id, final long size) {
 		return this.baseLocatorURI + "/" + id + "_" + Size.fromSize(size).SizeString + ".png";
-	}
-
-	public String getUriForTypeID(final long id, final Size size) {
-		return this.baseLocatorURI + "/" + id + "_" + size.SizeString + ".png";
 	}
 
 	public static enum Size {
@@ -45,8 +33,8 @@ public final class ImageURILocater {
 			this.SizeString = sizeString;
 		}
 
-		public static Size fromSize(final int size) {
-			switch (size) {
+		public static Size fromSize(final long size) {
+			switch ((int) size) {
 				case 32:
 					return _32x32;
 

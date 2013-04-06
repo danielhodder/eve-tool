@@ -40,7 +40,7 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 	}
 
 	@Override
-	public long getId() {
+	public int getId() {
 		return this.inventoryType.getTypeID();
 	}
 

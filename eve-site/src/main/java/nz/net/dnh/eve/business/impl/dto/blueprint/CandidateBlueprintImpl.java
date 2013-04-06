@@ -7,7 +7,7 @@ public class CandidateBlueprintImpl implements CandidateBlueprint {
 
 	private final InventoryBlueprintType inventoryBlueprint;
 
-	public CandidateBlueprintImpl(InventoryBlueprintType inventoryBlueprint) {
+	public CandidateBlueprintImpl(final InventoryBlueprintType inventoryBlueprint) {
 		this.inventoryBlueprint = inventoryBlueprint;
 	}
 
@@ -27,13 +27,18 @@ public class CandidateBlueprintImpl implements CandidateBlueprint {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return obj instanceof CandidateBlueprintImpl && this.inventoryBlueprint.equals(((CandidateBlueprintImpl) obj).inventoryBlueprint);
 	}
 
 	@Override
 	public int hashCode() {
 		return this.inventoryBlueprint.hashCode();
+	}
+
+	@Override
+	public int getProducedTypeID() {
+		return this.inventoryBlueprint.getProductTypeID();
 	}
 
 }
