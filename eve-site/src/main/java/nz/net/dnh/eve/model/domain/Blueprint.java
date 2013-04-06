@@ -49,6 +49,18 @@ public class Blueprint implements Serializable {
 	@OneToMany(mappedBy = "blueprint", fetch = FetchType.LAZY)
 	private Collection<BlueprintRequiredType> requiredTypes;
 
+	public Blueprint() {
+	}
+
+	public Blueprint(int blueprintTypeID, int numberPerRun, int hours, BigDecimal saleValue, int materialEfficiency) {
+		this.blueprintTypeID = blueprintTypeID;
+		this.numberPerRun = numberPerRun;
+		this.hours = hours;
+		this.saleValue = saleValue;
+		this.lastUpdated = new Timestamp(System.currentTimeMillis());
+		this.materialEfficiency = materialEfficiency;
+	}
+
 	public void setBlueprintTypeID(int blueprintTypeID) {
 		this.blueprintTypeID = blueprintTypeID;
 	}

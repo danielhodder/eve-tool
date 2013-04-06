@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -13,9 +14,16 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "invBlueprintTypes")
-@NamedQuery(name = "InventoryBlueprintType.findUnknownBlueprints", query = "SELECT ibt FROM InventoryBlueprintType ibt "
-		+ "WHERE ibt.blueprintTypeID NOT IN (SELECT b.blueprintTypeID from Blueprint b)")
+@NamedQueries({ @NamedQuery(name = "InventoryBlueprintType.findUnknownBlueprints", query = InventoryBlueprintType.UNKNOWN_BLUEPRINT_QUERY),
+		@NamedQuery(name = "InventoryBlueprintType.findUnknownBlueprintsBySearch", query = InventoryBlueprintType.UNKNOWN_BLUEPRINT_QUERY_SEARCH) })
 public class InventoryBlueprintType implements Serializable {
+	public static final String UNKNOWN_BLUEPRINT_QUERY = "SELECT ibt FROM InventoryBlueprintType ibt "
+			+ "WHERE ibt.blueprintTypeID NOT IN (SELECT b.blueprintTypeID from Blueprint b)";
+	// This performs really badly. But with our dataset you're not going to
+	// notice...
+	public static final String UNKNOWN_BLUEPRINT_QUERY_SEARCH = UNKNOWN_BLUEPRINT_QUERY
+			+ " AND LOWER(ibt.productType.typeName) LIKE LOWER(CONCAT('%', :search, '%'))";
+
 	private static final long serialVersionUID = 1L;
 
 	@Id

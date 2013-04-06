@@ -30,6 +30,9 @@ public class TypeServiceImpl implements TypeService {
 	@Autowired
 	private InventoryTypeRepository inventoryTypeRepository;
 
+	@Autowired
+	private BlueprintResolverService blueprintResolverService;
+
 	@Override
 	public List<Mineral> listMinerals(boolean includeMissing) {
 		List<Type> allTypes = this.typeRepository.findAllMinerals();
@@ -88,7 +91,7 @@ public class TypeServiceImpl implements TypeService {
 
 	@Override
 	public List<? extends AbstractType> listMissingTypes(BlueprintReference blueprintRef) {
-		Blueprint blueprint = BlueprintReferenceUtil.toBlueprint(blueprintRef);
+		Blueprint blueprint = this.blueprintResolverService.toBlueprint(blueprintRef);
 		List<AbstractType> missingTypes = new ArrayList<>();
 		addMinerals(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(blueprint), missingTypes);
 		addComponents(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(blueprint), missingTypes);
