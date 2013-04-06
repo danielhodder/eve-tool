@@ -14,8 +14,11 @@ import java.util.Date;
 import java.util.List;
 
 import nz.net.dnh.eve.business.AbstractType;
+import nz.net.dnh.eve.business.BlueprintIdReference;
+import nz.net.dnh.eve.business.BlueprintReference;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.Mineral;
+import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.Type;
 import nz.net.dnh.eve.model.raw.InventoryType;
 import nz.net.dnh.eve.model.repository.InventoryTypeRepository;
@@ -60,6 +63,9 @@ public class TypeServiceTest {
 	@Mock
 	private InventoryTypeRepository inventoryTypeRepository;
 
+	@Mock
+	private BlueprintResolverService blueprintResolverService;
+
 	private static void assertComponent(AbstractType type, String name, BigDecimal cost, Date lastUpdated, boolean missing) {
 		assertTrue(type instanceof Component);
 		assertType(type, name, cost, lastUpdated, missing);
@@ -78,7 +84,7 @@ public class TypeServiceTest {
 	}
 
 	@Test
-	public void testListComponents() {
+	public void listComponents() {
 		when(this.typeRepository.findAllComponents()).thenReturn(
 				Arrays.asList(TYPE_1, TYPE_2));
 		when(this.inventoryTypeRepository.findUnknownComponents()).thenReturn(Arrays.asList(COMPONENT_1));
@@ -98,7 +104,7 @@ public class TypeServiceTest {
 	}
 
 	@Test
-	public void testListMinerals() {
+	public void listMinerals() {
 		when(this.typeRepository.findAllMinerals()).thenReturn(
 				Arrays.asList(TYPE_2, TYPE_1));
 		when(this.inventoryTypeRepository.findUnknownMinerals()).thenReturn(Arrays.asList(MINERAL_1));
@@ -118,13 +124,19 @@ public class TypeServiceTest {
 	}
 
 	@Test
-	public void testListUnknownTypes() {
+	public void listMissingTypes() {
 		when(this.inventoryTypeRepository.findUnknownComponents()).thenReturn(Arrays.asList(COMPONENT_1));
 		when(this.inventoryTypeRepository.findUnknownMinerals()).thenReturn(Arrays.asList(MINERAL_1));
 
 		List<? extends AbstractType> types = this.typeService.listMissingTypes();
 
 		assertEquals(2, types.size());
+		sortTypesByName(types);
+		assertComponent(types.get(0), "Component 1", null, null, true);
+		assertMineral(types.get(1), "Mineral 1", null, null, true);
+	}
+
+	private static void sortTypesByName(List<? extends AbstractType> types) {
 		Collections.sort(types, new Comparator<AbstractType>() {
 
 			@Override
@@ -132,6 +144,20 @@ public class TypeServiceTest {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
+	}
+
+	@Test
+	public void listMissingTypesForBlueprint() {
+		BlueprintReference blueprintReference = new BlueprintIdReference(4);
+		Blueprint b = mock(Blueprint.class);
+		when(this.blueprintResolverService.toBlueprint(blueprintReference)).thenReturn(b);
+		when(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(b)).thenReturn(Arrays.asList(COMPONENT_1));
+		when(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(b)).thenReturn(Arrays.asList(MINERAL_1));
+
+		List<? extends AbstractType> types = this.typeService.listMissingTypes(blueprintReference);
+
+		assertEquals(2, types.size());
+		sortTypesByName(types);
 		assertComponent(types.get(0), "Component 1", null, null, true);
 		assertMineral(types.get(1), "Mineral 1", null, null, true);
 	}

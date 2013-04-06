@@ -3,7 +3,11 @@ package nz.net.dnh.eve.business.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -21,15 +25,21 @@ import nz.net.dnh.eve.business.impl.dto.blueprint.BlueprintSummaryImpl;
 import nz.net.dnh.eve.business.impl.dto.blueprint.CandidateBlueprintImpl;
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
+import nz.net.dnh.eve.model.raw.InventoryType;
 import nz.net.dnh.eve.model.repository.BlueprintRepository;
 import nz.net.dnh.eve.model.repository.InventoryBlueprintTypeRepository;
 import nz.net.dnh.eve.model.repository.TypeRepository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BlueprintServiceTest {
@@ -38,9 +48,18 @@ public class BlueprintServiceTest {
 	private static final MockBlueprint BLUEPRINT_2 = new MockBlueprint(13, 14, 15, new BigDecimal(16), 17, "Blueprint 2",
 			new BigDecimal(18), new BigDecimal(19), new BigDecimal(20), new BigDecimal(21), new BigDecimal(22));
 	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_1 = mock(InventoryBlueprintType.class);
+	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_2 = mock(InventoryBlueprintType.class);
 
 	static {
+		InventoryType productType = mock(InventoryType.class);
+		when(productType.getTypeName()).thenReturn("Inventory blueprint type");
+		when(INVENTORY_BLUEPRINT_1.getBlueprintTypeID()).thenReturn(985);
+		when(INVENTORY_BLUEPRINT_1.getProductType()).thenReturn(productType);
 
+		InventoryType productType2 = mock(InventoryType.class);
+		when(productType2.getTypeName()).thenReturn("Inventory blueprint type 2");
+		when(INVENTORY_BLUEPRINT_2.getBlueprintTypeID()).thenReturn(985);
+		when(INVENTORY_BLUEPRINT_2.getProductType()).thenReturn(productType2);
 	}
 
 	@InjectMocks
@@ -77,6 +96,15 @@ public class BlueprintServiceTest {
 		assertEquals(saleValue, summary.getSaleValue());
 		assertEquals(saleValueLastUpdated, summary.getSaleValueLastUpdated());
 		assertEquals(totalCost, summary.getTotalCost());
+	}
+
+	private static void assertCandidateBlueprint(CandidateBlueprint blueprint, InventoryBlueprintType inventoryBlueprint) {
+		assertCandidateBlueprint(blueprint, inventoryBlueprint.getBlueprintTypeID(), inventoryBlueprint.getProductType().getTypeName());
+	}
+
+	private static void assertCandidateBlueprint(CandidateBlueprint blueprint, int id, String name) {
+		assertEquals(id, blueprint.getId());
+		assertEquals(name, blueprint.getName());
 	}
 
 	@Test
@@ -206,5 +234,233 @@ public class BlueprintServiceTest {
 		assertEquals(2, out.size());
 		assertBlueprintSummary(out.get(0), BLUEPRINT_1);
 		assertBlueprintSummary(out.get(1), BLUEPRINT_2);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void listCandidateBlueprintsSortNotAllowed() {
+		this.service.listCandidateBlueprints(new PageRequest(0, 5, Direction.ASC, "totalCost"));
+	}
+
+	@Test
+	public void listNoCandidateBlueprints() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
+				new PageImpl<>(Collections.<InventoryBlueprintType> emptyList()));
+		
+		Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
+		assertTrue(out.getContent().isEmpty());
+	}
+
+	@Test
+	public void listSingleCandidateBlueprint() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
+				new PageImpl<>(Collections.singletonList(INVENTORY_BLUEPRINT_1)));
+
+		Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
+		assertEquals(1, out.getNumberOfElements());
+		assertEquals(0, out.getNumber());
+		assertEquals(1, out.getTotalPages());
+		assertEquals(1, out.getTotalElements());
+		assertCandidateBlueprint(out.getContent().get(0), INVENTORY_BLUEPRINT_1);
+	}
+
+	@Test
+	public void listCandidateBlueprints() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
+				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_2, INVENTORY_BLUEPRINT_1)));
+
+		Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
+		assertEquals(2, out.getNumberOfElements());
+		assertEquals(0, out.getNumber());
+		assertEquals(1, out.getTotalPages());
+		assertEquals(2, out.getTotalElements());
+		assertCandidateBlueprint(out.getContent().get(0), INVENTORY_BLUEPRINT_2);
+		assertCandidateBlueprint(out.getContent().get(1), INVENTORY_BLUEPRINT_1);
+	}
+
+	@Test
+	public void listCandidateBlueprintsPaged() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
+				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_1, INVENTORY_BLUEPRINT_2), page, 34));
+
+		Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
+		assertEquals(2, out.getNumberOfElements());
+		assertEquals(0, out.getNumber());
+		assertEquals(17, out.getTotalPages());
+		assertEquals(34, out.getTotalElements());
+		assertCandidateBlueprint(out.getContent().get(0), INVENTORY_BLUEPRINT_1);
+		assertCandidateBlueprint(out.getContent().get(1), INVENTORY_BLUEPRINT_2);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void findCandidateBlueprintsSortNotAllowed() {
+		this.service.findCandidateBlueprints("a", new PageRequest(0, 5, Direction.ASC, "totalCost"));
+	}
+
+	@Test
+	public void findNoCandidateBlueprints() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("s", page)).thenReturn(
+				new PageImpl<>(Collections.<InventoryBlueprintType> emptyList()));
+
+		Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("s", page);
+		assertTrue(out.getContent().isEmpty());
+	}
+
+	@Test
+	public void findSingleCandidateBlueprint() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("q", page)).thenReturn(
+				new PageImpl<>(Collections.singletonList(INVENTORY_BLUEPRINT_1)));
+
+		Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("q", page);
+		assertEquals(1, out.getNumberOfElements());
+		assertEquals(0, out.getNumber());
+		assertEquals(1, out.getTotalPages());
+		assertEquals(1, out.getTotalElements());
+		assertCandidateBlueprint(out.getContent().get(0), INVENTORY_BLUEPRINT_1);
+	}
+
+	@Test
+	public void findCandidateBlueprints() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("z", page)).thenReturn(
+				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_2, INVENTORY_BLUEPRINT_1)));
+
+		Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("z", page);
+		assertEquals(2, out.getNumberOfElements());
+		assertEquals(0, out.getNumber());
+		assertEquals(1, out.getTotalPages());
+		assertEquals(2, out.getTotalElements());
+		assertCandidateBlueprint(out.getContent().get(0), INVENTORY_BLUEPRINT_2);
+		assertCandidateBlueprint(out.getContent().get(1), INVENTORY_BLUEPRINT_1);
+	}
+
+	@Test
+	public void findCandidateBlueprintsPaged() {
+		PageRequest page = new PageRequest(0, 2);
+		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("p", page)).thenReturn(
+				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_1, INVENTORY_BLUEPRINT_2), page, 34));
+
+		Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("p", page);
+		assertEquals(2, out.getNumberOfElements());
+		assertEquals(0, out.getNumber());
+		assertEquals(17, out.getTotalPages());
+		assertEquals(34, out.getTotalElements());
+		assertCandidateBlueprint(out.getContent().get(0), INVENTORY_BLUEPRINT_1);
+		assertCandidateBlueprint(out.getContent().get(1), INVENTORY_BLUEPRINT_2);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void createBlueprintAlreadyExists() {
+		when(this.blueprintRepository.exists(1)).thenReturn(true);
+		this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void createBlueprintReferencedDoesntExist() {
+		when(this.blueprintRepository.exists(1)).thenReturn(false);
+		when(this.inventoryBlueprintTypeRepository.exists(1)).thenReturn(false);
+		this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void createBlueprintNullSaleValue() {
+		when(this.blueprintRepository.exists(1)).thenReturn(false);
+		when(this.inventoryBlueprintTypeRepository.exists(1)).thenReturn(true);
+		this.service.createBlueprint(new BlueprintIdReference(1), null, 3, 4, 5);
+	}
+
+	@Test
+	public void createBlueprint() {
+		when(this.blueprintRepository.exists(1)).thenReturn(false);
+		when(this.inventoryBlueprintTypeRepository.exists(1)).thenReturn(true);
+		when(this.blueprintRepository.save(any(Blueprint.class))).thenReturn(BLUEPRINT_1);
+
+		BlueprintSummary created = this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+
+		ArgumentCaptor<Blueprint> captor = ArgumentCaptor.forClass(Blueprint.class);
+		verify(this.blueprintRepository).save(captor.capture());
+		Blueprint blueprint = captor.getValue();
+		assertEquals(1, blueprint.getBlueprintTypeID());
+		assertEquals(new BigDecimal(2), blueprint.getSaleValue());
+		assertEquals(3, blueprint.getNumberPerRun());
+		assertEquals(4, blueprint.getHours());
+		assertEquals(5, blueprint.getMaterialEfficiency());
+
+		assertBlueprintSummary(created, BLUEPRINT_1);
+	}
+
+	@Test(expected=BlueprintNotFoundException.class)
+	public void editNonExistingBlueprint() {
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+	}
+
+	@Test
+	public void editBlueprintAllFields() {
+		Blueprint b = mock(Blueprint.class);
+		when(this.blueprintRepository.findOne(1)).thenReturn(b);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+
+		verify(b).setSaleValue(new BigDecimal(2));
+		verify(b).setLastUpdated(any(Timestamp.class));
+		verify(b).setNumberPerRun(3);
+		verify(b).setHours(4);
+		verify(b).setMaterialEfficiency(5);
+	}
+
+	@Test
+	public void editBlueprintSaleValue() {
+		Blueprint b = mock(Blueprint.class);
+		when(this.blueprintRepository.findOne(1)).thenReturn(b);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
+
+		verify(b).setSaleValue(new BigDecimal(2));
+		verify(b).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).setNumberPerRun(anyInt());
+		verify(b, never()).setHours(anyInt());
+		verify(b, never()).setMaterialEfficiency(anyInt());
+	}
+
+	@Test
+	public void editBlueprintNumberPerRun() {
+		Blueprint b = mock(Blueprint.class);
+		when(this.blueprintRepository.findOne(1)).thenReturn(b);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, 3, null, null);
+
+		verify(b, never()).setSaleValue(any(BigDecimal.class));
+		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b).setNumberPerRun(3);
+		verify(b, never()).setHours(anyInt());
+		verify(b, never()).setMaterialEfficiency(anyInt());
+	}
+
+	@Test
+	public void editBlueprintHours() {
+		Blueprint b = mock(Blueprint.class);
+		when(this.blueprintRepository.findOne(1)).thenReturn(b);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, null, 4, null);
+
+		verify(b, never()).setSaleValue(any(BigDecimal.class));
+		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).setNumberPerRun(anyInt());
+		verify(b).setHours(4);
+		verify(b, never()).setMaterialEfficiency(anyInt());
+	}
+
+	@Test
+	public void editBlueprintMaterialEfficiency() {
+		Blueprint b = mock(Blueprint.class);
+		when(this.blueprintRepository.findOne(1)).thenReturn(b);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, null, null, 5);
+
+		verify(b, never()).setSaleValue(any(BigDecimal.class));
+		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).setNumberPerRun(anyInt());
+		verify(b, never()).setHours(anyInt());
+		verify(b).setMaterialEfficiency(5);
 	}
 }

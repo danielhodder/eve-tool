@@ -111,6 +111,9 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 		if (!this.inventoryBlueprintTypeRepository.exists(blueprintReference.getId())) {
 			throw new IllegalArgumentException("The blueprint " + blueprintReference + " does not match any InventoryBlueprintType");
 		}
+		if (saleValue == null) {
+			throw new IllegalArgumentException("Sale value cannot be null");
+		}
 		// Create it
 		Blueprint newBlueprint = new Blueprint(blueprintReference.getId(), numberPerRun, hours, saleValue, materialEfficiency);
 		Blueprint savedBlueprint = this.blueprintRepository.save(newBlueprint);
