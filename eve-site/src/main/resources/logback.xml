@@ -16,5 +16,4 @@
 	</root>
 
 	<logger name="nz.net.dnh.eve" level="ALL" />
-	<logger name="org.hibernate.SQL" level="ALL" />
 </configuration>
