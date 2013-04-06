@@ -15,16 +15,6 @@ public class NumberFormatter {
 		setNullValue(nullValue);
 	}
 
-	public String format(final Double value) {
-		return (value == null ? this.nullValue : this.format.format(value));
-	}
-
-	public String format(final Long value) {
-
-
-		return (value == null ? this.nullValue : this.format.format(value));
-	}
-
 	public String format(final Object value) {
 		return (value == null ? this.nullValue : this.format.format(value));
 	}
