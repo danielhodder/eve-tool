@@ -49,7 +49,6 @@
 					<div class="popover-html">
 						<img src="<c:out value="${imageURILocator.getUriForBlueprint(blueprint, 64)}" />" />
 						<img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.producedTypeID, 64)}" />" />
-						
 					</div>
 				</td>
 			</tr>
@@ -69,10 +68,10 @@
 			});
 		});
 		
-		$('.blueprints tr td a').each(function () {
+		$('.blueprints tr').each(function () {
 			$(this).popover({
 				'html' : 'true',
-				'content' : $('.popover-html', $(this).parents('tr')).html(),
+				'content' : $('.popover-html', this).html(),
 				'placement' : 'left',
 				'trigger' : 'hover'
 			});

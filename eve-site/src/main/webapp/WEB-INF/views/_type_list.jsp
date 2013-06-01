@@ -37,8 +37,6 @@
 				<td class="hidden">
 					<div class="popover-html">
 						<img src="<c:out value="${imageURILocator.getUriForType(type, 64)}" />" />
-						
-						
 					</div>
 				</td>
 			</tr>
@@ -59,10 +57,10 @@
 			});
 		});
 		
-		$('.types tr td a').each(function () {
+		$('.types tr').each(function () {
 			$(this).popover({
 				'html' : 'true',
-				'content' : $('.popover-html', $(this).parents('tr')).html(),
+				'content' : $('.popover-html', this).html(),
 				'placement' : 'left',
 				'trigger' : 'hover'
 			});
