@@ -23,7 +23,7 @@ public final class BlueprintsController {
 	
 	@RequestMapping(value="/blueprints/{id}", method=RequestMethod.GET)
 	public ModelAndView showBlueprint(@PathVariable("id") final int id) {
-		BlueprintSummary blueprintInformation = this.blueprintService.getBlueprint(new BlueprintIdReference(id));
+		final BlueprintSummary blueprintInformation = this.blueprintService.getBlueprint(new BlueprintIdReference(id));
 		
 		return new ModelAndView("blueprints/show", "view", new BlueprintView(blueprintInformation, 
 				this.typeService.getRequiredTypes(blueprintInformation), new BlueprintForm(blueprintInformation)));
@@ -46,22 +46,22 @@ public final class BlueprintsController {
 		private final RequiredTypes requiredTypes;
 		private final BlueprintForm form;
 		
-		private BlueprintView(BlueprintSummary blueprint, RequiredTypes requiredTypes, BlueprintForm form) {
+		private BlueprintView(final BlueprintSummary blueprint, final RequiredTypes requiredTypes, final BlueprintForm form) {
 			this.blueprint = blueprint;
 			this.requiredTypes = requiredTypes;
 			this.form = form;
 		}
 
 		public BlueprintSummary getBlueprint() {
-			return blueprint;
+			return this.blueprint;
 		}
 
 		public RequiredTypes getRequiredTypes() {
-			return requiredTypes;
+			return this.requiredTypes;
 		}
 
 		public BlueprintForm getForm() {
-			return form;
+			return this.form;
 		}
 	}
 	
@@ -72,34 +72,34 @@ public final class BlueprintsController {
 		private int productionEffiecincy;
 		
 		public BlueprintForm() {}
-		public BlueprintForm(BlueprintSummary summary) {
+		public BlueprintForm(final BlueprintSummary summary) {
 			this.setSaleValue(summary.getSaleValue());
 			this.setNumberPerRun(summary.getNumberPerRun());
 			this.setMaterialEfficency(summary.getMaterialEfficiency());
 			this.setProductionEffiecincy(summary.getProductionEfficiency());
 		}
 		public BigDecimal getSaleValue() {
-			return saleValue;
+			return this.saleValue;
 		}
-		public void setSaleValue(BigDecimal saleValue) {
+		public void setSaleValue(final BigDecimal saleValue) {
 			this.saleValue = saleValue;
 		}
 		public int getNumberPerRun() {
-			return numberPerRun;
+			return this.numberPerRun;
 		}
-		public void setNumberPerRun(int numberPerRun) {
+		public void setNumberPerRun(final int numberPerRun) {
 			this.numberPerRun = numberPerRun;
 		}
 		public int getMaterialEfficency() {
-			return materialEfficency;
+			return this.materialEfficency;
 		}
-		public void setMaterialEfficency(int materialEfficency) {
+		public void setMaterialEfficency(final int materialEfficency) {
 			this.materialEfficency = materialEfficency;
 		}
 		public int getProductionEffiecincy() {
-			return productionEffiecincy;
+			return this.productionEffiecincy;
 		}
-		public void setProductionEffiecincy(int productionEffiecincy) {
+		public void setProductionEffiecincy(final int productionEffiecincy) {
 			this.productionEffiecincy = productionEffiecincy;
 		}
 	}

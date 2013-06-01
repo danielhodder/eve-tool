@@ -51,10 +51,10 @@ public class RequiredTypes {
 	 * @return
 	 */
 	public Map<? extends AbstractType, Integer> getAllRequiredTypes() {
-		Map<AbstractType, Integer> allTypes = new HashMap<>();
+		final Map<AbstractType, Integer> allTypes = new HashMap<>();
 		
-		allTypes.putAll(requiredComponents);
-		allTypes.putAll(requiredMinerals);
+		allTypes.putAll(this.requiredComponents);
+		allTypes.putAll(this.requiredMinerals);
 		
 		return allTypes;
 	}

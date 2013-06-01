@@ -4,7 +4,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles-extras" prefix="tilesx"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
-<table class="table table-striped table-hover blueprints image-table">
+<table class="table table-striped table-hover blueprints image-table click-row">
 	<thead>
 		<tr>
 			<th colspan="2">Blueprint Name</th>

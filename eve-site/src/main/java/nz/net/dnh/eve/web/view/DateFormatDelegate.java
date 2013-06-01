@@ -4,17 +4,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class DateFormatDelegate {
-	private SimpleDateFormat dateFormat;
+	private final SimpleDateFormat dateFormat;
 
-	public DateFormatDelegate(SimpleDateFormat simpleDateFormat) {
+	public DateFormatDelegate(final SimpleDateFormat simpleDateFormat) {
 		this.dateFormat = simpleDateFormat;
 		
 	}
 
-	public String format(Date date) {
+	public String format(final Date date) {
 		if (date == null)
 			return null;
 		else
-			return dateFormat.format(date);
+			return this.dateFormat.format(date);
 	}
 }

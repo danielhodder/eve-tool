@@ -1,0 +1,7 @@
+table.click-row tbody tr:hover a {
+	text-decoration: underline;
+}
+
+table.click-row tbody tr:hover {
+	cursor: pointer;
+}
