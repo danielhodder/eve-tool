@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import nz.net.dnh.eve.HelpingMatchers;
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintIdReference;
 import nz.net.dnh.eve.business.BlueprintReference;
@@ -272,8 +271,6 @@ public class TypeServiceTest {
 
 	@Test
 	public void updateComponent() {
-		final Date startTime = new Date();
-
 		when(this.type2.getType()).thenReturn(this.component1);
 		when(this.typeRepository.save(any(Type.class))).thenReturn(this.type1);
 		when(this.typeRepository.findOne(22)).thenReturn(this.type2);
@@ -284,14 +281,12 @@ public class TypeServiceTest {
 
 		assertThat(updatedComponent, is(component("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.type2).setCost(COST_1);
-		verify(this.type2).setLastUpdated(argThat(HelpingMatchers.<Timestamp, Date> greaterThanOrEqualTo(startTime)));
+		verify(this.type2).touchLastUpdated();
 		verify(this.typeRepository).save(this.type2);
 	}
 
 	@Test
 	public void updateMineral() {
-		final Date startTime = new Date();
-
 		when(this.type2.getType()).thenReturn(this.mineral1);
 		when(this.typeRepository.save(any(Type.class))).thenReturn(this.type1);
 		when(this.typeRepository.findOne(22)).thenReturn(this.type2);
@@ -302,7 +297,7 @@ public class TypeServiceTest {
 
 		assertThat(updatedComponent, is(mineral("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.type2).setCost(COST_1);
-		verify(this.type2).setLastUpdated(argThat(HelpingMatchers.<Timestamp, Date> greaterThanOrEqualTo(startTime)));
+		verify(this.type2).touchLastUpdated();
 		verify(this.typeRepository).save(this.type2);
 	}
 

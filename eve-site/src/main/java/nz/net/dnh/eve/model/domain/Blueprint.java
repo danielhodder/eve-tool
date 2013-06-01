@@ -2,7 +2,6 @@ package nz.net.dnh.eve.model.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Entity;
@@ -16,7 +15,7 @@ import javax.validation.constraints.NotNull;
 import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 
 @Entity
-public class Blueprint implements Serializable {
+public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotNull
@@ -37,9 +36,6 @@ public class Blueprint implements Serializable {
 	private BigDecimal saleValue;
 
 	@NotNull
-	private Timestamp lastUpdated;
-
-	@NotNull
 	private int materialEfficiency;
 
 	@OneToOne
@@ -58,7 +54,7 @@ public class Blueprint implements Serializable {
 		this.numberPerRun = numberPerRun;
 		this.productionEfficiency = productionEfficiency;
 		this.saleValue = saleValue;
-		this.lastUpdated = new Timestamp(System.currentTimeMillis());
+		touchLastUpdated();
 		this.materialEfficiency = materialEfficiency;
 	}
 
@@ -92,14 +88,6 @@ public class Blueprint implements Serializable {
 
 	public BigDecimal getSaleValue() {
 		return this.saleValue;
-	}
-
-	public Timestamp getLastUpdated() {
-		return this.lastUpdated;
-	}
-
-	public void setLastUpdated(final Timestamp lastUpdated) {
-		this.lastUpdated = lastUpdated;
 	}
 
 	public void setMaterialEfficiency(final int materialEfficiency) {
@@ -142,7 +130,7 @@ public class Blueprint implements Serializable {
 		return "Blueprint [blueprintTypeID=" + this.blueprintTypeID
 				+ ", blueprintType=" + this.blueprintType + ", numberPerRun="
 				+ this.numberPerRun + ", productionEfficiency=" + this.productionEfficiency + ", saleValue="
-				+ this.saleValue + ", lastUpdated=" + this.lastUpdated
+				+ this.saleValue + ", lastUpdated=" + getLastUpdated()
 				+ ", materialEfficiency=" + this.materialEfficiency
 				+ ", costSummary=" + this.costSummary + "]";
 	}

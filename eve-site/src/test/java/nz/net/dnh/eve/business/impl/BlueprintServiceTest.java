@@ -430,7 +430,7 @@ public class BlueprintServiceTest {
 		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
 
 		verify(b).setSaleValue(new BigDecimal(2));
-		verify(b).setLastUpdated(any(Timestamp.class));
+		verify(b).touchLastUpdated();
 		verify(b).setNumberPerRun(3);
 		verify(b).setProductionEfficiency(4);
 		verify(b).setMaterialEfficiency(5);
@@ -444,7 +444,7 @@ public class BlueprintServiceTest {
 		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
 
 		verify(b).setSaleValue(new BigDecimal(2));
-		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).touchLastUpdated();
 		verify(b).setNumberPerRun(3);
 		verify(b).setProductionEfficiency(4);
 		verify(b).setMaterialEfficiency(5);
@@ -458,7 +458,7 @@ public class BlueprintServiceTest {
 		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
-		verify(b).setLastUpdated(any(Timestamp.class));
+		verify(b).touchLastUpdated();
 		verify(b, never()).setNumberPerRun(anyInt());
 		verify(b, never()).setProductionEfficiency(anyInt());
 		verify(b, never()).setMaterialEfficiency(anyInt());
@@ -472,7 +472,7 @@ public class BlueprintServiceTest {
 		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
-		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).touchLastUpdated();
 		verify(b, never()).setNumberPerRun(anyInt());
 		verify(b, never()).setProductionEfficiency(anyInt());
 		verify(b, never()).setMaterialEfficiency(anyInt());
@@ -485,7 +485,7 @@ public class BlueprintServiceTest {
 		this.service.editBlueprint(new BlueprintIdReference(1), null, 3, null, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
-		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).touchLastUpdated();
 		verify(b).setNumberPerRun(3);
 		verify(b, never()).setProductionEfficiency(anyInt());
 		verify(b, never()).setMaterialEfficiency(anyInt());
@@ -498,7 +498,7 @@ public class BlueprintServiceTest {
 		this.service.editBlueprint(new BlueprintIdReference(1), null, null, 4, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
-		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).touchLastUpdated();
 		verify(b, never()).setNumberPerRun(anyInt());
 		verify(b).setProductionEfficiency(4);
 		verify(b, never()).setMaterialEfficiency(anyInt());
@@ -511,7 +511,7 @@ public class BlueprintServiceTest {
 		this.service.editBlueprint(new BlueprintIdReference(1), null, null, null, 5);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
-		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).touchLastUpdated();
 		verify(b, never()).setNumberPerRun(anyInt());
 		verify(b, never()).setProductionEfficiency(anyInt());
 		verify(b).setMaterialEfficiency(5);

@@ -1,7 +1,6 @@
 package nz.net.dnh.eve.business.impl;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,7 +129,7 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 		if (saleValue != null) {
 			// Update the last updated timestamp iff the sale value is different
 			if (!saleValue.equals(blueprint.getSaleValue()))
-				blueprint.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+				blueprint.touchLastUpdated();
 			blueprint.setSaleValue(saleValue);
 		}
 		if (numberPerRun != null) {

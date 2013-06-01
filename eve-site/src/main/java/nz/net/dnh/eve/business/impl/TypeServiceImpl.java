@@ -1,7 +1,6 @@
 package nz.net.dnh.eve.business.impl;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -158,9 +157,7 @@ public class TypeServiceImpl implements TypeService {
 			throw new IllegalArgumentException("Unknown type with id " + id.getId());
 		validateInventoryType(isMineral, inventoryType);
 
-		final Type newType = new Type();
-		newType.setTypeID(id.getId());
-		updateCostAndLastUpdated(newType, cost);
+		final Type newType = new Type(id.getId(), cost);
 		return this.typeRepository.save(newType);
 	}
 
@@ -180,13 +177,9 @@ public class TypeServiceImpl implements TypeService {
 		final Type persistentType = getTypeById(type, mineral);
 		if (persistentType == null)
 			throw new IllegalArgumentException("Unknown type with id " + type.getId());
-		updateCostAndLastUpdated(persistentType, cost);
+		persistentType.setCost(cost);
+		persistentType.touchLastUpdated();
 		return this.typeRepository.save(persistentType);
-	}
-
-	private static void updateCostAndLastUpdated(final Type type, final BigDecimal cost) {
-		type.setCost(cost);
-		type.setLastUpdated(new Timestamp(System.currentTimeMillis()));
 	}
 
 	@Override
