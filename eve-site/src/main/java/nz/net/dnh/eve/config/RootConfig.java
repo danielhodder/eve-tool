@@ -2,9 +2,12 @@ package nz.net.dnh.eve.config;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 
-import nz.net.dnh.eve.web.ImageURILocater;
-import nz.net.dnh.eve.web.NumberFormatter;
+import nz.net.dnh.eve.web.view.DateFormatDelegate;
+import nz.net.dnh.eve.web.view.DurationFormatter;
+import nz.net.dnh.eve.web.view.ImageURILocater;
+import nz.net.dnh.eve.web.view.NumberFormatter;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +59,15 @@ public class RootConfig {
 
 		return formatter;
 	}
-
+	
+	@Bean public static DateFormatDelegate dateFormatter() {
+		return new DateFormatDelegate(new SimpleDateFormat("d/m/yyyy"));
+	}
+	
+	@Bean public static DurationFormatter durationFormatter() {
+		return new DurationFormatter();
+	}
+	
 	private static Resource getOverrideResource() {
 		final Resource overrideResource = new ClassPathResource("/local.properties");
 		if (overrideResource.exists())

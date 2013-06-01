@@ -3,34 +3,17 @@
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
-		<div class="container">
+		<div class="container-fluid">
 			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> 
 					<span class="icon-bar"></span> 
 					<span class="icon-bar"></span> 
 					<span class="icon-bar"></span>
 			</a> 
-			<a class="brand" href="#">EVE Blueprint Tool</a>
+			<a class="brand" href="<s:url value="/" />">EVE Blueprint Tool</a>
 			<div class="nav-collapse collapse">
 				<ul class="nav">
-					<li class="active"><a href='<s:url value="/" />'>Home</a></li>					
-					
-					<!-- Blueprint menu items -->
-					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href='<s:url value="/blueprints" />'>Blueprints <b class="caret"></b></a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href='<s:url value="/blueprints" />'>List Blueprints</a></li>
-							<li><a href='<s:url value="/blueprints/new" />'>Add a blueprint</a></li>
-						</ul>
-					</li>
-					
-					<!-- Minerals and components -->
-					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href='<s:url value="/parts" />'>Parts <b class="caret"></b></a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href='<s:url value="/parts" />'>List Parts</a></li>
-							<li><a href='<s:url value="/parts/new" />'>Add a part</a></li>
-						</ul>
-					</li>
+					<li class="active"><a href='<s:url value="/" />'>Home</a></li>
+					<li><a href='<s:url value="/blueprints/new" />'>Add a blueprint</a></li>
 				</ul>
 				
 				<!-- Object Search -->

@@ -3,3 +3,19 @@ body {
 	padding-bottom: 40px;
 	background-color: #f5f5f5;
 }
+
+.table th.text-right, .table td.text-right {
+	text-align: right;
+}
+
+.modal > form {
+	margin: 0;
+}
+
+table.image-table tbody td {
+	vertical-align: middle;
+}
+
+table.image-table tbody tr td:first-child {
+	width: 32px;
+}

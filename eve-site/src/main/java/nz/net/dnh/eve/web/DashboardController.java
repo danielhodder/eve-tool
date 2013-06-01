@@ -2,6 +2,7 @@ package nz.net.dnh.eve.web;
 
 import java.util.List;
 
+import nz.net.dnh.eve.business.BlueprintIdReference;
 import nz.net.dnh.eve.business.BlueprintService;
 import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.Component;
@@ -24,6 +25,8 @@ public final class DashboardController {
 
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public ModelAndView dashboard() {
+		this.typeService.getRequiredTypes(new BlueprintIdReference(16243));
+		
 		return new ModelAndView("dashboard", "view", new DashboardView(
 				this.blueprintService.listSummaries(),
 				this.typeService.listMinerals(true),

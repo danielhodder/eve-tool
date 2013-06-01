@@ -6,7 +6,7 @@
 
 <h1>Overview</h1>
 
-<div class="row">
+<div class="row-fluid">
 	<div class="span12">
 		<tiles:insertTemplate template="_blueprint_list.jsp">
 			<tiles:putAttribute name="blueprints" value="${view.blueprints}" />
@@ -14,7 +14,7 @@
 	</div>
 </div>
 
-<div class="row">
+<div class="row-fluid">
 	<div class="span6">
 		<h2>Minerals</h2>
 		

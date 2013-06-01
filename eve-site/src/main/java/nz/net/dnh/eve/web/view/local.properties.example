@@ -1,0 +1,4 @@
+# Example file only. Copy to local.properties and edit with your values
+dataSource.url=jdbc:mysql://hostname/database_name
+dataSource.username=
+dataSource.password=

@@ -4,10 +4,10 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles-extras" prefix="tilesx"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
-<table class="table table-striped table-hover blueprints">
+<table class="table table-striped table-hover blueprints image-table">
 	<thead>
 		<tr>
-			<th>Blueprint Name</th>
+			<th colspan="2">Blueprint Name</th>
 			<th>Cost</th>
 			<th>Sale Value</th>
 			<th>Profit</th>
@@ -38,18 +38,15 @@
 			</c:set>
 			
 			<tr class="<c:out value="${class_name}" />">
-				<td><a><c:out value="${blueprint.name}" /></a></td>
+				<td>
+					<img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.producedTypeID, 32)}" />" />
+				</td>
+				<td><a href="<c:url value="/blueprints/${blueprint.id}" />"><c:out value="${blueprint.name}" /></a></td>
 				<td><c:out value="${currencyFormatter.format(blueprint.totalCost)}" /></td>
 				<td><c:out value="${currencyFormatter.format(blueprint.saleValue)}" /></td>
 				<td>
 					<span class="absolute"><c:out value="${currencyFormatter.format(blueprint.profit)}" /></span> 
 					<span class="percent">(<c:out value="${percentageFormatter.format(blueprint.profitPercentage)}" /> %)</span>
-				</td>
-				<td class="hidden">
-					<div class="popover-html">
-						<img src="<c:out value="${imageURILocator.getUriForBlueprint(blueprint, 64)}" />" />
-						<img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.producedTypeID, 64)}" />" />
-					</div>
 				</td>
 			</tr>
 		</c:forEach>
@@ -65,15 +62,6 @@
 		$.each(tooltips, function(identifier, tooltip) {
 			$(identifier, $('.blueprints')).tooltip({
 				'title': tooltip
-			});
-		});
-		
-		$('.blueprints tr').each(function () {
-			$(this).popover({
-				'html' : 'true',
-				'content' : $('.popover-html', this).html(),
-				'placement' : 'left',
-				'trigger' : 'hover'
 			});
 		});
 	});

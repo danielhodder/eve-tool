@@ -11,18 +11,14 @@
 		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
 		<link href="<c:url value="/resources/css/core.css" />" rel="stylesheet" media="screen" />
 		
-		<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
 	    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+	    <script src="<c:url value="/resources/javascript/loading_buttons.js" />"></script>
 		
 		<tilesx:useAttribute id="styles" name="styles" classname="java.util.List" ignore="true" />
 		<c:forEach var="cssName" items="${styles}">
 			<link type="text/css" href="<c:url value="/resources/css/${cssName}"/>" rel="stylesheet" media="screen" />
 		</c:forEach>
-		
-		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-	    <!--[if lt IE 9]>
-	      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-	    <![endif]-->
 	</head>
 	
 	<body>
@@ -30,7 +26,7 @@
 		
 		<!-- Page content -->
 		
-		<div class="container">
+		<div class="container-fluid">
 			<tiles:insertAttribute name="body" defaultValue="" />
 		</div>
 		

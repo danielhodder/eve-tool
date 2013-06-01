@@ -1,4 +1,4 @@
-package nz.net.dnh.eve.web;
+package nz.net.dnh.eve.web.view;
 
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintReference;

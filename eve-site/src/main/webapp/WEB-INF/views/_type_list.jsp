@@ -6,12 +6,12 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles-extras" prefix="tilesx"%>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 
-<table class="table table-striped table-hover types">
+<table class="table table-striped table-hover types image-table">
 	<thead>
 		<tr>
-			<th><tiles:getAsString name="typeName" /></th>
-			<th>Last Cost</th>
-			<th>Last Updated</th>
+			<th colspan="2"><tiles:getAsString name="typeName" /></th>
+			<th class="text-right">Last Cost</th>
+			<th class="text-right">Last Updated</th>
 		</tr>
 	</thead>
 
@@ -31,13 +31,13 @@
 			</c:set>
 			
 			<tr class="<c:out value="${class_name}" />" >
+				<td><img src="<c:out value="${imageURILocator.getUriForType(type, 32)}" />" /></td>
 				<td><a><c:out value="${type.name}" /></a></td>
-				<td><c:out value="${currencyFormatter.format(type.cost)}" /></td>
-				<td><c:out value="${type.costLastUpdated}" /></td>
-				<td class="hidden">
-					<div class="popover-html">
-						<img src="<c:out value="${imageURILocator.getUriForType(type, 64)}" />" />
-					</div>
+				<td class="text-right"><c:out value="${currencyFormatter.format(type.cost)}" /></td>
+				<td class="text-right">
+					<abbr title="<c:out value="${type.costLastUpdated}" />">
+						<c:out value="${dateFormatter.format(type.costLastUpdated)}" />
+					</abbr>
 				</td>
 			</tr>
 		</c:forEach>
@@ -54,15 +54,6 @@
 		$.each(tooltips, function(identifier, tooltip) {
 			$(identifier, $('.types')).tooltip({
 				'title': tooltip
-			});
-		});
-		
-		$('.types tr').each(function () {
-			$(this).popover({
-				'html' : 'true',
-				'content' : $('.popover-html', this).html(),
-				'placement' : 'left',
-				'trigger' : 'hover'
 			});
 		});
 	});
