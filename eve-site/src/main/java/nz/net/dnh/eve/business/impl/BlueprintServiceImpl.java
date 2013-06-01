@@ -25,8 +25,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class BlueprintServiceImpl implements BlueprintService, BlueprintResolverService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintServiceImpl.class);
 
@@ -51,7 +53,7 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 	@Override
 	public Blueprint toBlueprint(BlueprintReference blueprintReference) {
 		if (blueprintReference instanceof BlueprintSummaryImpl) {
-			return ((BlueprintSummaryImpl) blueprintReference).toBlueprint();
+			return this.blueprintRepository.refresh(((BlueprintSummaryImpl) blueprintReference).toBlueprint());
 		}
 		Blueprint blueprint = this.blueprintRepository.findOne(blueprintReference.getId());
 		if (blueprint == null) {

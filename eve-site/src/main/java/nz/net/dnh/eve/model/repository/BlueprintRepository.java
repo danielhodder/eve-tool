@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * Retrieves {@link Blueprint}s 
  */
-public interface BlueprintRepository extends JpaRepository<Blueprint, Integer> {
+public interface BlueprintRepository extends JpaRepository<Blueprint, Integer>, BlueprintRepositoryCustom {
 }
