@@ -41,60 +41,60 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 
 	@Override
 	public List<BlueprintSummary> listSummaries() {
-		List<Blueprint> blueprints = this.blueprintRepository.findAll();
-		List<BlueprintSummary> blueprintSummaries = new ArrayList<>(
+		final List<Blueprint> blueprints = this.blueprintRepository.findAll();
+		final List<BlueprintSummary> blueprintSummaries = new ArrayList<>(
 				blueprints.size());
-		for (Blueprint blueprint : blueprints) {
+		for (final Blueprint blueprint : blueprints) {
 			blueprintSummaries.add(new BlueprintSummaryImpl(blueprint));
 		}
 		return blueprintSummaries;
 	}
 
 	@Override
-	public Blueprint toBlueprint(BlueprintReference blueprintReference) {
+	public Blueprint toBlueprint(final BlueprintReference blueprintReference) {
 		if (blueprintReference instanceof BlueprintSummaryImpl) {
 			return this.blueprintRepository.refresh(((BlueprintSummaryImpl) blueprintReference).toBlueprint());
 		}
-		Blueprint blueprint = this.blueprintRepository.findOne(blueprintReference.getId());
+		final Blueprint blueprint = this.blueprintRepository.findOne(blueprintReference.getId());
 		if (blueprint == null) {
 			throw new BlueprintNotFoundException(blueprintReference);
 		}
 		return blueprint;
 	}
 
-	private static Pageable sanitisePageable(Pageable page) {
+	private static Pageable sanitisePageable(final Pageable page) {
 		if (page.getSort() != null) {
 			throw new IllegalArgumentException("The page parameter must not provide sorting information");
 		}
 		return page;
 	}
 
-	private static Page<CandidateBlueprint> toCandidateBlueprints(Pageable page, Page<InventoryBlueprintType> unknownBlueprints) {
-		List<CandidateBlueprint> candidateBlueprints = new ArrayList<>(unknownBlueprints.getNumberOfElements());
-		for (InventoryBlueprintType inventoryBlueprint : unknownBlueprints) {
+	private static Page<CandidateBlueprint> toCandidateBlueprints(final Pageable page, final Page<InventoryBlueprintType> unknownBlueprints) {
+		final List<CandidateBlueprint> candidateBlueprints = new ArrayList<>(unknownBlueprints.getNumberOfElements());
+		for (final InventoryBlueprintType inventoryBlueprint : unknownBlueprints) {
 			candidateBlueprints.add(new CandidateBlueprintImpl(inventoryBlueprint));
 		}
 		return new PageImpl<>(candidateBlueprints, page, unknownBlueprints.getTotalElements());
 	}
 
 	@Override
-	public Page<CandidateBlueprint> listCandidateBlueprints(Pageable page) {
-		Page<InventoryBlueprintType> unknownBlueprints = this.inventoryBlueprintTypeRepository
+	public Page<CandidateBlueprint> listCandidateBlueprints(final Pageable page) {
+		final Page<InventoryBlueprintType> unknownBlueprints = this.inventoryBlueprintTypeRepository
 				.findUnknownBlueprints(sanitisePageable(page));
 
 		return toCandidateBlueprints(page, unknownBlueprints);
 	}
 
 	@Override
-	public Page<CandidateBlueprint> findCandidateBlueprints(String search, Pageable page) {
-		Page<InventoryBlueprintType> unknownBlueprints = this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch(search,
+	public Page<CandidateBlueprint> findCandidateBlueprints(final String search, final Pageable page) {
+		final Page<InventoryBlueprintType> unknownBlueprints = this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch(search,
 				sanitisePageable(page));
 
 		return toCandidateBlueprints(page, unknownBlueprints);
 	}
 
 	@Override
-	public BlueprintSummary getBlueprint(BlueprintReference blueprintReference) {
+	public BlueprintSummary getBlueprint(final BlueprintReference blueprintReference) {
 		if (blueprintReference instanceof BlueprintSummary) {
 			LOGGER.warn("You already had a blueprint summary, why are you asking for another one?");
 			return (BlueprintSummary) blueprintReference;
@@ -103,8 +103,8 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 	}
 
 	@Override
-	public BlueprintSummary createBlueprint(BlueprintReference blueprintReference, BigDecimal saleValue, int numberPerRun, int hours,
-			int materialEfficiency) {
+	public BlueprintSummary createBlueprint(final BlueprintReference blueprintReference, final BigDecimal saleValue,
+			final int numberPerRun, final int productionEfficiency, final int materialEfficiency) {
 		// Check it doesn't already exist
 		if (this.blueprintRepository.exists(blueprintReference.getId())) {
 			throw new IllegalArgumentException("The blueprint " + blueprintReference + " already exists");
@@ -117,15 +117,16 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 			throw new IllegalArgumentException("Sale value cannot be null");
 		}
 		// Create it
-		Blueprint newBlueprint = new Blueprint(blueprintReference.getId(), numberPerRun, hours, saleValue, materialEfficiency);
-		Blueprint savedBlueprint = this.blueprintRepository.save(newBlueprint);
+		final Blueprint newBlueprint = new Blueprint(blueprintReference.getId(), numberPerRun, productionEfficiency, saleValue,
+				materialEfficiency);
+		final Blueprint savedBlueprint = this.blueprintRepository.save(newBlueprint);
 		return new BlueprintSummaryImpl(savedBlueprint);
 	}
 
 	@Override
-	public BlueprintSummary editBlueprint(BlueprintReference blueprintReference, BigDecimal saleValue, Integer numberPerRun, Integer hours,
-			Integer materialEfficiency) {
-		Blueprint blueprint = toBlueprint(blueprintReference);
+	public BlueprintSummary editBlueprint(final BlueprintReference blueprintReference, final BigDecimal saleValue,
+			final Integer numberPerRun, final Integer productionEfficiency, final Integer materialEfficiency) {
+		final Blueprint blueprint = toBlueprint(blueprintReference);
 		if (saleValue != null) {
 			blueprint.setSaleValue(saleValue);
 			blueprint.setLastUpdated(new Timestamp(System.currentTimeMillis()));
@@ -133,14 +134,14 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 		if (numberPerRun != null) {
 			blueprint.setNumberPerRun(numberPerRun);
 		}
-		if (hours != null) {
-			blueprint.setHours(hours);
+		if (productionEfficiency != null) {
+			blueprint.setProductionEfficiency(productionEfficiency);
 		}
 		if (materialEfficiency != null) {
 			blueprint.setMaterialEfficiency(materialEfficiency);
 		}
 
-		Blueprint savedBlueprint = this.blueprintRepository.save(blueprint);
+		final Blueprint savedBlueprint = this.blueprintRepository.save(blueprint);
 		return new BlueprintSummaryImpl(savedBlueprint);
 	}
 }

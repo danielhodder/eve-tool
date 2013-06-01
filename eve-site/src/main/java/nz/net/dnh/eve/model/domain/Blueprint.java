@@ -31,7 +31,7 @@ public class Blueprint implements Serializable {
 	private int numberPerRun;
 
 	@NotNull
-	private int hours;
+	private int productionEfficiency;
 
 	@NotNull
 	private BigDecimal saleValue;
@@ -52,16 +52,17 @@ public class Blueprint implements Serializable {
 	public Blueprint() {
 	}
 
-	public Blueprint(int blueprintTypeID, int numberPerRun, int hours, BigDecimal saleValue, int materialEfficiency) {
+	public Blueprint(final int blueprintTypeID, final int numberPerRun, final int productionEfficiency, final BigDecimal saleValue,
+			final int materialEfficiency) {
 		this.blueprintTypeID = blueprintTypeID;
 		this.numberPerRun = numberPerRun;
-		this.hours = hours;
+		this.productionEfficiency = productionEfficiency;
 		this.saleValue = saleValue;
 		this.lastUpdated = new Timestamp(System.currentTimeMillis());
 		this.materialEfficiency = materialEfficiency;
 	}
 
-	public void setBlueprintTypeID(int blueprintTypeID) {
+	public void setBlueprintTypeID(final int blueprintTypeID) {
 		this.blueprintTypeID = blueprintTypeID;
 	}
 
@@ -69,7 +70,7 @@ public class Blueprint implements Serializable {
 		return this.blueprintTypeID;
 	}
 
-	public void setNumberPerRun(int numberPerRun) {
+	public void setNumberPerRun(final int numberPerRun) {
 		this.numberPerRun = numberPerRun;
 	}
 
@@ -77,15 +78,15 @@ public class Blueprint implements Serializable {
 		return this.numberPerRun;
 	}
 
-	public void setHours(int hours) {
-		this.hours = hours;
+	public void setProductionEfficiency(final int productionEfficiency) {
+		this.productionEfficiency = productionEfficiency;
 	}
 
-	public int getHours() {
-		return this.hours;
+	public int getProductionEfficiency() {
+		return this.productionEfficiency;
 	}
 
-	public void setSaleValue(BigDecimal saleValue) {
+	public void setSaleValue(final BigDecimal saleValue) {
 		this.saleValue = saleValue;
 	}
 
@@ -97,11 +98,11 @@ public class Blueprint implements Serializable {
 		return this.lastUpdated;
 	}
 
-	public void setLastUpdated(Timestamp lastUpdated) {
+	public void setLastUpdated(final Timestamp lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 
-	public void setMaterialEfficiency(int materialEfficiency) {
+	public void setMaterialEfficiency(final int materialEfficiency) {
 		this.materialEfficiency = materialEfficiency;
 	}
 
@@ -113,7 +114,7 @@ public class Blueprint implements Serializable {
 		return this.requiredTypes;
 	}
 
-	public void setRequiredTypes(Collection<BlueprintRequiredType> requiredTypes) {
+	public void setRequiredTypes(final Collection<BlueprintRequiredType> requiredTypes) {
 		this.requiredTypes = requiredTypes;
 	}
 
@@ -140,14 +141,14 @@ public class Blueprint implements Serializable {
 	public String toString() {
 		return "Blueprint [blueprintTypeID=" + this.blueprintTypeID
 				+ ", blueprintType=" + this.blueprintType + ", numberPerRun="
-				+ this.numberPerRun + ", hours=" + this.hours + ", saleValue="
+				+ this.numberPerRun + ", productionEfficiency=" + this.productionEfficiency + ", saleValue="
 				+ this.saleValue + ", lastUpdated=" + this.lastUpdated
 				+ ", materialEfficiency=" + this.materialEfficiency
 				+ ", costSummary=" + this.costSummary + "]";
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		return o instanceof Blueprint
 				&& this.blueprintTypeID == ((Blueprint) o).getBlueprintTypeID();
 	}

@@ -48,7 +48,8 @@ public interface BlueprintSummary extends BlueprintInformation {
 	public int getNumberPerRun();
 
 	/**
-	 * @return The time for a single run, in hours
+	 * @return The time for a single run (i.e. producing
+	 *         {@link #getNumberPerRun()} products), in hours
 	 */
 	public int getHours();
 
@@ -56,4 +57,9 @@ public interface BlueprintSummary extends BlueprintInformation {
 	 * @return The material efficiency magical value
 	 */
 	public int getMaterialEfficiency();
+
+	/**
+	 * @return The production efficiency magical value
+	 */
+	public int getProductionEfficiency();
 }

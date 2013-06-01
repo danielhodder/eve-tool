@@ -9,10 +9,10 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-INSERT INTO `Blueprint` (`blueprintTypeID`, `numberPerRun`, `hours`, `saleValue`, `lastUpdated`, `materialEfficiency`) VALUES
-(22457, 1, 26, 41500000.00, NOW(), -4),
-(16243, 440, 719, 1160000.00, NOW(), 30),
-(12821, 500, 48, 1175999.99, NOW(), -4);
+INSERT INTO `Blueprint` (`blueprintTypeID`, `numberPerRun`, `productionEfficiency`, `saleValue`, `lastUpdated`, `materialEfficiency`) VALUES
+(22457, 1, -4, 41500000.00, NOW(), -4),
+(16243, 440, 50, 1160000.00, NOW(), 30),
+(12821, 500, -4, 1175999.99, NOW(), -4);
 
 INSERT INTO `Type` (`typeID`, `cost`, `lastUpdated`) VALUES
 (3828, 8450.00, NOW()),

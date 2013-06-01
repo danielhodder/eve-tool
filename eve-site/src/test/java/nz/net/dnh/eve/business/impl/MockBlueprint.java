@@ -15,12 +15,15 @@ public class MockBlueprint extends Blueprint {
 	private final BigDecimal profitPercentage;
 	private final BigDecimal totalCost;
 	private final int producedTypeId;
+	private final int hours;
 
-	public MockBlueprint(final int blueprintTypeID, final int numberPerRun, final int hours, final BigDecimal saleValue,
-			final int materialEfficiency, final String typeName, final BigDecimal materialCost, final BigDecimal otherCost,
-			final BigDecimal profit, final BigDecimal profitPercentage, final BigDecimal totalCost, int producedTypeId) {
-		super(blueprintTypeID, numberPerRun, hours, saleValue, materialEfficiency);
+	public MockBlueprint(final int blueprintTypeID, final int numberPerRun, final int hours, final int productionEfficiency,
+			final BigDecimal saleValue, final int materialEfficiency, final String typeName, final BigDecimal materialCost,
+			final BigDecimal otherCost, final BigDecimal profit, final BigDecimal profitPercentage, final BigDecimal totalCost,
+			final int producedTypeId) {
+		super(blueprintTypeID, numberPerRun, productionEfficiency, saleValue, materialEfficiency);
 		this.typeName = typeName;
+		this.hours = hours;
 		this.materialCost = materialCost;
 		this.otherCost = otherCost;
 		this.profit = profit;
@@ -40,6 +43,10 @@ public class MockBlueprint extends Blueprint {
 
 	public BigDecimal getOtherCost() {
 		return this.otherCost;
+	}
+
+	public int getHours() {
+		return this.hours;
 	}
 
 	public BigDecimal getProfit() {
@@ -103,6 +110,11 @@ public class MockBlueprint extends Blueprint {
 			@Override
 			public BigDecimal getTotalCost() {
 				return MockBlueprint.this.getTotalCost();
+			}
+
+			@Override
+			public int getHours() {
+				return MockBlueprint.this.getHours();
 			}
 		};
 	}

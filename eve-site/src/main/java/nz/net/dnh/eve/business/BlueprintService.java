@@ -74,9 +74,9 @@ public interface BlueprintService {
 	 *            {@link BlueprintSummary#getSaleValue()}
 	 * @param numberPerRun
 	 *            The number per run. {@link BlueprintSummary#getNumberPerRun()}
-	 * @param hours
-	 *            The time per run, in hours.
-	 *            {@link BlueprintSummary#getHours()}
+	 * @param productionEfficiency
+	 *            The production efficiency.
+	 *            {@link BlueprintSummary#getProductionEfficiency()}
 	 * @param materialEfficiency
 	 *            The material efficiency.
 	 *            {@link BlueprintSummary#getMaterialEfficiency()}
@@ -84,7 +84,7 @@ public interface BlueprintService {
 	 * @see #listCandidateBlueprints(Pageable)
 	 * @see CandidateBlueprint
 	 */
-	public BlueprintSummary createBlueprint(BlueprintReference blueprint, BigDecimal saleValue, int numberPerRun, int hours,
+	public BlueprintSummary createBlueprint(BlueprintReference blueprint, BigDecimal saleValue, int numberPerRun, int productionEfficiency,
 			int materialEfficiency);
 
 	/**
@@ -99,8 +99,8 @@ public interface BlueprintService {
 	 * @param numberPerRun
 	 *            The number per run. May be null to keep the current value.
 	 *            {@link BlueprintSummary#getNumberPerRun()}
-	 * @param hours
-	 *            The time per run, in hours. May be null to keep the current
+	 * @param productionEfficiency
+	 *            The production efficiency. May be null to keep the current
 	 *            value. {@link BlueprintSummary#getHours()}
 	 * @param materialEfficiency
 	 *            The material efficiency. May be null to keep the current
@@ -109,7 +109,7 @@ public interface BlueprintService {
 	 * @see #listSummaries()
 	 * @see BlueprintSummary
 	 */
-	public BlueprintSummary editBlueprint(BlueprintReference blueprint, BigDecimal saleValue, Integer numberPerRun, Integer hours,
-			Integer materialEfficiency);
+	public BlueprintSummary editBlueprint(BlueprintReference blueprint, BigDecimal saleValue, Integer numberPerRun,
+			Integer productionEfficiency, Integer materialEfficiency);
 
 }

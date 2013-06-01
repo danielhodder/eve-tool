@@ -41,6 +41,8 @@ public class BlueprintCostSummary implements Serializable {
 
 	private BigDecimal profitPercentage;
 
+	private int hours;
+
 	public int getBlueprintTypeID() {
 		return this.blueprintTypeID;
 	}
@@ -79,13 +81,17 @@ public class BlueprintCostSummary implements Serializable {
 		return this.profitPercentage;
 	}
 
+	public int getHours() {
+		return this.hours;
+	}
+
 	@Override
 	public String toString() {
 		return "BlueprintCosts [blueprintTypeID=" + this.blueprintTypeID
 				+ ", materialCost=" + this.materialCost + ", otherCost="
 				+ this.otherCost + ", totalCost=" + this.totalCost
 				+ ", saleValue=" + this.saleValue + ", profit=" + this.profit
-				+ ", profitPercentage=" + this.profitPercentage + "]";
+				+ ", profitPercentage=" + this.profitPercentage + ", hours=" + this.hours + "]";
 	}
 
 	@Override
@@ -94,7 +100,7 @@ public class BlueprintCostSummary implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return obj instanceof BlueprintCostSummary
 				&& this.blueprintTypeID == ((BlueprintCostSummary) obj).blueprintTypeID;
 	}

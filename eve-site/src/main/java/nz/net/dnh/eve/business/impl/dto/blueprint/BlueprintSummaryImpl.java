@@ -65,12 +65,17 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 
 	@Override
 	public int getHours() {
-		return this.blueprint.getHours();
+		return this.blueprint.getCostSummary().getHours();
 	}
 
 	@Override
 	public int getNumberPerRun() {
 		return this.blueprint.getNumberPerRun();
+	}
+
+	@Override
+	public int getProductionEfficiency() {
+		return this.blueprint.getProductionEfficiency();
 	}
 
 	@Override
