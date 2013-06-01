@@ -12,9 +12,12 @@ import nz.net.dnh.eve.business.BlueprintReference;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.Mineral;
 import nz.net.dnh.eve.business.RequiredTypes;
+import nz.net.dnh.eve.business.TypeReference;
 import nz.net.dnh.eve.business.TypeService;
+import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMineralImpl;
+import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.ComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.MineralImpl;
 import nz.net.dnh.eve.model.domain.Blueprint;
@@ -138,43 +141,43 @@ public class TypeServiceImpl implements TypeService {
 	}
 
 	@Override
-	public Mineral createMissingMineral(final int id, final BigDecimal cost) {
+	public Mineral createMissingMineral(final TypeReference id, final BigDecimal cost) {
 		final Type savedType = createMissingType(cost, true, id);
 		return new MineralImpl(savedType);
 	}
 
 	@Override
-	public Component createMissingComponent(final int id, final BigDecimal cost) {
+	public Component createMissingComponent(final TypeReference id, final BigDecimal cost) {
 		final Type savedType = createMissingType(cost, false, id);
 		return new ComponentImpl(savedType);
 	}
 
-	private Type createMissingType(final BigDecimal cost, final boolean isMineral, final int id) {
-		final InventoryType inventoryType = this.inventoryTypeRepository.findOne(id);
+	private Type createMissingType(final BigDecimal cost, final boolean isMineral, final TypeReference id) {
+		final InventoryType inventoryType = toInventoryType(id);
 		if (inventoryType == null)
-			throw new IllegalArgumentException("Unknown type with id "+id);
+			throw new IllegalArgumentException("Unknown type with id " + id.getId());
 		validateInventoryType(isMineral, inventoryType);
 
 		final Type newType = new Type();
-		newType.setTypeID(id);
+		newType.setTypeID(id.getId());
 		updateCostAndLastUpdated(newType, cost);
 		return this.typeRepository.save(newType);
 	}
 
 	@Override
-	public Mineral updateMineral(final Mineral type, final BigDecimal cost) {
+	public Mineral updateMineral(final TypeReference type, final BigDecimal cost) {
 		final Type savedType = updateType(type, cost, true);
 		return new MineralImpl(savedType);
 	}
 
 	@Override
-	public Component updateComponent(final Component type, final BigDecimal cost) {
+	public Component updateComponent(final TypeReference type, final BigDecimal cost) {
 		final Type savedType = updateType(type, cost, false);
 		return new ComponentImpl(savedType);
 	}
 
-	private Type updateType(final AbstractType type, final BigDecimal cost, final boolean mineral) {
-		final Type persistentType = getTypeById(type.getId(), mineral);
+	private Type updateType(final TypeReference type, final BigDecimal cost, final boolean mineral) {
+		final Type persistentType = getTypeById(type, mineral);
 		if (persistentType == null)
 			throw new IllegalArgumentException("Unknown type with id " + type.getId());
 		updateCostAndLastUpdated(persistentType, cost);
@@ -187,7 +190,7 @@ public class TypeServiceImpl implements TypeService {
 	}
 
 	@Override
-	public Component getComponent(final int id) {
+	public Component getComponent(final TypeReference id) {
 		final Type componentType = getTypeById(id, false);
 		if (componentType == null)
 			return null;
@@ -196,7 +199,7 @@ public class TypeServiceImpl implements TypeService {
 	}
 
 	@Override
-	public Mineral getMineral(final int id) {
+	public Mineral getMineral(final TypeReference id) {
 		final Type mineralType = getTypeById(id, true);
 		if (mineralType == null)
 			return null;
@@ -204,11 +207,31 @@ public class TypeServiceImpl implements TypeService {
 		return new MineralImpl(mineralType);
 	}
 
-	private Type getTypeById(final int id, final boolean mineral) {
-		final Type type = this.typeRepository.findOne(id);
+	private Type getTypeById(final TypeReference typeReference, final boolean mineral) {
+		final Type type = toType(typeReference);
 		if (type != null)
 			validateInventoryType(mineral, type.getType());
 		return type;
+	}
+
+	/**
+	 * Unwrap or retrieve the type for the given type reference
+	 */
+	Type toType(final TypeReference typeReference) {
+		if (typeReference instanceof AbstractTypeImpl)
+			return ((AbstractTypeImpl) typeReference).toType();
+		return this.typeRepository.findOne(typeReference.getId());
+	}
+
+	/**
+	 * Unwrap or retrieve the inventory type for the given type reference
+	 */
+	InventoryType toInventoryType(final TypeReference typeReference) {
+		if (typeReference instanceof AbstractTypeImpl)
+			return ((AbstractTypeImpl) typeReference).toType().getType();
+		if (typeReference instanceof AbstractMissingTypeImpl)
+			return ((AbstractMissingTypeImpl) typeReference).toInventoryType();
+		return this.inventoryTypeRepository.findOne(typeReference.getId());
 	}
 
 	/**

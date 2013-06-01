@@ -61,71 +61,71 @@ public interface TypeService {
 	/**
 	 * Get the mineral with the given id (from {@link Mineral#getId()})
 	 * 
-	 * @param id
-	 *            The id of the mineral to retrieve
+	 * @param type
+	 *            A reference to the mineral to retrieve
 	 * @return The mineral with the given id, or null if no such mineral exists
 	 */
-	public Mineral getMineral(int id);
+	public Mineral getMineral(TypeReference type);
 
 	/**
 	 * Get the component with the given id (from {@link Component#getId()})
 	 * 
 	 * @param id
-	 *            The id of the component to retrieve
+	 *            A reference to the component to retrieve
 	 * @return The component with the given id, or null if no such component
 	 *         exists
 	 */
-	public Component getComponent(int id);
+	public Component getComponent(TypeReference type);
 
 	/**
 	 * Create the mineral with the given id (from {@link Mineral#getId()})
 	 * 
 	 * @param id
-	 *            The id of the mineral to retrieve
+	 *            A reference to the mineral to retrieve
 	 * @param cost
 	 *            The cost of the mineral
 	 * @return The newly created mineral with the given id
 	 * @throws IllegalArgumentException
 	 *             if no such missing mineral exists
 	 */
-	Mineral createMissingMineral(int id, BigDecimal cost);
+	Mineral createMissingMineral(TypeReference type, BigDecimal cost);
 
 	/**
 	 * Create the component with the given id (from {@link Component#getId()})
 	 * 
 	 * @param id
-	 *            The id of the component to retrieve
+	 *            A reference to the component to retrieve
 	 * @param cost
 	 *            The cost of the component
 	 * @return The newly created component with the given id
 	 * @throws IllegalArgumentException
 	 *             if no such missing component exists
 	 */
-	Component createMissingComponent(int id, BigDecimal cost);
+	Component createMissingComponent(TypeReference type, BigDecimal cost);
 
 	/**
 	 * Update the given mineral with a new cost.
 	 * 
 	 * @param mineral
-	 *            The mineral to update
+	 *            A reference to the mineral to update
 	 * @param cost
 	 *            The new cost of the mineral
 	 * @return The updated mineral
 	 * @throws IllegalArgumentException
 	 *             if no such mineral exists
 	 */
-	Mineral updateMineral(Mineral mineral, BigDecimal cost);
+	Mineral updateMineral(TypeReference mineral, BigDecimal cost);
 
 	/**
 	 * Update the given component with a new cost.
 	 * 
 	 * @param component
-	 *            The component to update
+	 *            A reference to the component to update
 	 * @param cost
 	 *            The new cost of the component
 	 * @return The updated component
 	 * @throws IllegalArgumentException
 	 *             if no such component exists
 	 */
-	Component updateComponent(Component component, BigDecimal cost);
+	Component updateComponent(TypeReference component, BigDecimal cost);
 }

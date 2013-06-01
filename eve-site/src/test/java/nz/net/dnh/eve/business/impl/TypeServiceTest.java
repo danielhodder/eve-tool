@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -33,6 +34,11 @@ import nz.net.dnh.eve.business.BlueprintReference;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.Mineral;
 import nz.net.dnh.eve.business.RequiredTypes;
+import nz.net.dnh.eve.business.TypeIdReference;
+import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingComponentImpl;
+import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMineralImpl;
+import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.ComponentImpl;
+import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.MineralImpl;
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
 import nz.net.dnh.eve.model.domain.Type;
@@ -171,7 +177,7 @@ public class TypeServiceTest {
 		when(this.type1.getType()).thenReturn(this.component1);
 		when(this.typeRepository.findOne(42)).thenReturn(this.type1);
 
-		final Component component = this.typeService.getComponent(42);
+		final Component component = this.typeService.getComponent(new TypeIdReference(42));
 		assertThat(component, is(component("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 	}
 
@@ -180,12 +186,12 @@ public class TypeServiceTest {
 		when(this.type1.getType()).thenReturn(this.mineral1);
 		when(this.typeRepository.findOne(43)).thenReturn(this.type1);
 
-		this.typeService.getComponent(43);
+		this.typeService.getComponent(new TypeIdReference(43));
 	}
 
 	@Test
 	public void getMissingComponent() {
-		final Component component = this.typeService.getComponent(42);
+		final Component component = this.typeService.getComponent(new TypeIdReference(42));
 		assertNull(component);
 	}
 
@@ -194,7 +200,7 @@ public class TypeServiceTest {
 		when(this.type2.getType()).thenReturn(this.mineral1);
 		when(this.typeRepository.findOne(42)).thenReturn(this.type2);
 
-		final Mineral component = this.typeService.getMineral(42);
+		final Mineral component = this.typeService.getMineral(new TypeIdReference(42));
 		assertThat(component, is(mineral("Type 2", COST_2, LAST_UPDATED_2, false, 2)));
 	}
 
@@ -203,12 +209,12 @@ public class TypeServiceTest {
 		when(this.type1.getType()).thenReturn(this.component1);
 		when(this.typeRepository.findOne(43)).thenReturn(this.type1);
 
-		this.typeService.getMineral(43);
+		this.typeService.getMineral(new TypeIdReference(43));
 	}
 
 	@Test
 	public void getMissingMineral() {
-		final Mineral component = this.typeService.getMineral(42);
+		final Mineral component = this.typeService.getMineral(new TypeIdReference(42));
 		assertNull(component);
 	}
 
@@ -218,7 +224,7 @@ public class TypeServiceTest {
 		when(this.typeRepository.save(any(Type.class))).thenReturn(this.type1);
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.component1);
 
-		final Component createdComponent = this.typeService.createMissingComponent(45, COST_1);
+		final Component createdComponent = this.typeService.createMissingComponent(new TypeIdReference(45), COST_1);
 
 		assertThat(createdComponent, is(component("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.typeRepository).save(
@@ -232,7 +238,7 @@ public class TypeServiceTest {
 		when(this.typeRepository.save(any(Type.class))).thenReturn(this.type1);
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.mineral1);
 
-		final Mineral createdMineral = this.typeService.createMissingMineral(45, COST_1);
+		final Mineral createdMineral = this.typeService.createMissingMineral(new TypeIdReference(45), COST_1);
 
 		assertThat(createdMineral, is(mineral("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.typeRepository).save(
@@ -244,24 +250,24 @@ public class TypeServiceTest {
 	public void createMissingComponentWithMineralId() {
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.mineral1);
 
-		this.typeService.createMissingComponent(45, COST_2);
+		this.typeService.createMissingComponent(new TypeIdReference(45), COST_2);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createMissingMineralWithComponentId() {
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.component1);
 
-		this.typeService.createMissingMineral(45, COST_2);
+		this.typeService.createMissingMineral(new TypeIdReference(45), COST_2);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createMissingComponentWithInvalidId() {
-		this.typeService.createMissingComponent(45, COST_2);
+		this.typeService.createMissingComponent(new TypeIdReference(45), COST_2);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createMissingMineralWithInvalidId() {
-		this.typeService.createMissingMineral(45, COST_2);
+		this.typeService.createMissingMineral(new TypeIdReference(45), COST_2);
 	}
 
 	@Test
@@ -298,6 +304,22 @@ public class TypeServiceTest {
 		verify(this.type2).setCost(COST_1);
 		verify(this.type2).setLastUpdated(argThat(HelpingMatchers.<Timestamp, Date> greaterThanOrEqualTo(startTime)));
 		verify(this.typeRepository).save(this.type2);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void updateComponentWithInvalidId() {
+		final Component component = mock(Component.class);
+		when(component.getId()).thenReturn(22);
+
+		this.typeService.updateComponent(component, COST_1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void updateMineralWithInvalidId() {
+		final Mineral mineral = mock(Mineral.class);
+		when(mineral.getId()).thenReturn(22);
+
+		this.typeService.updateMineral(mineral, COST_1);
 	}
 
 	@Test
@@ -346,5 +368,83 @@ public class TypeServiceTest {
 		assertEquals(2, requiredMinerals.size());
 		assertThat(requiredMinerals, hasEntry(mineral("Type 2", COST_2, LAST_UPDATED_2, false, 2), 14));
 		assertThat(requiredMinerals, hasEntry(mineral("Mineral 2", null, null, true, 14), 3));
+	}
+
+	@Test
+	public void toTypeWithIdReference() {
+		when(this.typeRepository.findOne(4)).thenReturn(this.type1);
+
+		assertSame(this.type1, this.typeService.toType(new TypeIdReference(4)));
+	}
+
+	@Test
+	public void toTypeWithInvalidIdReference() {
+		assertNull(this.typeService.toType(new TypeIdReference(4)));
+	}
+
+	@Test
+	public void toTypeWithMineralImpl() {
+		final MineralImpl mineral = new MineralImpl(this.type1);
+		assertSame(this.type1, this.typeService.toType(mineral));
+	}
+
+	@Test
+	public void toTypeWithComponentImpl() {
+		final ComponentImpl mineral = new ComponentImpl(this.type1);
+		assertSame(this.type1, this.typeService.toType(mineral));
+	}
+
+	@Test
+	public void toTypeWithMissingMineralImpl() {
+		when(this.typeRepository.findOne(4)).thenReturn(this.type1);
+		final MissingMineralImpl missing = mock(MissingMineralImpl.class);
+		when(missing.getId()).thenReturn(4);
+		assertSame(this.type1, this.typeService.toType(missing));
+	}
+
+	@Test
+	public void toTypeWithMissingComponentImpl() {
+		when(this.typeRepository.findOne(4)).thenReturn(this.type1);
+		final MissingComponentImpl missing = mock(MissingComponentImpl.class);
+		when(missing.getId()).thenReturn(4);
+		assertSame(this.type1, this.typeService.toType(missing));
+	}
+
+	@Test
+	public void toInventoryTypeWithIdReference() {
+		when(this.inventoryTypeRepository.findOne(4)).thenReturn(this.mineral1);
+
+		assertSame(this.mineral1, this.typeService.toInventoryType(new TypeIdReference(4)));
+	}
+
+	@Test
+	public void toInventoryTypeWithInvalidIdReference() {
+		assertNull(this.typeService.toInventoryType(new TypeIdReference(4)));
+	}
+
+	@Test
+	public void toInventoryTypeWithMineralImpl() {
+		when(this.type1.getType()).thenReturn(this.mineral1);
+		final MineralImpl mineral = new MineralImpl(this.type1);
+		assertSame(this.mineral1, this.typeService.toInventoryType(mineral));
+	}
+
+	@Test
+	public void toInventoryTypeWithComponentImpl() {
+		when(this.type1.getType()).thenReturn(this.component1);
+		final ComponentImpl component = new ComponentImpl(this.type1);
+		assertSame(this.component1, this.typeService.toInventoryType(component));
+	}
+
+	@Test
+	public void toInventoryTypeWithMissingMineralImpl() {
+		final MissingMineralImpl missing = new MissingMineralImpl(this.mineral1);
+		assertSame(this.mineral1, this.typeService.toInventoryType(missing));
+	}
+
+	@Test
+	public void toInventoryTypeWithMissingComponentImpl() {
+		final MissingComponentImpl missing = new MissingComponentImpl(this.component1);
+		assertSame(this.component1, this.typeService.toInventoryType(missing));
 	}
 }

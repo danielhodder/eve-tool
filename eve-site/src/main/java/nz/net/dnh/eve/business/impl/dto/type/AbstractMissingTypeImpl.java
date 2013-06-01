@@ -39,6 +39,10 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 		this.inventoryType = inventoryType;
 	}
 
+	public InventoryType toInventoryType() {
+		return this.inventoryType;
+	}
+
 	@Override
 	public int getId() {
 		return this.inventoryType.getTypeID();

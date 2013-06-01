@@ -9,7 +9,7 @@ import java.util.Date;
  * @see Component
  * @see Mineral
  */
-public interface AbstractType {
+public interface AbstractType extends TypeReference {
 	/**
 	 * @return The name of the type
 	 */
@@ -29,9 +29,4 @@ public interface AbstractType {
 	 * @return True if the type is missing from the database
 	 */
 	public boolean isMissing();
-
-	/**
-	 * @return The id of the type
-	 */
-	public int getId();
 }

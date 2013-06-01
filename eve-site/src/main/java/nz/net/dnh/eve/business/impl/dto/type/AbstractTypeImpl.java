@@ -39,6 +39,10 @@ public abstract class AbstractTypeImpl implements AbstractType {
 		this.type = type;
 	}
 
+	public Type toType() {
+		return this.type;
+	}
+
 	@Override
 	public int getId() {
 		return this.type.getTypeID();
