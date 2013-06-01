@@ -128,8 +128,10 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 			final Integer numberPerRun, final Integer productionEfficiency, final Integer materialEfficiency) {
 		final Blueprint blueprint = toBlueprint(blueprintReference);
 		if (saleValue != null) {
+			// Update the last updated timestamp iff the sale value is different
+			if (!saleValue.equals(blueprint.getSaleValue()))
+				blueprint.setLastUpdated(new Timestamp(System.currentTimeMillis()));
 			blueprint.setSaleValue(saleValue);
-			blueprint.setLastUpdated(new Timestamp(System.currentTimeMillis()));
 		}
 		if (numberPerRun != null) {
 			blueprint.setNumberPerRun(numberPerRun);

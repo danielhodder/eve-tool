@@ -425,6 +425,7 @@ public class BlueprintServiceTest {
 	@Test
 	public void editBlueprintAllFields() {
 		final Blueprint b = mock(Blueprint.class);
+		when(b.getSaleValue()).thenReturn(new BigDecimal(1));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
 		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
 
@@ -436,13 +437,42 @@ public class BlueprintServiceTest {
 	}
 
 	@Test
+	public void editBlueprintAllFieldsIdenticalSaleValue() {
+		final Blueprint b = mock(Blueprint.class);
+		when(b.getSaleValue()).thenReturn(new BigDecimal(2));
+		when(this.blueprintRepository.findOne(1)).thenReturn(b);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+
+		verify(b).setSaleValue(new BigDecimal(2));
+		verify(b, never()).setLastUpdated(any(Timestamp.class));
+		verify(b).setNumberPerRun(3);
+		verify(b).setProductionEfficiency(4);
+		verify(b).setMaterialEfficiency(5);
+	}
+
+	@Test
 	public void editBlueprintSaleValue() {
 		final Blueprint b = mock(Blueprint.class);
+		when(b.getSaleValue()).thenReturn(new BigDecimal(1));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
 		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b).setLastUpdated(any(Timestamp.class));
+		verify(b, never()).setNumberPerRun(anyInt());
+		verify(b, never()).setProductionEfficiency(anyInt());
+		verify(b, never()).setMaterialEfficiency(anyInt());
+	}
+
+	@Test
+	public void editBlueprintIdenticalSaleValue() {
+		final Blueprint b = mock(Blueprint.class);
+		when(b.getSaleValue()).thenReturn(new BigDecimal(2));
+		when(this.blueprintRepository.findOne(1)).thenReturn(b);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
+
+		verify(b).setSaleValue(new BigDecimal(2));
+		verify(b, never()).setLastUpdated(any(Timestamp.class));
 		verify(b, never()).setNumberPerRun(anyInt());
 		verify(b, never()).setProductionEfficiency(anyInt());
 		verify(b, never()).setMaterialEfficiency(anyInt());
