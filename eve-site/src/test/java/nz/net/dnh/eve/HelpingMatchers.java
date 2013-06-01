@@ -29,6 +29,26 @@ public class HelpingMatchers {
 	}
 
 	/**
+	 * Allow overriding the generic type of the matcher for Mockito
+	 * 
+	 * @see Matchers#greaterThanOrEqualTo(Comparable)
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <U extends T, T extends java.lang.Comparable<T>> org.hamcrest.Matcher<U> greaterThanOrEqualTo(final T value) {
+		return (Matcher) Matchers.greaterThanOrEqualTo(value);
+	}
+
+	/**
+	 * Allow overriding the generic type of the matcher for Mockito
+	 * 
+	 * @see Matchers#greaterThan(Comparable)
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <U extends T, T extends java.lang.Comparable<T>> org.hamcrest.Matcher<U> greaterThan(final T value) {
+		return (Matcher) Matchers.greaterThan(value);
+	}
+
+	/**
 	 * Convenience method which takes the raw value as the second parameter
 	 * 
 	 * @see Matchers#hasEntry(Matcher, Matcher)
@@ -42,9 +62,7 @@ public class HelpingMatchers {
 	 * 
 	 * @see Matchers#hasEntry(Matcher, Matcher)
 	 */
-	public static <K, V> Matcher<Map<? extends K, ? extends V>> hasEntry(
-final K key,
- final Matcher<? super V> valueMatcher) {
+	public static <K, V> Matcher<Map<? extends K, ? extends V>> hasEntry(final K key, final Matcher<? super V> valueMatcher) {
 		return Matchers.hasEntry(equalTo(key), valueMatcher);
 	}
 

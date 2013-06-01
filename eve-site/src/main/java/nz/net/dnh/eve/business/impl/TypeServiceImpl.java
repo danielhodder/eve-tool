@@ -1,5 +1,7 @@
 package nz.net.dnh.eve.business.impl;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -133,5 +135,93 @@ public class TypeServiceImpl implements TypeService {
 			}
 		}
 		return new RequiredTypes(requiredComponents, requiredMinerals);
+	}
+
+	@Override
+	public Mineral createMissingMineral(final int id, final BigDecimal cost) {
+		final Type savedType = createMissingType(cost, true, id);
+		return new MineralImpl(savedType);
+	}
+
+	@Override
+	public Component createMissingComponent(final int id, final BigDecimal cost) {
+		final Type savedType = createMissingType(cost, false, id);
+		return new ComponentImpl(savedType);
+	}
+
+	private Type createMissingType(final BigDecimal cost, final boolean isMineral, final int id) {
+		final InventoryType inventoryType = this.inventoryTypeRepository.findOne(id);
+		if (inventoryType == null)
+			throw new IllegalArgumentException("Unknown type with id "+id);
+		validateInventoryType(isMineral, inventoryType);
+
+		final Type newType = new Type();
+		newType.setTypeID(id);
+		updateCostAndLastUpdated(newType, cost);
+		return this.typeRepository.save(newType);
+	}
+
+	@Override
+	public Mineral updateMineral(final Mineral type, final BigDecimal cost) {
+		final Type savedType = updateType(type, cost, true);
+		return new MineralImpl(savedType);
+	}
+
+	@Override
+	public Component updateComponent(final Component type, final BigDecimal cost) {
+		final Type savedType = updateType(type, cost, false);
+		return new ComponentImpl(savedType);
+	}
+
+	private Type updateType(final AbstractType type, final BigDecimal cost, final boolean mineral) {
+		final Type persistentType = getTypeById(type.getId(), mineral);
+		if (persistentType == null)
+			throw new IllegalArgumentException("Unknown type with id " + type.getId());
+		updateCostAndLastUpdated(persistentType, cost);
+		return this.typeRepository.save(persistentType);
+	}
+
+	private static void updateCostAndLastUpdated(final Type type, final BigDecimal cost) {
+		type.setCost(cost);
+		type.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+	}
+
+	@Override
+	public Component getComponent(final int id) {
+		final Type componentType = getTypeById(id, false);
+		if (componentType == null)
+			return null;
+
+		return new ComponentImpl(componentType);
+	}
+
+	@Override
+	public Mineral getMineral(final int id) {
+		final Type mineralType = getTypeById(id, true);
+		if (mineralType == null)
+			return null;
+
+		return new MineralImpl(mineralType);
+	}
+
+	private Type getTypeById(final int id, final boolean mineral) {
+		final Type type = this.typeRepository.findOne(id);
+		if (type != null)
+			validateInventoryType(mineral, type.getType());
+		return type;
+	}
+
+	/**
+	 * Validate that the given inventory type is a mineral iff the mineral flag
+	 * is true
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the given inventory type is a mineral and the mineral flag
+	 *             is false, or vice versa
+	 */
+	private void validateInventoryType(final boolean mineral, final InventoryType inventoryType) {
+		if (inventoryType.isMineral() != mineral)
+			throw new IllegalArgumentException(String.format("The type with id %d is a %s but needed a %s", inventoryType.getTypeID(),
+					mineral ? "component" : "mineral", mineral ? "mineral" : "component"));
 	}
 }
