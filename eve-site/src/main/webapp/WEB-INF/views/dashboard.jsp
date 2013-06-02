@@ -33,3 +33,5 @@
 		</tiles:insertTemplate>
 	</div>
 </div>
+
+<tiles:insertTemplate template="_change_type_cost_modal.jsp" />

@@ -19,6 +19,11 @@ public abstract class AbstractTypeImpl implements AbstractType {
 		public String toString() {
 			return "Mineral " + super.toString();
 		}
+
+		@Override
+		public boolean isMineral() {
+			return true;
+		}
 	}
 
 	public static class ComponentImpl extends AbstractTypeImpl implements
@@ -30,6 +35,11 @@ public abstract class AbstractTypeImpl implements AbstractType {
 		@Override
 		public String toString() {
 			return "Component " + super.toString();
+		}
+
+		@Override
+		public boolean isMineral() {
+			return false;
 		}
 	}
 

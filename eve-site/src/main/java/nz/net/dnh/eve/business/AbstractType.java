@@ -29,4 +29,10 @@ public interface AbstractType extends TypeReference {
 	 * @return True if the type is missing from the database
 	 */
 	public boolean isMissing();
+
+	/**
+	 * @return True if the type is a {@link Mineral}, false if the type is a
+	 *         {@link Component}
+	 */
+	public boolean isMineral();
 }

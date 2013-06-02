@@ -3,7 +3,6 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles-extras" prefix="tilesx"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
-
 <div class="row-fluid">
 	<div class="span12">
 		<tiles:insertTemplate template="_blueprint_information.jsp">
@@ -23,3 +22,10 @@
 		</tiles:insertTemplate>
 	</div>
 </div>
+
+<tiles:insertTemplate template="_update_blueprint_modal.jsp">
+	<tiles:putAttribute name="blueprint" value="${view.blueprint}" />
+	<tiles:putAttribute name="form" value="${view.form}" />
+</tiles:insertTemplate>
+
+<tiles:insertTemplate template="../_change_type_cost_modal.jsp" />

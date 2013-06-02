@@ -44,27 +44,28 @@
 				<td>
 					<a>
 						<img src="<c:out value="${imageURILocator.getUriForType(requiredComponent.key, 32)}" />" />
-						<c:out value="${requiredComponent.key.name}" />
+						${requiredComponent.key.name}
 					</a>
 				</td>
 				<td class="text-right"><c:out value="${requiredComponent.value}" /></td>
 				<td class="text-right">
-					<a class="btn btn-link reveal-icon no-padding">
-						<c:out value="${currencyFormatter.format(requiredComponent.key.cost)}" /><i class="icon-pencil"></i>
+					<a class="btn btn-link reveal-icon no-padding" data-toggle="modal" data-target="#change-type-cost"
+							data-type-cost="${requiredComponent.key.cost}" data-type-name="${requiredComponent.key.name}" data-type-id="${requiredComponent.key.id}" data-type-missing="${requiredComponent.key.missing}" data-type-mineral="${requiredComponent.key.mineral}">
+						${currencyFormatter.format(requiredComponent.key.cost)}<i class="icon-pencil"></i>
 					</a>
 				</td>
 				<td class="text-right">
 					<strong>
-						<c:out value="${currencyFormatter.format(requiredComponent.key.cost * requiredComponent.value)}" />
+						${currencyFormatter.format(requiredComponent.key.cost * requiredComponent.value)}
 					</strong>
 				</td>
 				<td class="text-right">
 					<em>
-						<c:out value="${percentageFormatter.format(blueprint.totalCost == null ? null : ((requiredComponent.key.cost * requiredComponent.value) / blueprint.totalCost) * 100)}" />
+						${percentageFormatter.format(blueprint.totalCost == null ? null : ((requiredComponent.key.cost * requiredComponent.value) / blueprint.totalCost) * 100)}
 					</em>
 				</td>
 				<td class="text-right">
-					<c:out value="${dateFormatter.format(requiredComponent.key.costLastUpdated)}" />
+					${dateFormatter.format(requiredComponent.key.costLastUpdated)}
 					<c:if test="${requiredComponent.key.costLastUpdated != null}">
 						<i class="icon-info-sign" title="${dateTimeFormatter.format(requiredComponent.key.costLastUpdated)}"></i>
 					</c:if>

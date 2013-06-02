@@ -1,0 +1,44 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<div id="change-type-cost" class="modal hide fade" data-focus-on-open="true" data-action-prefix="<c:url value="/types/" />">
+	<form class="form-horizontal" method="post" action="" autocomplete="off">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="myModalLabel">Edit the cost of <span class="type-name"></span></h3>
+		</div>
+		<div class="modal-body">
+			<div class="control-group">
+				<label class="control-label" for="cost">Cost:</label>
+				<div class="controls">
+					<div class="input-append">
+						<input type="text" name="cost" value="" required="required"
+							pattern="[0-9]+\.[0-9]{2}" title="Please enter a currency including the cost to two decimal places" />
+						<span class="add-on">ISK</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<input type="hidden" name="return" value="<c:out value="${pageContext.request.getAttribute('javax.servlet.forward.request_uri')}" />" />
+			<input type="hidden" name="missing" />
+			<input type="hidden" name="mineral" />
+			<button type="reset" class="btn" data-dismiss="modal">Close</button>
+			<button type="submit" class="btn btn-primary" data-loading-text="Saving...">Save</button>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+	$('#change-type-cost').on('show', function() {
+		var dialog = $(this);
+		var options = dialog.data('modal').options;
+		// Update the inputs
+		$('.type-name', this).text(options.typeName);
+		$('[name=cost]', this).val(options.typeCost);
+		$('[name=missing]', this).val(options.typeMissing);
+		$('[name=mineral]', this).val(options.typeMineral);
+		// Set the form action to the data-action-prefix value plus the type id
+		$('form', this).attr('action', dialog.data('actionPrefix') + options.typeId);
+	}).on('hide', function() {
+		$(this).removeData('modal');
+	});
+</script>

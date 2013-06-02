@@ -38,9 +38,14 @@
 			<tr class="${class_name}" title="${tooltip}" data-toggle="tooltip" data-container="body">
 				<td><img src="<c:out value="${imageURILocator.getUriForType(type, 32)}" />" /></td>
 				<td><a><c:out value="${type.name}" /></a></td>
-				<td class="text-right"><c:out value="${currencyFormatter.format(type.cost)}" /></td>
 				<td class="text-right">
-					<c:out value="${dateFormatter.format(type.costLastUpdated)}" />
+					<a class="btn btn-link reveal-icon no-padding" data-toggle="modal" data-target="#change-type-cost"
+							data-type-cost="${type.cost}" data-type-name="${type.name}" data-type-id="${type.id}" data-type-missing="${type.missing}" data-type-mineral="${type.mineral}">
+						${currencyFormatter.format(type.cost)}<i class="icon-pencil"></i>
+					</a>
+				</td>
+				<td class="text-right">
+					${dateFormatter.format(type.costLastUpdated)}
 					<c:if test="${type.costLastUpdated != null}">
 						<i class="icon-info-sign" title="${dateTimeFormatter.format(type.costLastUpdated)}"></i>
 					</c:if>
