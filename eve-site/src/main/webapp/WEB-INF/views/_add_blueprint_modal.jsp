@@ -13,6 +13,9 @@
 	
 		<div class="modal-body">		
 			<fieldset class="control-group">
+				<label class="control-label" id="new-blueprint-image-container">
+				</label>
+				
 				<div class="controls">
 					<input type="text" name="blueprint-name" class="input-xlarge search-query" placeholder="Blueprint Name" data-provide="typeahead" id="blueprint-name" required="required" />
 					<input type="hidden" name="blueprint-id" id="blueprint-id" required="required" />
@@ -84,6 +87,9 @@
 						});
 			}, updater: function (selectedName) {
 				$('#blueprint-id').val(map[selectedName].id);
+				$('#new-blueprint-image-container').empty();
+				$('#new-blueprint-image-container').append('<img src="'+map[selectedName].imageURI+'" />');
+				
 				return selectedName;
 			}, minLength: 3
 		});

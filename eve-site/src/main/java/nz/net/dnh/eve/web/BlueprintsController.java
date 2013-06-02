@@ -10,6 +10,7 @@ import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.CandidateBlueprint;
 import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.business.TypeService;
+import nz.net.dnh.eve.web.view.ImageURILocater;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public final class BlueprintsController {
+	@Autowired
+	private ImageURILocater imageURILocator;
 	@Autowired private BlueprintService blueprintService;
 	@Autowired private TypeService typeService;
 
@@ -59,7 +62,7 @@ public final class BlueprintsController {
 		final List<BlueprintSearchResult> resultList = new LinkedList<>();
 
 		for (final CandidateBlueprint blueprint : blueprints) {
-			resultList.add(new BlueprintSearchResult(blueprint.getName(), blueprint.getId()));
+			resultList.add(new BlueprintSearchResult(blueprint));
 		}
 
 		return resultList;
@@ -142,11 +145,14 @@ public final class BlueprintsController {
 
 	public final class BlueprintSearchResult {
 		private final String name;
+		private final String imageURI;
 		private final int id;
 
-		public BlueprintSearchResult(final String name, final int id) {
-			this.name = name;
-			this.id = id;
+		public BlueprintSearchResult(final CandidateBlueprint blueprint) {
+			this.name = blueprint.getName();
+			this.id = blueprint.getId();
+			this.imageURI = BlueprintsController.this.imageURILocator
+					.getUriForTypeID(blueprint.getProducedTypeID(), 32);
 		}
 
 		public String getName() {
@@ -155,6 +161,10 @@ public final class BlueprintsController {
 
 		public int getId() {
 			return this.id;
+		}
+
+		public String getImageURI() {
+			return this.imageURI;
 		}
 	}
 }
