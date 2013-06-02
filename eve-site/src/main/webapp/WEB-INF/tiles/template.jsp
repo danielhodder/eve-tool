@@ -29,6 +29,15 @@
 		<tiles:insertAttribute name="header"  defaultValue="" />
 		
 		<!-- Page content -->
+		<noscript>
+			<div class="container-fluid">
+				<div class="alert alert-block alert-error">
+			    	<h4>Please enable javascript</h4>
+			    	Please enable javascript to use this app. Viewing this app will work without javascript
+			    	but you will not be able to edit anything.
+			    </div>
+			</div>
+		</noscript>
 		
 		<div class="container-fluid">
 			<tiles:insertAttribute name="body" defaultValue="" />
