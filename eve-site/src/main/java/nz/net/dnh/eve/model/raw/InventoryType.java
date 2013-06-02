@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 		@NamedQuery(name = "InventoryType.findUnknownComponents", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.COMPONENT_SQL) })
 public class InventoryType implements Serializable {
 	// t.cost is not a nullable column, so this really checks whether t is null
-	public static final String UNKNOWN_TYPES_SQL = "SELECT brt.inventoryType FROM BlueprintRequiredType brt LEFT OUTER JOIN brt.type t WHERE t.cost IS NULL";
+	public static final String UNKNOWN_TYPES_SQL = "SELECT DISTINCT brt.inventoryType FROM BlueprintRequiredType brt LEFT OUTER JOIN brt.type t WHERE t.cost IS NULL";
 	public static final String MINERAL_SQL = " AND brt.inventoryType.group.groupName = '"
 			+ InventoryGroup.MINERAL_GROUP + "'";
 	public static final String COMPONENT_SQL = " AND brt.inventoryType.group.groupName != '"+InventoryGroup.MINERAL_GROUP+"'";
@@ -69,7 +69,7 @@ public class InventoryType implements Serializable {
 		return this.typeID;
 	}
 
-	public void setTypeID(int typeID) {
+	public void setTypeID(final int typeID) {
 		this.typeID = typeID;
 	}
 
@@ -85,7 +85,7 @@ public class InventoryType implements Serializable {
 		return this.typeName;
 	}
 
-	public void setTypeName(String typeName) {
+	public void setTypeName(final String typeName) {
 		this.typeName = typeName;
 	}
 
@@ -93,7 +93,7 @@ public class InventoryType implements Serializable {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
@@ -101,7 +101,7 @@ public class InventoryType implements Serializable {
 		return this.mass;
 	}
 
-	public void setMass(Double mass) {
+	public void setMass(final Double mass) {
 		this.mass = mass;
 	}
 
@@ -109,7 +109,7 @@ public class InventoryType implements Serializable {
 		return this.volume;
 	}
 
-	public void setVolume(Double volume) {
+	public void setVolume(final Double volume) {
 		this.volume = volume;
 	}
 
@@ -117,7 +117,7 @@ public class InventoryType implements Serializable {
 		return this.capacity;
 	}
 
-	public void setCapacity(Double capacity) {
+	public void setCapacity(final Double capacity) {
 		this.capacity = capacity;
 	}
 
@@ -125,7 +125,7 @@ public class InventoryType implements Serializable {
 		return this.portionSize;
 	}
 
-	public void setPortionSize(Integer portionSize) {
+	public void setPortionSize(final Integer portionSize) {
 		this.portionSize = portionSize;
 	}
 
@@ -133,7 +133,7 @@ public class InventoryType implements Serializable {
 		return this.raceID;
 	}
 
-	public void setRaceID(Integer raceID) {
+	public void setRaceID(final Integer raceID) {
 		this.raceID = raceID;
 	}
 
@@ -141,7 +141,7 @@ public class InventoryType implements Serializable {
 		return this.basePrice;
 	}
 
-	public void setBasePrice(BigDecimal basePrice) {
+	public void setBasePrice(final BigDecimal basePrice) {
 		this.basePrice = basePrice;
 	}
 
@@ -149,7 +149,7 @@ public class InventoryType implements Serializable {
 		return this.published;
 	}
 
-	public void setPublished(Integer published) {
+	public void setPublished(final Integer published) {
 		this.published = published;
 	}
 
@@ -157,7 +157,7 @@ public class InventoryType implements Serializable {
 		return this.marketGroupID;
 	}
 
-	public void setMarketGroupID(Integer marketGroupID) {
+	public void setMarketGroupID(final Integer marketGroupID) {
 		this.marketGroupID = marketGroupID;
 	}
 
@@ -165,7 +165,7 @@ public class InventoryType implements Serializable {
 		return this.chanceOfDuplicating;
 	}
 
-	public void setChanceOfDuplicating(Double chanceOfDuplicating) {
+	public void setChanceOfDuplicating(final Double chanceOfDuplicating) {
 		this.chanceOfDuplicating = chanceOfDuplicating;
 	}
 
@@ -173,7 +173,7 @@ public class InventoryType implements Serializable {
 		return this.iconID;
 	}
 
-	public void setIconID(Integer iconID) {
+	public void setIconID(final Integer iconID) {
 		this.iconID = iconID;
 	}
 
@@ -196,7 +196,7 @@ public class InventoryType implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return obj instanceof InventoryType
 				&& this.typeID == ((InventoryType) obj).getTypeID();
 	}
