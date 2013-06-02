@@ -17,27 +17,29 @@
 	<tbody>
 		<tiles:importAttribute name="blueprints" />
 		<c:forEach var="blueprint" items="${blueprints}">
-			<c:set var="class_name">
-				<c:choose>
-					<c:when test="${blueprint.totalCost == null}">
-						info missing-data
-					</c:when>
-					
-					<c:when test="${blueprint.profitPercentage > 15}">
-						success
-					</c:when>
-					
-					<c:when test="${blueprint.profitPercentage > 0 }">
-						warning
-					</c:when>
-					
-					<c:otherwise>
-						error
-					</c:otherwise>
-				</c:choose>
-			</c:set>
+			<c:choose>
+				<c:when test="${blueprint.totalCost == null}">
+					<c:set var="class_name">info</c:set>
+					<c:set var="tooltip">This blueprint is missing some pricing information</c:set>
+				</c:when>
+				
+				<c:when test="${blueprint.profitPercentage > 15}">
+					<c:set var="class_name">success</c:set>
+					<c:set var="tooltip" />
+				</c:when>
+				
+				<c:when test="${blueprint.profitPercentage > 0 }">
+					<c:set var="class_name">warning</c:set>
+					<c:set var="tooltip" />
+				</c:when>
+				
+				<c:otherwise>
+					<c:set var="class_name">error</c:set>
+					<c:set var="tooltip" />
+				</c:otherwise>
+			</c:choose>
 			
-			<tr class="<c:out value="${class_name}" />">
+			<tr class="${class_name}" title="${tooltip}" data-toggle="tooltip" data-container="body">
 				<td>
 					<img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.producedTypeID, 32)}" />" />
 				</td>
@@ -52,17 +54,3 @@
 		</c:forEach>
 	</tbody>
 </table>
-
-<script type="text/javascript">
-	$(function () {
-		var tooltips = {
-				'.missing-data' : 'This blueprint is missing some pricing information'
-		}
-		
-		$.each(tooltips, function(identifier, tooltip) {
-			$(identifier, $('.blueprints')).tooltip({
-				'title': tooltip
-			});
-		});
-	});
-</script>

@@ -18,19 +18,24 @@
 	<tbody>
 		<tiles:importAttribute name="types" />
 		<c:forEach var="type" items="${types}">
-			<c:set var="class_name">
-				<c:choose>
-					<c:when test="${type.cost == null}">
-						error missing-data
-					</c:when>
-					
-					<c:when test="${dashboardViewHelper.isTypeDataOld(type)}">
-						warning old-data
-					</c:when>
-				</c:choose>
-			</c:set>
+			<c:choose>
+				<c:when test="${type.cost == null}">
+					<c:set var="class_name">error</c:set>
+					<c:set var="tooltip">There is no pricing information available</c:set>
+				</c:when>
+				
+				<c:when test="${dashboardViewHelper.isTypeDataOld(type)}">
+					<c:set var="class_name">warning</c:set>
+					<c:set var="tooltip">This data is old and may not be reliable</c:set>
+				</c:when>
+				
+				<c:otherwise>
+					<c:set var="tooltip" />
+					<c:set var="class_name" />
+				</c:otherwise>
+			</c:choose>
 			
-			<tr class="<c:out value="${class_name}" />" >
+			<tr class="${class_name}" title="${tooltip}" data-toggle="tooltip" data-container="body">
 				<td><img src="<c:out value="${imageURILocator.getUriForType(type, 32)}" />" /></td>
 				<td><a><c:out value="${type.name}" /></a></td>
 				<td class="text-right"><c:out value="${currencyFormatter.format(type.cost)}" /></td>
@@ -43,18 +48,3 @@
 		</c:forEach>
 	</tbody>
 </table>
-
-<script type="text/javascript">
-	$(function () {
-		var tooltips = {
-				'.old-data' : 'This data is old and may not be reliable',
-				'.missing-data' : 'This blueprint is missing some pricing information'
-		}
-		
-		$.each(tooltips, function(identifier, tooltip) {
-			$(identifier, $('.types')).tooltip({
-				'title': tooltip
-			});
-		});
-	});
-</script>

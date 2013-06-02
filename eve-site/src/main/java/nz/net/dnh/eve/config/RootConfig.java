@@ -28,7 +28,7 @@ public class RootConfig {
 		ppc.setLocations(new Resource[] {
 				new ClassPathResource("/persistence.properties"),
 				new ClassPathResource("/static.properties"),
-				getOverrideResource() });
+				RootConfig.getOverrideResource() });
 		return ppc;
 	}
 
@@ -59,19 +59,19 @@ public class RootConfig {
 
 		return formatter;
 	}
-	
+
 	@Bean public static DateFormatDelegate dateFormatter() {
-		return new DateFormatDelegate(new SimpleDateFormat("d/m/yyyy"));
+		return new DateFormatDelegate(new SimpleDateFormat("d/M/yyyy"));
 	}
-	
+
 	@Bean public static DurationFormatter durationFormatter() {
 		return new DurationFormatter();
 	}
-	
+
 	private static Resource getOverrideResource() {
 		final Resource overrideResource = new ClassPathResource("/local.properties");
 		if (overrideResource.exists())
 			return overrideResource;
-		return EMPTY_RESOURCE;
+		return RootConfig.EMPTY_RESOURCE;
 	}
 }

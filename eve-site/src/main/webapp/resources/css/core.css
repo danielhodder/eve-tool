@@ -19,3 +19,25 @@ table.image-table tbody td {
 table.image-table tbody tr td:first-child {
 	width: 32px;
 }
+
+a.reveal-icon:hover {
+	text-decoration: none;
+}
+
+a.reveal-icon [class^="icon-"], a.reveal-icon [class*=" icon-"] {
+	visibility: hidden;
+	display: inline-block;
+	width: 0px;
+}
+
+a.reveal-icon [class^="icon-"]:before, a.reveal-icon [class*=" icon-"]:before {
+	padding-left: 0.3em;
+}
+
+a.reveal-icon:hover [class^="icon-"], a.reveal-icon:hover [class*=" icon-"] {
+	visibility: visible;
+}
+
+.no-padding {
+	padding: 0;
+}

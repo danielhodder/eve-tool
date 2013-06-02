@@ -23,19 +23,24 @@
 	<tbody>
 		<tiles:importAttribute name="types" />
 		<c:forEach var="requiredComponent"  items="${types}">
-			<c:set var="class_name">
-				<c:choose>
-					<c:when test="${requiredComponent.key.cost == null}">
-						error missing-data
-					</c:when>
-					
-					<c:when test="${dashboardViewHelper.isTypeDataOld(requiredComponent.key)}">
-						warning old-data
-					</c:when>
-				</c:choose>
-			</c:set>
+			<c:choose>
+				<c:when test="${requiredComponent.key.cost == null}">
+					<c:set var="class_name">error</c:set>
+					<c:set var="tooltip">There is no pricing information available</c:set>
+				</c:when>
+				
+				<c:when test="${dashboardViewHelper.isTypeDataOld(requiredComponent.key)}">
+					<c:set var="class_name">warning</c:set>
+					<c:set var="tooltip">This data is old and may not be reliable</c:set>
+				</c:when>
+				
+				<c:otherwise>
+					<c:set var="tooltip" />
+					<c:set var="class_name" />
+				</c:otherwise>
+			</c:choose>
 			
-			<tr class="<c:out value="${class_name}" />" >
+			<tr class="${class_name}" title="${tooltip}" data-toggle="tooltip" data-container="body">
 				<td>
 					<a>
 						<img src="<c:out value="${imageURILocator.getUriForType(requiredComponent.key, 32)}" />" />
@@ -43,7 +48,11 @@
 					</a>
 				</td>
 				<td class="text-right"><c:out value="${requiredComponent.value}" /></td>
-				<td class="text-right"><c:out value="${currencyFormatter.format(requiredComponent.key.cost)}" /></td>
+				<td class="text-right">
+					<a class="btn btn-link reveal-icon no-padding">
+						<c:out value="${currencyFormatter.format(requiredComponent.key.cost)}" /><i class="icon-pencil"></i>
+					</a>
+				</td>
 				<td class="text-right">
 					<strong>
 						<c:out value="${currencyFormatter.format(requiredComponent.key.cost * requiredComponent.value)}" />
@@ -62,18 +71,3 @@
 		</c:forEach>
 	</tbody>
 </table>
-
-<script type="text/javascript">
-	$(function () {
-		var tooltips = {
-				'.old-data' : 'This data is old and may not be reliable',
-				'.missing-data' : 'This blueprint is missing some pricing information'
-		}
-		
-		$.each(tooltips, function(identifier, tooltip) {
-			$(identifier, $('.types')).tooltip({
-				'title': tooltip
-			});
-		});
-	});
-</script>
