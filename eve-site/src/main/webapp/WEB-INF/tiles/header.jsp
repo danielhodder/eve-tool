@@ -17,11 +17,6 @@
 					<li class="active"><a href='<s:url value="/" />'>Home</a></li>
 					<li><a href="#new-blueprint" data-toggle="modal">Add a blueprint</a></li>
 				</ul>
-				
-				<!-- Object Search -->
-<!-- 				<form class="navbar-search pull-right"> -->
-<!-- 					<input type="text" class="search-query" autocomplete="off" data-provide="typeahead" placeholder="Object Name" /> -->
-<!-- 				</form> -->
 			</div>
 			<!--/.nav-collapse -->
 		</div>

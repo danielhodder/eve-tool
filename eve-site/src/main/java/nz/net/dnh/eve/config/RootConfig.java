@@ -8,6 +8,7 @@ import nz.net.dnh.eve.web.view.DateFormatDelegate;
 import nz.net.dnh.eve.web.view.DurationFormatter;
 import nz.net.dnh.eve.web.view.ImageURILocater;
 import nz.net.dnh.eve.web.view.NumberFormatter;
+import nz.net.dnh.eve.web.view.VersionReader;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -76,6 +77,11 @@ public class RootConfig {
 	@Bean
 	public static DurationFormatter durationFormatter() {
 		return new DurationFormatter();
+	}
+
+	@Bean
+	public static VersionReader versionReader() {
+		return new VersionReader();
 	}
 
 	private static Resource getOverrideResource() {
