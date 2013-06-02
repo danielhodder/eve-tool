@@ -37,7 +37,7 @@
 			
 			<tr class="${class_name}" title="${tooltip}" data-toggle="tooltip" data-container="body">
 				<td><img src="<c:out value="${imageURILocator.getUriForType(type, 32)}" />" /></td>
-				<td><a><c:out value="${type.name}" /></a></td>
+				<td><c:out value="${type.name}" /></td>
 				<td class="text-right">
 					<a class="btn btn-link reveal-icon no-padding" data-toggle="modal" data-target="#change-type-cost"
 							data-type-cost="${type.cost}" data-type-name="${type.name}" data-type-id="${type.id}" data-type-missing="${type.missing}" data-type-mineral="${type.mineral}">

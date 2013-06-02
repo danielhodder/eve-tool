@@ -42,10 +42,8 @@
 			
 			<tr class="${class_name}" title="${tooltip}" data-toggle="tooltip" data-container="body">
 				<td>
-					<a>
-						<img src="<c:out value="${imageURILocator.getUriForType(requiredComponent.key, 32)}" />" />
-						${requiredComponent.key.name}
-					</a>
+					<img src="<c:out value="${imageURILocator.getUriForType(requiredComponent.key, 32)}" />" />
+					${requiredComponent.key.name}
 				</td>
 				<td class="text-right"><c:out value="${requiredComponent.value}" /></td>
 				<td class="text-right">

@@ -31,7 +31,7 @@
 				<label class="control-label" for="numberPerRun">Number per run:</label>
 				
 				<div class="controls">
-					<input type="number" min="0" name="numberPerRun" value="${form.numberPerRun}" required="required" pattern="[0-9]+" />
+					<input type="number" min="1" name="numberPerRun" value="${form.numberPerRun}" required="required" pattern="[1-9][0-9]*" />
 				</div>
 			</div>
 			
