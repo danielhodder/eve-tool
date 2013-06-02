@@ -23,8 +23,3 @@
 		</tiles:insertTemplate>
 	</div>
 </div>
-
-<tiles:insertTemplate template="_update_blueprint_modal.jsp">
-	<tiles:putAttribute name="blueprint" value="${view.blueprint}" />
-	<tiles:putAttribute name="form" value="${view.form}" />
-</tiles:insertTemplate>
