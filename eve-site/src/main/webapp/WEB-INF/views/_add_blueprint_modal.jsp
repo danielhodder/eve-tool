@@ -13,7 +13,7 @@
 	
 		<div class="modal-body">		
 			<fieldset class="control-group">
-				<label class="control-label" id="new-blueprint-image-container">
+				<label class="control-label" id="new-blueprint-image-container" style="margin-top: 0;">
 				</label>
 				
 				<div class="controls">
