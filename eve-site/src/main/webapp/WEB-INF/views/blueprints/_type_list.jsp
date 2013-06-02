@@ -60,12 +60,14 @@
 				</td>
 				<td class="text-right">
 					<em>
-						<c:out value="${percentageFormatter.format(((requiredComponent.key.cost * requiredComponent.value) / blueprint.totalCost) * 100)}" />%
+						<c:out value="${percentageFormatter.format(blueprint.totalCost == null ? null : ((requiredComponent.key.cost * requiredComponent.value) / blueprint.totalCost) * 100)}" />
 					</em>
 				</td>
 				<td class="text-right">
 					<c:out value="${dateFormatter.format(requiredComponent.key.costLastUpdated)}" />
-					<i class="icon-info-sign" title="<c:out value="${requiredComponent.key.costLastUpdated}" />"></i>
+					<c:if test="${requiredComponent.key.costLastUpdated != null}">
+						<i class="icon-info-sign" title="${dateTimeFormatter.format(requiredComponent.key.costLastUpdated)}"></i>
+					</c:if>
 				</td>
 			</tr>
 		</c:forEach>

@@ -10,6 +10,9 @@ import javax.persistence.Table;
 
 import nz.net.dnh.eve.model.raw.InventoryType;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 /**
  * Represents a type required to build a blueprint
  */
@@ -23,11 +26,12 @@ public class BlueprintRequiredType implements Serializable {
 	@JoinColumn(name = "blueprintTypeID")
 	private Blueprint blueprint;
 
-	@Id
 	@ManyToOne
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "materialTypeID")
 	private Type type;
 
+	@Id
 	@ManyToOne
 	@JoinColumn(name = "materialTypeID", insertable = false, updatable = false)
 	private InventoryType inventoryType;
@@ -38,7 +42,7 @@ public class BlueprintRequiredType implements Serializable {
 		return this.blueprint;
 	}
 
-	public void setBlueprint(Blueprint blueprint) {
+	public void setBlueprint(final Blueprint blueprint) {
 		this.blueprint = blueprint;
 	}
 
@@ -46,7 +50,7 @@ public class BlueprintRequiredType implements Serializable {
 		return this.type;
 	}
 
-	public void setType(Type type) {
+	public void setType(final Type type) {
 		this.type = type;
 	}
 
@@ -58,7 +62,7 @@ public class BlueprintRequiredType implements Serializable {
 		return this.units;
 	}
 
-	public void setUnits(int units) {
+	public void setUnits(final int units) {
 		this.units = units;
 	}
 
@@ -75,10 +79,10 @@ public class BlueprintRequiredType implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (!(obj instanceof BlueprintRequiredType))
 			return false;
-		BlueprintRequiredType other = (BlueprintRequiredType) obj;
+		final BlueprintRequiredType other = (BlueprintRequiredType) obj;
 		return this.blueprint.equals(other.getBlueprint())
 				&& this.type.equals(other.getType());
 	}

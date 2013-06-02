@@ -50,21 +50,30 @@ public class RootConfig {
 	}
 
 	@Bean
-	public static NumberFormat percentageFormatter() {
-		final NumberFormat formatter = NumberFormat.getNumberInstance();
+	public static NumberFormatter percentageFormatter() {
+		final DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
 
 		formatter.setMaximumIntegerDigits(3);
 		formatter.setMaximumFractionDigits(2);
 		formatter.setGroupingUsed(false);
+		formatter.setPositiveSuffix("%");
+		formatter.setNegativeSuffix("%");
 
-		return formatter;
+		return new NumberFormatter(formatter, "???");
 	}
 
-	@Bean public static DateFormatDelegate dateFormatter() {
+	@Bean
+	public static DateFormatDelegate dateFormatter() {
 		return new DateFormatDelegate(new SimpleDateFormat("d/M/yyyy"));
 	}
 
-	@Bean public static DurationFormatter durationFormatter() {
+	@Bean
+	public static DateFormatDelegate dateTimeFormatter() {
+		return new DateFormatDelegate(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a"));
+	}
+
+	@Bean
+	public static DurationFormatter durationFormatter() {
 		return new DurationFormatter();
 	}
 

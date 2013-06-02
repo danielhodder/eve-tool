@@ -48,7 +48,7 @@
 				<td><c:out value="${currencyFormatter.format(blueprint.saleValue)}" /></td>
 				<td>
 					<span class="absolute"><c:out value="${currencyFormatter.format(blueprint.profit)}" /></span> 
-					<span class="percent">(<c:out value="${percentageFormatter.format(blueprint.profitPercentage)}" /> %)</span>
+					<span class="percent">(<c:out value="${percentageFormatter.format(blueprint.profitPercentage)}" />)</span>
 				</td>
 			</tr>
 		</c:forEach>

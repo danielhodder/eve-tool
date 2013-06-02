@@ -40,9 +40,10 @@
 				<td><a><c:out value="${type.name}" /></a></td>
 				<td class="text-right"><c:out value="${currencyFormatter.format(type.cost)}" /></td>
 				<td class="text-right">
-					<abbr title="<c:out value="${type.costLastUpdated}" />">
-						<c:out value="${dateFormatter.format(type.costLastUpdated)}" />
-					</abbr>
+					<c:out value="${dateFormatter.format(type.costLastUpdated)}" />
+					<c:if test="${type.costLastUpdated != null}">
+						<i class="icon-info-sign" title="${dateTimeFormatter.format(type.costLastUpdated)}"></i>
+					</c:if>
 				</td>
 			</tr>
 		</c:forEach>
