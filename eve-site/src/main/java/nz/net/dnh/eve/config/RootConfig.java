@@ -12,13 +12,14 @@ import nz.net.dnh.eve.web.view.NumberFormatter;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 @Configuration
-@ComponentScan(basePackages = { "nz.net.dnh.eve" })
+@ComponentScan(basePackages = { "nz.net.dnh.eve" }, excludeFilters = { @Filter(value = AvoidComponentScan.class) })
 public class RootConfig {
 	private static final Resource EMPTY_RESOURCE = new ByteArrayResource(new byte[0]);
 

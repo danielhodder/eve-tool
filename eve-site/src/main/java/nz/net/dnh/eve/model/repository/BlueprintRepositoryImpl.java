@@ -2,6 +2,7 @@ package nz.net.dnh.eve.model.repository;
 
 import javax.persistence.PersistenceContext;
 
+import nz.net.dnh.eve.config.AvoidComponentScan;
 import nz.net.dnh.eve.model.domain.Blueprint;
 
 import org.hibernate.Session;
@@ -9,6 +10,7 @@ import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.stereotype.Service;
 
 @Service
+@AvoidComponentScan
 public class BlueprintRepositoryImpl implements BlueprintRepositoryCustom {
 
 	@PersistenceContext
