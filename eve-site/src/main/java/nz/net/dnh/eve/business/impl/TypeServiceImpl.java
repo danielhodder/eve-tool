@@ -2,6 +2,7 @@ package nz.net.dnh.eve.business.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,8 @@ import java.util.Map;
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintReference;
 import nz.net.dnh.eve.business.Component;
+import nz.net.dnh.eve.business.MarketPrice;
+import nz.net.dnh.eve.business.MarketPrices;
 import nz.net.dnh.eve.business.Mineral;
 import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.business.TypeReference;
@@ -19,6 +22,9 @@ import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMine
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.ComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.MineralImpl;
+import nz.net.dnh.eve.market.eve_central.EveCentralMarketStatRequester;
+import nz.net.dnh.eve.market.eve_central.EveCentralMarketStatResponse;
+import nz.net.dnh.eve.market.eve_central.EveCentralMarketStatResponse.MarketStatData;
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
 import nz.net.dnh.eve.model.domain.Type;
@@ -42,6 +48,9 @@ public class TypeServiceImpl implements TypeService {
 
 	@Autowired
 	private BlueprintResolverService blueprintResolverService;
+
+	@Autowired
+	private EveCentralMarketStatRequester eveCentralMarketStatRequester;
 
 	@Override
 	public List<Mineral> listMinerals(final boolean includeMissing) {
@@ -70,11 +79,11 @@ public class TypeServiceImpl implements TypeService {
 	}
 
 	private void addMissingComponents(final List<? super Component> components) {
-		addComponents(this.inventoryTypeRepository.findUnknownComponents(), components);
+		TypeServiceImpl.addComponents(this.inventoryTypeRepository.findUnknownComponents(), components);
 	}
 
 	private void addMissingMinerals(final List<? super Mineral> missingTypes) {
-		addMinerals(this.inventoryTypeRepository.findUnknownMinerals(), missingTypes);
+		TypeServiceImpl.addMinerals(this.inventoryTypeRepository.findUnknownMinerals(), missingTypes);
 	}
 
 	@Override
@@ -103,8 +112,8 @@ public class TypeServiceImpl implements TypeService {
 	public List<? extends AbstractType> listMissingTypes(final BlueprintReference blueprintRef) {
 		final Blueprint blueprint = this.blueprintResolverService.toBlueprint(blueprintRef);
 		final List<AbstractType> missingTypes = new ArrayList<>();
-		addMinerals(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(blueprint), missingTypes);
-		addComponents(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(blueprint), missingTypes);
+		TypeServiceImpl.addMinerals(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(blueprint), missingTypes);
+		TypeServiceImpl.addComponents(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(blueprint), missingTypes);
 		return missingTypes;
 	}
 
@@ -202,8 +211,9 @@ public class TypeServiceImpl implements TypeService {
 
 	private Type getTypeById(final TypeReference typeReference, final boolean mineral) {
 		final Type type = toType(typeReference);
-		if (type != null)
+		if (type != null) {
 			validateInventoryType(mineral, type.getType());
+		}
 		return type;
 	}
 
@@ -230,7 +240,7 @@ public class TypeServiceImpl implements TypeService {
 	/**
 	 * Validate that the given inventory type is a mineral iff the mineral flag
 	 * is true
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 *             if the given inventory type is a mineral and the mineral flag
 	 *             is false, or vice versa
@@ -239,5 +249,47 @@ public class TypeServiceImpl implements TypeService {
 		if (inventoryType.isMineral() != mineral)
 			throw new IllegalArgumentException(String.format("The type with id %d is a %s but needed a %s", inventoryType.getTypeID(),
 					mineral ? "component" : "mineral", mineral ? "mineral" : "component"));
+	}
+
+	@Override
+	public MarketPrices<? extends AbstractType> getMarketPrices(
+			final Collection<TypeReference> types) {
+		final Map<Integer, TypeReference> typeIds = new HashMap<>();
+		for (final TypeReference type : types) {
+			typeIds.put(type.getId(), type);
+		}
+
+		final EveCentralMarketStatResponse response = this.eveCentralMarketStatRequester
+				.getDataForType(typeIds.keySet());
+
+		final Map<AbstractType, MarketPrice> prices = new HashMap<>();
+		for (final nz.net.dnh.eve.market.eve_central.EveCentralMarketStatResponse.Type responseType : response
+				.getTypes()) {
+			final TypeReference typeReference = typeIds.get(responseType
+					.getId());
+
+			AbstractType businessType;
+			final Type type = toType(typeReference);
+			if (type == null) {
+				final InventoryType inventoryType = toInventoryType(typeReference);
+
+				if (inventoryType.isMineral()) {
+					businessType = new MissingMineralImpl(inventoryType);
+				} else {
+					businessType = new MissingComponentImpl(inventoryType);
+				}
+			} else if (type.getType().isMineral()) {
+				businessType = new MineralImpl(type);
+			} else {
+				businessType = new ComponentImpl(type);
+			}
+
+			final MarketStatData buyOrderSummary = responseType.getBuy();
+			prices.put(businessType,
+					new MarketPrice(buyOrderSummary.getAverage(),
+							buyOrderSummary.getMedian()));
+		}
+
+		return new MarketPrices<>(prices);
 	}
 }

@@ -1,6 +1,7 @@
 package nz.net.dnh.eve.business;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 public interface TypeService {
 	/**
 	 * List the minerals in the system, optionally including minerals which are referenced by blueprints but missing from the database.
-	 * 
+	 *
 	 * @param includeMissing Whether to include minerals that are missing from the database
 	 * @return The list of minerals
 	 * @see #listMissingTypes()
@@ -21,7 +22,7 @@ public interface TypeService {
 
 	/**
 	 * List the components in the system, optionally including components which are referenced by blueprints but missing from the database.
-	 * 
+	 *
 	 * @param includeMissing Whether to include components that are missing from the database
 	 * @return The list of components
 	 * @see #listMissingTypes()
@@ -31,7 +32,7 @@ public interface TypeService {
 	/**
 	 * List minerals and components which are referenced by blueprints but
 	 * missing from the database
-	 * 
+	 *
 	 * @return The list of minerals and components referenced by blueprints but
 	 *         missing from the database
 	 */
@@ -40,7 +41,7 @@ public interface TypeService {
 	/**
 	 * List minerals and components which are referenced by the given blueprint
 	 * but missing from the database
-	 * 
+	 *
 	 * @param The
 	 *            blueprint to check for missing references
 	 * @return The list of minerals and components referenced by the given
@@ -51,7 +52,7 @@ public interface TypeService {
 	/**
 	 * Get the minerals and components required to build the given blueprint,
 	 * and their quantities.
-	 * 
+	 *
 	 * @param blueprint
 	 *            The blueprint to retrieve required types for
 	 * @return The required minerals and components
@@ -60,7 +61,7 @@ public interface TypeService {
 
 	/**
 	 * Get the mineral with the given id (from {@link Mineral#getId()})
-	 * 
+	 *
 	 * @param type
 	 *            A reference to the mineral to retrieve
 	 * @return The mineral with the given id, or null if no such mineral exists
@@ -69,7 +70,7 @@ public interface TypeService {
 
 	/**
 	 * Get the component with the given id (from {@link Component#getId()})
-	 * 
+	 *
 	 * @param id
 	 *            A reference to the component to retrieve
 	 * @return The component with the given id, or null if no such component
@@ -79,7 +80,7 @@ public interface TypeService {
 
 	/**
 	 * Create the mineral with the given id (from {@link Mineral#getId()})
-	 * 
+	 *
 	 * @param id
 	 *            A reference to the mineral to retrieve
 	 * @param cost
@@ -92,7 +93,7 @@ public interface TypeService {
 
 	/**
 	 * Create the component with the given id (from {@link Component#getId()})
-	 * 
+	 *
 	 * @param id
 	 *            A reference to the component to retrieve
 	 * @param cost
@@ -105,7 +106,7 @@ public interface TypeService {
 
 	/**
 	 * Update the given mineral with a new cost.
-	 * 
+	 *
 	 * @param mineral
 	 *            A reference to the mineral to update
 	 * @param cost
@@ -118,7 +119,7 @@ public interface TypeService {
 
 	/**
 	 * Update the given component with a new cost.
-	 * 
+	 *
 	 * @param component
 	 *            A reference to the component to update
 	 * @param cost
@@ -128,4 +129,14 @@ public interface TypeService {
 	 *             if no such component exists
 	 */
 	Component updateComponent(TypeReference component, BigDecimal cost);
+
+	/**
+	 * Get the current market data for the given types.
+	 *
+	 * @param types
+	 *            The types to query for
+	 * @return the current market data
+	 */
+	MarketPrices<? extends AbstractType> getMarketPrices(
+			Collection<TypeReference> types);
 }
