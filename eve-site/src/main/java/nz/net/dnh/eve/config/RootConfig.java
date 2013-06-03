@@ -3,6 +3,7 @@ package nz.net.dnh.eve.config;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 
 import nz.net.dnh.eve.web.view.DateFormatDelegate;
 import nz.net.dnh.eve.web.view.DurationFormatter;
@@ -27,6 +28,11 @@ public class RootConfig {
 	@Bean
 	public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
 		final PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+
+		final Properties environmentProperties = new Properties();
+		environmentProperties.putAll(System.getenv());
+		ppc.setProperties(environmentProperties);
+
 		ppc.setLocations(new Resource[] {
 				new ClassPathResource("/persistence.properties"),
 				new ClassPathResource("/static.properties"),
