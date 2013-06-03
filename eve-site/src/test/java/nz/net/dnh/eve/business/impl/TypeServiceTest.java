@@ -223,7 +223,7 @@ public class TypeServiceTest {
 		when(this.typeRepository.save(any(Type.class))).thenReturn(this.type1);
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.component1);
 
-		final Component createdComponent = this.typeService.createMissingComponent(new TypeIdReference(45), COST_1);
+		final Component createdComponent = this.typeService.createMissingComponent(new TypeIdReference(45), COST_1, false);
 
 		assertThat(createdComponent, is(component("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.typeRepository).save(
@@ -237,7 +237,7 @@ public class TypeServiceTest {
 		when(this.typeRepository.save(any(Type.class))).thenReturn(this.type1);
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.mineral1);
 
-		final Mineral createdMineral = this.typeService.createMissingMineral(new TypeIdReference(45), COST_1);
+		final Mineral createdMineral = this.typeService.createMissingMineral(new TypeIdReference(45), COST_1, false);
 
 		assertThat(createdMineral, is(mineral("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.typeRepository).save(
@@ -249,24 +249,24 @@ public class TypeServiceTest {
 	public void createMissingComponentWithMineralId() {
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.mineral1);
 
-		this.typeService.createMissingComponent(new TypeIdReference(45), COST_2);
+		this.typeService.createMissingComponent(new TypeIdReference(45), COST_2, false);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createMissingMineralWithComponentId() {
 		when(this.inventoryTypeRepository.findOne(45)).thenReturn(this.component1);
 
-		this.typeService.createMissingMineral(new TypeIdReference(45), COST_2);
+		this.typeService.createMissingMineral(new TypeIdReference(45), COST_2, false);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createMissingComponentWithInvalidId() {
-		this.typeService.createMissingComponent(new TypeIdReference(45), COST_2);
+		this.typeService.createMissingComponent(new TypeIdReference(45), COST_2, false);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createMissingMineralWithInvalidId() {
-		this.typeService.createMissingMineral(new TypeIdReference(45), COST_2);
+		this.typeService.createMissingMineral(new TypeIdReference(45), COST_2, false);
 	}
 
 	@Test
@@ -277,7 +277,7 @@ public class TypeServiceTest {
 		final Component component = mock(Component.class);
 		when(component.getId()).thenReturn(22);
 
-		final Component updatedComponent = this.typeService.updateComponent(component, COST_1);
+		final Component updatedComponent = this.typeService.updateComponent(component, COST_1, false);
 
 		assertThat(updatedComponent, is(component("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.type2).setCost(COST_1);
@@ -293,7 +293,7 @@ public class TypeServiceTest {
 		final Mineral mineral = mock(Mineral.class);
 		when(mineral.getId()).thenReturn(22);
 
-		final Mineral updatedComponent = this.typeService.updateMineral(mineral, COST_1);
+		final Mineral updatedComponent = this.typeService.updateMineral(mineral, COST_1, false);
 
 		assertThat(updatedComponent, is(mineral("Type 1", COST_1, LAST_UPDATED_1, false, 1)));
 		verify(this.type2).setCost(COST_1);
@@ -306,7 +306,7 @@ public class TypeServiceTest {
 		final Component component = mock(Component.class);
 		when(component.getId()).thenReturn(22);
 
-		this.typeService.updateComponent(component, COST_1);
+		this.typeService.updateComponent(component, COST_1, false);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -314,7 +314,7 @@ public class TypeServiceTest {
 		final Mineral mineral = mock(Mineral.class);
 		when(mineral.getId()).thenReturn(22);
 
-		this.typeService.updateMineral(mineral, COST_1);
+		this.typeService.updateMineral(mineral, COST_1, false);
 	}
 
 	@Test

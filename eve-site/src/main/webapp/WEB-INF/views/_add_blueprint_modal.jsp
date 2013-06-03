@@ -23,6 +23,17 @@
 			</fieldset>
 			
 			<div class="control-group">
+				<label class="control-label">Price Update Policy</label>
+				<div class="controls">
+					<select name="automaticPriceUpdate" class="input input-xlarge">
+						<option value="1">Automatically update the Sale Price</option>
+						<option value="0" selected="selected">Manually update the Sale Price</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<input type="hidden" name="quantity" value="1" />
 				<label class="control-label" for="saleValue">Sale Value per <span>1</span>:</label>
 				<div class="controls">
 					<div class="input-append">
@@ -89,7 +100,10 @@
 				$('#blueprint-id').val(map[selectedName].id);
 				$('#new-blueprint-image-container').empty();
 				$('#new-blueprint-image-container').append('<img src="'+map[selectedName].imageURI+'" />');
-			$('#new-blueprint label[for="saleValue"] > span').text(map[selectedName].producedQuantity);
+				$('#new-blueprint label[for="saleValue"] > span').text(map[selectedName].producedQuantity);
+				$('#new-blueprint [name="quantity"]').val(map[selectedName].producedQuantity);
+				
+				updateSalePriceField();
 				
 				return selectedName;
 			}, minLength: 3
@@ -103,5 +117,31 @@
 			} else
 				return true;
 		});
+		
+		$('#new-blueprint [name="automaticPriceUpdate"]').change(function () {
+			var $saleValueField = $('#new-blueprint [name="saleValue"]');
+			
+			if ($(this).val() == "0")
+				$saleValueField.prop('disabled', false);
+			else if ($(this).val() == "1") {
+				$saleValueField.prop('disabled', true);
+				updateSalePriceField();
+			}
+		});
+		
+		function updateSalePriceField() {
+			var blueprintId = $('#blueprint-id').val();
+			var producedQuantity = $('#new-blueprint [name="quantity"]').val();
+			
+			if (blueprintId == '')
+				return;
+			
+			$.get('/price/blueprint/'+blueprintId, function (data) {
+				if (data.value == -1)
+					alert('Error retrieving marker information');
+				else
+					$('#new-blueprint [name="saleValue"]').val(data.value * producedQuantity);
+			}, 'json');
+		}
 	});
 </script>

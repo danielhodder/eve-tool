@@ -18,9 +18,33 @@
 					<li><a href="#new-blueprint" data-toggle="modal">Add a blueprint</a></li>
 				</ul>
 			</div>
+			
+			<form class="navbar-form pull-right">
+				<button type="submit" id="update-prices" class="btn btn-danger">Update All Prices</button>
+			</form>
 			<!--/.nav-collapse -->
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(function () {
+		$('#update-prices').click(function () {
+			var $this = $(this);
+			$(this).prop('disabled', true);
+			
+			$.post('/price/update_all', function (data) {
+				$this.prop('disabled', false);
+				
+				if (data == true)
+					alert('Update Successful');
+				else
+					alert('Update Failed');
+			});
+			
+			return false;
+		})
+	});
+</script>
 
 <tiles:insertTemplate template="../views/_add_blueprint_modal.jsp" />

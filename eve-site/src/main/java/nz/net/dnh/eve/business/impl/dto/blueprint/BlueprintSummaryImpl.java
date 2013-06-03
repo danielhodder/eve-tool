@@ -110,4 +110,8 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 		return this.blueprint.getProducedQuantity();
 	}
 
+	@Override
+	public boolean isAutomaticallyUpdateSalePrice() {
+		return this.blueprint.isAutomaticallyUpdateSalePrice();
+	}
 }

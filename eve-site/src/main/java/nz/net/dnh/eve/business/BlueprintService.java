@@ -1,6 +1,7 @@
 package nz.net.dnh.eve.business;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -85,7 +86,7 @@ public interface BlueprintService {
 	 * @see CandidateBlueprint
 	 */
 	public BlueprintSummary createBlueprint(BlueprintReference blueprint, BigDecimal saleValue, int numberPerRun, int productionEfficiency,
-			int materialEfficiency);
+			int materialEfficiency, Boolean automaticSalePriceUpdate);
 
 	/**
 	 * Modify an existing blueprint. Parameters can be null to keep the current
@@ -105,11 +106,30 @@ public interface BlueprintService {
 	 * @param materialEfficiency
 	 *            The material efficiency. May be null to keep the current
 	 *            value. {@link BlueprintSummary#getMaterialEfficiency()}
+	 * @param automaticSalePriceUpdate
+	 *            A boolean flag indicating that this blueprint's price should
+	 *            be updated automatically.
 	 * @return The modified blueprint
 	 * @see #listSummaries()
 	 * @see BlueprintSummary
 	 */
 	public BlueprintSummary editBlueprint(BlueprintReference blueprint, BigDecimal saleValue, Integer numberPerRun,
-			Integer productionEfficiency, Integer materialEfficiency);
+			Integer productionEfficiency, Integer materialEfficiency, Boolean automaticSalePriceUpdate);
 
+	/**
+	 * Gets the sale value of one item of the type the blueprint makes. Returns
+	 * either the latest data in the data source or fetches from a remote source
+	 * and stores that if appropriate.
+	 * 
+	 * @param blueprint
+	 * @return The sale price of one item that this blueprint makes
+	 */
+	public BigDecimal getMarketPrice(BlueprintReference blueprint);
+
+	/**
+	 * Get all the blueprints that are marked for automatic updating
+	 * 
+	 * @return
+	 */
+	public Collection<BlueprintSummary> getBlueprintsForAutomaticUpdate();
 }

@@ -22,7 +22,8 @@ import nz.net.dnh.eve.model.raw.InventoryType;
 		@NamedQuery(name = "Type.findAllMinerals", query = "select t from Type t where t.type.group.groupName = '"
 				+ InventoryGroup.MINERAL_GROUP + "'"),
 		@NamedQuery(name = "Type.findAllComponents", query = "select t from Type t where t.type.group.groupName != '"
-				+ InventoryGroup.MINERAL_GROUP + "'") })
+				+ InventoryGroup.MINERAL_GROUP + "'"),
+		@NamedQuery(name = "Type.findAllAutoUpdatingTypes", query = "select t from Type t where t.autoUpdate = true") })
 public class Type extends AbstractLastUpdatedBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -40,12 +41,21 @@ public class Type extends AbstractLastUpdatedBean implements Serializable {
 	@OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
 	private Collection<BlueprintRequiredType> requiredBy;
 
+	@NotNull
+	private boolean autoUpdate;
+
 	public Type() {
 	}
 
-	public Type(final int typeID, final BigDecimal cost) {
+	public Type(final int typeID, final BigDecimal cost, final boolean autoUpdate) {
 		this.typeID = typeID;
+		this.autoUpdate = autoUpdate;
 		this.cost = cost;
+
+		if (this.autoUpdate && this.cost == null) {
+			this.cost = new BigDecimal(0);
+		}
+
 		touchLastUpdated();
 	}
 
@@ -99,5 +109,13 @@ public class Type extends AbstractLastUpdatedBean implements Serializable {
 	@Override
 	public int hashCode() {
 		return this.typeID;
+	}
+
+	public boolean isAutoUpdate() {
+		return this.autoUpdate;
+	}
+
+	public void setAutoUpdate(final boolean autoUpdate) {
+		this.autoUpdate = autoUpdate;
 	}
 }

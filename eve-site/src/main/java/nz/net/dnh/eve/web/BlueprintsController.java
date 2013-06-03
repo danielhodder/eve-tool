@@ -44,10 +44,11 @@ public final class BlueprintsController {
 	public String updateBlueprint(@PathVariable("id") final int id,
 			@ModelAttribute final BlueprintForm form) {
 		this.blueprintService.editBlueprint(new BlueprintIdReference(id),
-		                                    form.getSaleValue(),
-		                                    form.getNumberPerRun(),
-		                                    form.getProductionEffiecincy(),
-		                                    form.getMaterialEfficency());
+											form.getSaleValue(),
+											form.getNumberPerRun(),
+											form.getProductionEffiecincy(),
+											form.getMaterialEfficency(),
+											form.getAutomaticPriceUpdate());
 
 		return "redirect:/blueprints/" + id;
 	}
@@ -73,9 +74,12 @@ public final class BlueprintsController {
 			@RequestParam("return") final String returnUri,
 			@RequestParam("blueprint-id") final int blueprintId,
 			@ModelAttribute final BlueprintForm form) {
-		this.blueprintService.createBlueprint(new BlueprintIdReference(
-		                                                               blueprintId), form.getSaleValue(), form.getNumberPerRun(), form
-		                                                               .getProductionEffiecincy(), form.getMaterialEfficency());
+		this.blueprintService.createBlueprint(new BlueprintIdReference(blueprintId),
+				                              form.getSaleValue(),
+				                              form.getNumberPerRun(),
+				                              form.getProductionEffiecincy(),
+											  form.getMaterialEfficency(),
+											  form.getAutomaticPriceUpdate());
 
 		return new RedirectView(returnUri);
 	}
@@ -109,6 +113,7 @@ public final class BlueprintsController {
 		private int numberPerRun;
 		private int materialEfficency;
 		private int productionEffiecincy;
+		private boolean automaticPriceUpdate;
 
 		public BlueprintForm() {}
 		public BlueprintForm(final BlueprintSummary summary) {
@@ -140,6 +145,16 @@ public final class BlueprintsController {
 		}
 		public void setProductionEffiecincy(final int productionEffiecincy) {
 			this.productionEffiecincy = productionEffiecincy;
+		}
+
+		public boolean isAutomaticPriceUpdate() {
+			return this.automaticPriceUpdate;
+		}
+		public boolean getAutomaticPriceUpdate() {
+			return this.automaticPriceUpdate;
+		}
+		public void setAutomaticPriceUpdate(final boolean automaticPriceUpdate) {
+			this.automaticPriceUpdate = automaticPriceUpdate;
 		}
 	}
 

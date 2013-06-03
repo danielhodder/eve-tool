@@ -20,8 +20,8 @@ public class MockBlueprint extends Blueprint {
 	public MockBlueprint(final int blueprintTypeID, final int numberPerRun, final int hours, final int productionEfficiency,
 			final BigDecimal saleValue, final int materialEfficiency, final String typeName, final BigDecimal materialCost,
 			final BigDecimal otherCost, final BigDecimal profit, final BigDecimal profitPercentage, final BigDecimal totalCost,
-			final int producedTypeId) {
-		super(blueprintTypeID, numberPerRun, productionEfficiency, saleValue, materialEfficiency);
+			final int producedTypeId, final boolean automaticallyUpdateSalePrice) {
+		super(blueprintTypeID, numberPerRun, productionEfficiency, saleValue, materialEfficiency, automaticallyUpdateSalePrice);
 		this.typeName = typeName;
 		this.hours = hours;
 		this.materialCost = materialCost;

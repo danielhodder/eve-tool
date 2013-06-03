@@ -95,4 +95,8 @@ public abstract class AbstractMissingTypeImpl implements AbstractType {
 						.equals(((AbstractMissingTypeImpl) obj).inventoryType);
 	}
 
+	@Override
+	public boolean isAutoUpdate() {
+		return false;
+	}
 }

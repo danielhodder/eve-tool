@@ -1,5 +1,6 @@
 package nz.net.dnh.eve.model.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import nz.net.dnh.eve.model.domain.Type;
@@ -13,4 +14,6 @@ public interface TypeRepository extends JpaRepository<Type, Integer> {
 	public List<Type> findAllMinerals();
 
 	public List<Type> findAllComponents();
+
+	public Collection<Type> findAllAutoUpdatingTypes();
 }

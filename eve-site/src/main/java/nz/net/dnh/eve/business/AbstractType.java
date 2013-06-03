@@ -35,4 +35,9 @@ public interface AbstractType extends TypeReference {
 	 *         {@link Component}
 	 */
 	public boolean isMineral();
+
+	/**
+	 * @return True if the type is being updated automatically
+	 */
+	public boolean isAutoUpdate();
 }

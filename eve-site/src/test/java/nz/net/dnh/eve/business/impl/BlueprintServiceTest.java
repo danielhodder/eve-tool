@@ -48,9 +48,9 @@ import org.springframework.data.domain.Sort.Direction;
 public class BlueprintServiceTest {
 	private static final MockBlueprint BLUEPRINT_1 = new MockBlueprint(3, 4, 5, 101, new BigDecimal(6), 7, "Blueprint 1",
 	                                                                   new BigDecimal(8),
-	                                                                   new BigDecimal(9), new BigDecimal(10), new BigDecimal(11), new BigDecimal(12), 99);
+			new BigDecimal(9), new BigDecimal(10), new BigDecimal(11), new BigDecimal(12), 99, false);
 	private static final MockBlueprint BLUEPRINT_2 = new MockBlueprint(13, 14, 15, 201, new BigDecimal(16), 17, "Blueprint 2",
-	                                                                   new BigDecimal(18), new BigDecimal(19), new BigDecimal(20), new BigDecimal(21), new BigDecimal(22), 98);
+			new BigDecimal(18), new BigDecimal(19), new BigDecimal(20), new BigDecimal(21), new BigDecimal(22), 98, false);
 	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_1 = mock(InventoryBlueprintType.class);
 	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_2 = mock(InventoryBlueprintType.class);
 
@@ -380,21 +380,21 @@ public class BlueprintServiceTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void createBlueprintAlreadyExists() {
 		when(this.blueprintRepository.exists(1)).thenReturn(true);
-		this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, false);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createBlueprintReferencedDoesntExist() {
 		when(this.blueprintRepository.exists(1)).thenReturn(false);
 		when(this.inventoryBlueprintTypeRepository.exists(1)).thenReturn(false);
-		this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, false);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createBlueprintNullSaleValue() {
 		when(this.blueprintRepository.exists(1)).thenReturn(false);
 		when(this.inventoryBlueprintTypeRepository.exists(1)).thenReturn(true);
-		this.service.createBlueprint(new BlueprintIdReference(1), null, 3, 4, 5);
+		this.service.createBlueprint(new BlueprintIdReference(1), null, 3, 4, 5, false);
 	}
 
 	@Test
@@ -403,7 +403,7 @@ public class BlueprintServiceTest {
 		when(this.inventoryBlueprintTypeRepository.exists(1)).thenReturn(true);
 		when(this.blueprintRepository.save(any(Blueprint.class))).thenReturn(BLUEPRINT_1);
 
-		final BlueprintSummary created = this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		final BlueprintSummary created = this.service.createBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, false);
 
 		final ArgumentCaptor<Blueprint> captor = ArgumentCaptor.forClass(Blueprint.class);
 		verify(this.blueprintRepository).save(captor.capture());
@@ -419,7 +419,7 @@ public class BlueprintServiceTest {
 
 	@Test(expected=BlueprintNotFoundException.class)
 	public void editNonExistingBlueprint() {
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, null);
 	}
 
 	@Test
@@ -427,7 +427,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(1));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b).touchLastUpdated();
@@ -441,7 +441,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(2));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b, never()).touchLastUpdated();
@@ -455,7 +455,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(1));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b).touchLastUpdated();
@@ -469,7 +469,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(2));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b, never()).touchLastUpdated();
@@ -482,7 +482,7 @@ public class BlueprintServiceTest {
 	public void editBlueprintNumberPerRun() {
 		final Blueprint b = mock(Blueprint.class);
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), null, 3, null, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, 3, null, null, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
 		verify(b, never()).touchLastUpdated();
@@ -495,7 +495,7 @@ public class BlueprintServiceTest {
 	public void editBlueprintHours() {
 		final Blueprint b = mock(Blueprint.class);
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), null, null, 4, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, null, 4, null, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
 		verify(b, never()).touchLastUpdated();
@@ -508,7 +508,7 @@ public class BlueprintServiceTest {
 	public void editBlueprintMaterialEfficiency() {
 		final Blueprint b = mock(Blueprint.class);
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), null, null, null, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, null, null, 5, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
 		verify(b, never()).touchLastUpdated();

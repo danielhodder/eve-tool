@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
@@ -15,8 +17,11 @@ import javax.validation.constraints.NotNull;
 import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 
 @Entity
+@NamedQueries({ @NamedQuery(name="Blueprint.findAutomaticlyUpdating", query=Blueprint.AUTOMATICLY_UPDATING_QUERY) })
 public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	public static final String AUTOMATICLY_UPDATING_QUERY = "SELECT b FROM Blueprint b WHERE b.automaticallyUpdateSalePrice = TRUE";
 
 	@NotNull
 	@Id
@@ -38,6 +43,9 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 	@NotNull
 	private int materialEfficiency;
 
+	@NotNull
+	private boolean automaticallyUpdateSalePrice;
+
 	@OneToOne
 	@JoinColumn(name = "blueprintTypeID", updatable = false, insertable = false)
 	private BlueprintCostSummary costSummary;
@@ -49,13 +57,14 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 	}
 
 	public Blueprint(final int blueprintTypeID, final int numberPerRun, final int productionEfficiency, final BigDecimal saleValue,
-			final int materialEfficiency) {
+			final int materialEfficiency, final boolean automaticallyUpdateSalePrice) {
 		this.blueprintTypeID = blueprintTypeID;
 		this.numberPerRun = numberPerRun;
 		this.productionEfficiency = productionEfficiency;
 		this.saleValue = saleValue;
 		touchLastUpdated();
 		this.materialEfficiency = materialEfficiency;
+		this.automaticallyUpdateSalePrice = automaticallyUpdateSalePrice;
 	}
 
 	public void setBlueprintTypeID(final int blueprintTypeID) {
@@ -127,12 +136,10 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Blueprint [blueprintTypeID=" + this.blueprintTypeID
-				+ ", blueprintType=" + this.blueprintType + ", numberPerRun="
-				+ this.numberPerRun + ", productionEfficiency=" + this.productionEfficiency + ", saleValue="
-				+ this.saleValue + ", lastUpdated=" + getLastUpdated()
-				+ ", materialEfficiency=" + this.materialEfficiency
-				+ ", costSummary=" + this.costSummary + "]";
+		return "Blueprint [blueprintTypeID=" + this.blueprintTypeID + ", blueprintType=" + this.blueprintType + ", numberPerRun="
+				+ this.numberPerRun + ", productionEfficiency=" + this.productionEfficiency + ", saleValue=" + this.saleValue
+				+ ", materialEfficiency=" + this.materialEfficiency + ", automaticallyUpdateSalePrice=" + this.automaticallyUpdateSalePrice
+				+ ", costSummary=" + this.costSummary + ", requiredTypes=" + this.requiredTypes + "]";
 	}
 
 	@Override
@@ -148,5 +155,13 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 
 	public int getProducedQuantity() {
 		return getBlueprintType().getProducedQuantity();
+	}
+
+	public boolean isAutomaticallyUpdateSalePrice() {
+		return this.automaticallyUpdateSalePrice;
+	}
+
+	public void setAutomaticallyUpdateSalePrice(final boolean automaticallyUpdateSalePrice) {
+		this.automaticallyUpdateSalePrice = automaticallyUpdateSalePrice;
 	}
 }

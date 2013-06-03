@@ -10,12 +10,22 @@
 <tiles:importAttribute name="form" />
 
 <div id="update-blueprint-details" class="modal hide fade" data-reset-on-close="true" data-focus-on-open="true">
-	<form class="form-horizontal" action="<s:url value="/blueprints/${blueprint.id}" />" method="post" autocomplete="off">
+	<form class="form-horizontal" action="<s:url value="/blueprints/${blueprint.id}" />" method="post" autocomplete="off" data-automatic-update="${blueprint.automaticallyUpdateSalePrice ? "yes" : "no"}">
 		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
 			<h3>Edit the sale price of the ${blueprint.name}</h3>
 		</div>
 		<div class="modal-body">
+			<div class="control-group">
+				<label class="control-label">Price Update Policy</label>
+				<div class="controls">
+					<select name="automaticPriceUpdate" class="input input-xlarge">
+						<option value="1">Automatically update the Sale Price</option>
+						<option value="0" selected="selected">Manually update the Sale Price</option>
+					</select>
+				</div>
+			</div>
+		
 			<div class="control-group">
 				<label class="control-label" for="saleValue">Sale Value per ${blueprint.producedQuantity}:</label>
 				<div class="controls">
@@ -51,9 +61,42 @@
 				</div>
 			</div>
 		</div>
+		
 		<div class="modal-footer">
 			<button type="reset" class="btn" data-dismiss="modal">Close</button>
 			<button type="submit" class="btn btn-primary" data-loading-text="Saving...">Save</button>
 		</div>
 	</form>
 </div>
+
+<script type="text/javascript">
+	$(function () {
+		var $form = $('#update-blueprint-details form');
+		
+		$('[name="automaticPriceUpdate"]', $form).change(function () {
+			var $saleValueField = $('#new-blueprint [name="saleValue"]');
+			
+			if ($(this).val() == "0")
+				$saleValueField.prop('disabled', false);
+			else if ($(this).val() == "1") {
+				$saleValueField.prop('disabled', true);
+				updateSalePriceField();
+			}
+		});
+		
+		function updateSalePriceField() {
+			var blueprintId = $('#blueprint-id').val();
+			var producedQuantity = ${blueprint.producedQuantity}
+			
+			if (blueprintId == '')
+				return;
+			
+			$.get('/price/bluepring/'+blueprintId, function (data) {
+				if (data.value == -1)
+					alert('Error retrieving marker information');
+				else
+					$('#new-blueprint [name="saleValue"]').val(data.value * producedQuantity);
+			}, 'json');
+		}
+	});
+</script>

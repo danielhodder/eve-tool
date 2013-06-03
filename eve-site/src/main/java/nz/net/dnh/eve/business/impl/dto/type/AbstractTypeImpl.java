@@ -94,4 +94,9 @@ public abstract class AbstractTypeImpl implements AbstractType {
 	public int hashCode() {
 		return this.type.hashCode();
 	}
+
+	@Override
+	public boolean isAutoUpdate() {
+		return this.type.isAutoUpdate();
+	}
 }

@@ -26,16 +26,18 @@ public class TypeController {
 		final TypeReference type = new TypeIdReference(typeId);
 		if (typeInfo.isMissing()) {
 			// Create a missing mineral or component
-			if (typeInfo.isMineral())
-				this.typeService.createMissingMineral(type, typeInfo.getCost());
-			else
-				this.typeService.createMissingComponent(type, typeInfo.getCost());
+			if (typeInfo.isMineral()) {
+				this.typeService.createMissingMineral(type, typeInfo.getCost(), typeInfo.isAutoUpdate());
+			} else {
+				this.typeService.createMissingComponent(type, typeInfo.getCost(), typeInfo.isAutoUpdate());
+			}
 		} else {
 			// Update the existing mineral or component
-			if (typeInfo.isMineral())
-				this.typeService.updateMineral(type, typeInfo.getCost());
-			else
-				this.typeService.updateComponent(type, typeInfo.getCost());
+			if (typeInfo.isMineral()) {
+				this.typeService.updateMineral(type, typeInfo.getCost(), typeInfo.isAutoUpdate());
+			} else {
+				this.typeService.updateComponent(type, typeInfo.getCost(), typeInfo.isAutoUpdate());
+			}
 		}
 
 		return new RedirectView(returnUri);
@@ -45,6 +47,7 @@ public class TypeController {
 		private BigDecimal cost;
 		private boolean missing;
 		private boolean mineral;
+		private boolean autoUpdate;
 
 		public BigDecimal getCost() {
 			return this.cost;
@@ -68,6 +71,14 @@ public class TypeController {
 
 		public void setMineral(final boolean mineral) {
 			this.mineral = mineral;
+		}
+
+		public boolean isAutoUpdate() {
+			return this.autoUpdate;
+		}
+
+		public void setAutoUpdate(final boolean autoUpdate) {
+			this.autoUpdate = autoUpdate;
 		}
 	}
 }
