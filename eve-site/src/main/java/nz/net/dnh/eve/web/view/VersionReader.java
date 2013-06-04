@@ -9,7 +9,7 @@ public class VersionReader {
 
 	public VersionReader() {
 		final InputStream versionResource = getClass().getResourceAsStream(
-				"/META-INF/maven/nz.net.dnh/eve-site/pom.properties");
+				"version.properties");
 
 		if (versionResource == null) {
 			this.version = "DEVELOPMENT";
