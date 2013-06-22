@@ -63,8 +63,6 @@ public class InventoryType implements Serializable {
 
 	private Double chanceOfDuplicating;
 
-	private Integer iconID;
-
 	public int getTypeID() {
 		return this.typeID;
 	}
@@ -169,14 +167,6 @@ public class InventoryType implements Serializable {
 		this.chanceOfDuplicating = chanceOfDuplicating;
 	}
 
-	public Integer getIconID() {
-		return this.iconID;
-	}
-
-	public void setIconID(final Integer iconID) {
-		this.iconID = iconID;
-	}
-
 	@Override
 	public String toString() {
 		return "InventoryType [typeID=" + this.typeID + ", group=" + this.group
@@ -187,7 +177,7 @@ public class InventoryType implements Serializable {
 				+ this.raceID + ", basePrice=" + this.basePrice
 				+ ", published=" + this.published + ", marketGroupID="
 				+ this.marketGroupID + ", chanceOfDuplicating="
-				+ this.chanceOfDuplicating + ", iconID=" + this.iconID + "]";
+				+ this.chanceOfDuplicating + "]";
 	}
 
 	@Override
