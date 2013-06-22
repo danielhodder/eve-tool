@@ -38,6 +38,9 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 	@NotNull
 	private int materialEfficiency;
 
+	@NotNull
+	private boolean automaticallyUpdateSalePrice;
+
 	@OneToOne
 	@JoinColumn(name = "blueprintTypeID", updatable = false, insertable = false)
 	private BlueprintCostSummary costSummary;
@@ -127,12 +130,10 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Blueprint [blueprintTypeID=" + this.blueprintTypeID
-				+ ", blueprintType=" + this.blueprintType + ", numberPerRun="
-				+ this.numberPerRun + ", productionEfficiency=" + this.productionEfficiency + ", saleValue="
-				+ this.saleValue + ", lastUpdated=" + getLastUpdated()
-				+ ", materialEfficiency=" + this.materialEfficiency
-				+ ", costSummary=" + this.costSummary + "]";
+		return "Blueprint [blueprintTypeID=" + this.blueprintTypeID + ", blueprintType=" + this.blueprintType + ", numberPerRun="
+				+ this.numberPerRun + ", productionEfficiency=" + this.productionEfficiency + ", saleValue=" + this.saleValue
+				+ ", materialEfficiency=" + this.materialEfficiency + ", automaticallyUpdateSalePrice=" + this.automaticallyUpdateSalePrice
+				+ ", costSummary=" + this.costSummary + ", requiredTypes=" + this.requiredTypes + "]";
 	}
 
 	@Override
@@ -148,5 +149,13 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 
 	public int getProducedQuantity() {
 		return getBlueprintType().getProducedQuantity();
+	}
+
+	public boolean isAutomaticallyUpdateSalePrice() {
+		return this.automaticallyUpdateSalePrice;
+	}
+
+	public void setAutomaticallyUpdateSalePrice(final boolean automaticallyUpdateSalePrice) {
+		this.automaticallyUpdateSalePrice = automaticallyUpdateSalePrice;
 	}
 }

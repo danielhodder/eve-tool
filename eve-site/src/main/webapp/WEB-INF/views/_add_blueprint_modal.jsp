@@ -23,6 +23,15 @@
 			</fieldset>
 			
 			<div class="control-group">
+				<label class="control-label">Price Update Policy</label>
+				<div class="controls">
+					<div id="price-policy-slider" data-toggleButton-label-enabled="Automatic" data-toggleButton-label-disable="Manual">
+						<input type="checkbox" checked="checked">
+					</div>
+				</div>
+			</div>
+			
+			<div class="control-group">
 				<label class="control-label" for="saleValue">Sale Value per <span>1</span>:</label>
 				<div class="controls">
 					<div class="input-append">

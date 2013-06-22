@@ -44,3 +44,7 @@ a.reveal-icon:hover [class^="icon-"], a.reveal-icon:hover [class*=" icon-"] {
 footer {
 	padding-bottom: 20px;
 }
+
+h1 .btn {
+	font-weight: normal;
+}

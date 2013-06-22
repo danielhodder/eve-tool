@@ -51,20 +51,17 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 
 	@Override
 	public Blueprint toBlueprint(final BlueprintReference blueprintReference) {
-		if (blueprintReference instanceof BlueprintSummaryImpl) {
+		if (blueprintReference instanceof BlueprintSummaryImpl)
 			return this.blueprintRepository.refresh(((BlueprintSummaryImpl) blueprintReference).toBlueprint());
-		}
 		final Blueprint blueprint = this.blueprintRepository.findOne(blueprintReference.getId());
-		if (blueprint == null) {
+		if (blueprint == null)
 			throw new BlueprintNotFoundException(blueprintReference);
-		}
 		return blueprint;
 	}
 
 	private static Pageable sanitisePageable(final Pageable page) {
-		if (page.getSort() != null) {
+		if (page.getSort() != null)
 			throw new IllegalArgumentException("The page parameter must not provide sorting information");
-		}
 		return page;
 	}
 
@@ -87,7 +84,7 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 	@Override
 	public Page<CandidateBlueprint> findCandidateBlueprints(final String search, final Pageable page) {
 		final Page<InventoryBlueprintType> unknownBlueprints = this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch(search,
-				sanitisePageable(page));
+		                                                                                                                           sanitisePageable(page));
 
 		return toCandidateBlueprints(page, unknownBlueprints);
 	}
@@ -105,31 +102,33 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 	public BlueprintSummary createBlueprint(final BlueprintReference blueprintReference, final BigDecimal saleValue,
 			final int numberPerRun, final int productionEfficiency, final int materialEfficiency) {
 		// Check it doesn't already exist
-		if (this.blueprintRepository.exists(blueprintReference.getId())) {
+		if (this.blueprintRepository.exists(blueprintReference.getId()))
 			throw new IllegalArgumentException("The blueprint " + blueprintReference + " already exists");
-		}
 		// Check it matches something in the EVE dump
-		if (!this.inventoryBlueprintTypeRepository.exists(blueprintReference.getId())) {
+		if (!this.inventoryBlueprintTypeRepository.exists(blueprintReference.getId()))
 			throw new IllegalArgumentException("The blueprint " + blueprintReference + " does not match any InventoryBlueprintType");
-		}
-		if (saleValue == null) {
+		if (saleValue == null)
 			throw new IllegalArgumentException("Sale value cannot be null");
-		}
 		// Create it
 		final Blueprint newBlueprint = new Blueprint(blueprintReference.getId(), numberPerRun, productionEfficiency, saleValue,
-				materialEfficiency);
+		                                             materialEfficiency);
 		final Blueprint savedBlueprint = this.blueprintRepository.save(newBlueprint);
 		return new BlueprintSummaryImpl(savedBlueprint);
 	}
 
 	@Override
-	public BlueprintSummary editBlueprint(final BlueprintReference blueprintReference, final BigDecimal saleValue,
-			final Integer numberPerRun, final Integer productionEfficiency, final Integer materialEfficiency) {
+	public BlueprintSummary editBlueprint(final BlueprintReference blueprintReference,
+			final BigDecimal saleValue,
+			final Integer numberPerRun,
+			final Integer productionEfficiency,
+			final Integer materialEfficiency,
+			final Boolean automaticallyUpdateSalePrice) {
 		final Blueprint blueprint = toBlueprint(blueprintReference);
 		if (saleValue != null) {
 			// Update the last updated timestamp iff the sale value is different
-			if (!saleValue.equals(blueprint.getSaleValue()))
+			if (!saleValue.equals(blueprint.getSaleValue())) {
 				blueprint.touchLastUpdated();
+			}
 			blueprint.setSaleValue(saleValue);
 		}
 		if (numberPerRun != null) {
@@ -140,6 +139,9 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 		}
 		if (materialEfficiency != null) {
 			blueprint.setMaterialEfficiency(materialEfficiency);
+		}
+		if (automaticallyUpdateSalePrice != null) {
+			blueprint.setAutomaticallyUpdateSalePrice(automaticallyUpdateSalePrice);
 		}
 
 		final Blueprint savedBlueprint = this.blueprintRepository.save(blueprint);

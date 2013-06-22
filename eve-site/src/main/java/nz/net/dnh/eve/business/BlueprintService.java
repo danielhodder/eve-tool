@@ -105,11 +105,14 @@ public interface BlueprintService {
 	 * @param materialEfficiency
 	 *            The material efficiency. May be null to keep the current
 	 *            value. {@link BlueprintSummary#getMaterialEfficiency()}
+	 * @param automaticSalePriceUpdate
+	 *            A boolean flag indicating that this blueprint's price should
+	 *            be updated automatically.
 	 * @return The modified blueprint
 	 * @see #listSummaries()
 	 * @see BlueprintSummary
 	 */
 	public BlueprintSummary editBlueprint(BlueprintReference blueprint, BigDecimal saleValue, Integer numberPerRun,
-			Integer productionEfficiency, Integer materialEfficiency);
+			Integer productionEfficiency, Integer materialEfficiency, Boolean automaticSalePriceUpdate);
 
 }

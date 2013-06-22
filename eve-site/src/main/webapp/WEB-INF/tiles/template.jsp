@@ -12,12 +12,15 @@
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css" rel="stylesheet">
 		<link href="<c:url value="/resources/css/core.css" />" rel="stylesheet" media="screen" />
 		<link href="<c:url value="/resources/css/click_row.css" />" rel="stylesheet" media="screen" />
+<%-- 		<link href="<c:url value="/resources/css/bootstrapSwitch.css" />" rel="stylesheet" media="screen" /> --%>
 		
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
 	    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 	    <script src="<c:url value="/resources/javascript/bootstrap_initialisers.js" />"></script>
 	    <script src="<c:url value="/resources/javascript/click_row.js" />"></script>
 	    <script src="<c:url value="/resources/javascript/modal_addons.js" />"></script>
+	    <script src="<c:url value="/resources/javascript/bootstrap_radio_button_field.js" />"></script>
+<%-- 	    <script src="<c:url value="/resources/javascript/bootstrapSwitch.js" />"></script> --%>
 		
 		<tilesx:useAttribute id="styles" name="styles" classname="java.util.List" ignore="true" />
 		<c:forEach var="cssName" items="${styles}">

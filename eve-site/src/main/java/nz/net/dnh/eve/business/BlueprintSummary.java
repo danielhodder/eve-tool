@@ -62,4 +62,10 @@ public interface BlueprintSummary extends BlueprintInformation {
 	 * @return The production efficiency magical value
 	 */
 	public int getProductionEfficiency();
+
+	/**
+	 * @return Is the price for this blueprint being updated automatically
+	 * @return
+	 */
+	public boolean isAutomaticallyUpdateSalePrice();
 }
