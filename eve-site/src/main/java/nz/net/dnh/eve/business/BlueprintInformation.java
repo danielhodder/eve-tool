@@ -13,4 +13,9 @@ public interface BlueprintInformation extends BlueprintReference {
 	 * @return
 	 */
 	public int getProducedTypeID();
+
+	/**
+	 * @return The number of things produced by this blueprint
+	 */
+	public int getProducedQuantity();
 }

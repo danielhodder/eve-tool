@@ -146,4 +146,7 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 		return this.blueprintTypeID;
 	}
 
+	public int getProducedQuantity() {
+		return getBlueprintType().getProducedQuantity();
+	}
 }

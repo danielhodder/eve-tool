@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "invBlueprintTypes")
 @NamedQueries({ @NamedQuery(name = "InventoryBlueprintType.findUnknownBlueprints", query = InventoryBlueprintType.UNKNOWN_BLUEPRINT_QUERY),
-		@NamedQuery(name = "InventoryBlueprintType.findUnknownBlueprintsBySearch", query = InventoryBlueprintType.UNKNOWN_BLUEPRINT_QUERY_SEARCH) })
+	@NamedQuery(name = "InventoryBlueprintType.findUnknownBlueprintsBySearch", query = InventoryBlueprintType.UNKNOWN_BLUEPRINT_QUERY_SEARCH) })
 public class InventoryBlueprintType implements Serializable {
 	public static final String UNKNOWN_BLUEPRINT_QUERY = "SELECT ibt FROM InventoryBlueprintType ibt "
 			+ "WHERE ibt.blueprintTypeID NOT IN (SELECT b.blueprintTypeID from Blueprint b)";
@@ -73,7 +73,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.blueprintTypeID;
 	}
 
-	public void setBlueprintTypeID(int blueprintTypeID) {
+	public void setBlueprintTypeID(final int blueprintTypeID) {
 		this.blueprintTypeID = blueprintTypeID;
 	}
 
@@ -85,7 +85,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.parentBlueprintTypeID;
 	}
 
-	public void setParentBlueprintTypeID(Integer parentBlueprintTypeID) {
+	public void setParentBlueprintTypeID(final Integer parentBlueprintTypeID) {
 		this.parentBlueprintTypeID = parentBlueprintTypeID;
 	}
 
@@ -97,7 +97,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.productTypeID;
 	}
 
-	public void setProductTypeID(Integer productTypeID) {
+	public void setProductTypeID(final Integer productTypeID) {
 		this.productTypeID = productTypeID;
 	}
 
@@ -109,7 +109,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.productionTime;
 	}
 
-	public void setProductionTime(Integer productionTime) {
+	public void setProductionTime(final Integer productionTime) {
 		this.productionTime = productionTime;
 	}
 
@@ -117,7 +117,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.techLevel;
 	}
 
-	public void setTechLevel(Integer techLevel) {
+	public void setTechLevel(final Integer techLevel) {
 		this.techLevel = techLevel;
 	}
 
@@ -125,7 +125,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.researchProductivityTime;
 	}
 
-	public void setResearchProductivityTime(Integer researchProductivityTime) {
+	public void setResearchProductivityTime(final Integer researchProductivityTime) {
 		this.researchProductivityTime = researchProductivityTime;
 	}
 
@@ -133,7 +133,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.researchMaterialTime;
 	}
 
-	public void setResearchMaterialTime(Integer researchMaterialTime) {
+	public void setResearchMaterialTime(final Integer researchMaterialTime) {
 		this.researchMaterialTime = researchMaterialTime;
 	}
 
@@ -141,7 +141,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.researchCopyTime;
 	}
 
-	public void setResearchCopyTime(Integer researchCopyTime) {
+	public void setResearchCopyTime(final Integer researchCopyTime) {
 		this.researchCopyTime = researchCopyTime;
 	}
 
@@ -149,7 +149,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.researchTechTime;
 	}
 
-	public void setResearchTechTime(Integer researchTechTime) {
+	public void setResearchTechTime(final Integer researchTechTime) {
 		this.researchTechTime = researchTechTime;
 	}
 
@@ -157,7 +157,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.productivityModifier;
 	}
 
-	public void setProductivityModifier(Integer productivityModifier) {
+	public void setProductivityModifier(final Integer productivityModifier) {
 		this.productivityModifier = productivityModifier;
 	}
 
@@ -165,7 +165,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.materialModifier;
 	}
 
-	public void setMaterialModifier(Integer materialModifier) {
+	public void setMaterialModifier(final Integer materialModifier) {
 		this.materialModifier = materialModifier;
 	}
 
@@ -173,7 +173,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.wasteFactor;
 	}
 
-	public void setWasteFactor(Integer wasteFactor) {
+	public void setWasteFactor(final Integer wasteFactor) {
 		this.wasteFactor = wasteFactor;
 	}
 
@@ -181,7 +181,7 @@ public class InventoryBlueprintType implements Serializable {
 		return this.maxProductionLimit;
 	}
 
-	public void setMaxProductionLimit(Integer maxProductionLimit) {
+	public void setMaxProductionLimit(final Integer maxProductionLimit) {
 		this.maxProductionLimit = maxProductionLimit;
 	}
 
@@ -210,9 +210,13 @@ public class InventoryBlueprintType implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return obj instanceof InventoryBlueprintType
 				&& this.blueprintTypeID == ((InventoryBlueprintType) obj)
-						.getBlueprintTypeID();
+				.getBlueprintTypeID();
+	}
+
+	public int getProducedQuantity() {
+		return getProductType().getPortionSize();
 	}
 }

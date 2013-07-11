@@ -47,10 +47,10 @@ import org.springframework.data.domain.Sort.Direction;
 @RunWith(MockitoJUnitRunner.class)
 public class BlueprintServiceTest {
 	private static final MockBlueprint BLUEPRINT_1 = new MockBlueprint(3, 4, 5, 101, new BigDecimal(6), 7, "Blueprint 1",
-			new BigDecimal(8),
-			new BigDecimal(9), new BigDecimal(10), new BigDecimal(11), new BigDecimal(12), 99);
+	                                                                   new BigDecimal(8),
+	                                                                   new BigDecimal(9), new BigDecimal(10), new BigDecimal(11), new BigDecimal(12), 99);
 	private static final MockBlueprint BLUEPRINT_2 = new MockBlueprint(13, 14, 15, 201, new BigDecimal(16), 17, "Blueprint 2",
-			new BigDecimal(18), new BigDecimal(19), new BigDecimal(20), new BigDecimal(21), new BigDecimal(22), 98);
+	                                                                   new BigDecimal(18), new BigDecimal(19), new BigDecimal(20), new BigDecimal(21), new BigDecimal(22), 98);
 	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_1 = mock(InventoryBlueprintType.class);
 	private static final InventoryBlueprintType INVENTORY_BLUEPRINT_2 = mock(InventoryBlueprintType.class);
 
@@ -82,9 +82,9 @@ public class BlueprintServiceTest {
 
 	private static void assertBlueprintSummary(final BlueprintSummary summary, final MockBlueprint blueprint) {
 		assertBlueprintSummary(summary, blueprint.getTypeName(), blueprint.getBlueprintTypeID(), blueprint.getProducedTypeId(),
-				blueprint.getHours(), blueprint.getProductionEfficiency(), blueprint.getNumberPerRun(), blueprint.getMaterialEfficiency(),
-				blueprint.getMaterialCost(), blueprint.getProfit(), blueprint.getProfitPercentage(), blueprint.getOtherCost(),
-				blueprint.getTotalCost(), blueprint.getSaleValue(), blueprint.getLastUpdated());
+		                       blueprint.getHours(), blueprint.getProductionEfficiency(), blueprint.getNumberPerRun(), blueprint.getMaterialEfficiency(),
+		                       blueprint.getMaterialCost(), blueprint.getProfit(), blueprint.getProfitPercentage(), blueprint.getOtherCost(),
+		                       blueprint.getTotalCost(), blueprint.getSaleValue(), blueprint.getLastUpdated());
 	}
 
 	private static void assertBlueprintSummary(final BlueprintSummary summary, final String name, final int id, final int producedTypeId,
@@ -109,7 +109,7 @@ public class BlueprintServiceTest {
 
 	private static void assertCandidateBlueprint(final CandidateBlueprint blueprint, final InventoryBlueprintType inventoryBlueprint) {
 		assertCandidateBlueprint(blueprint, inventoryBlueprint.getBlueprintTypeID(), inventoryBlueprint.getProductTypeID(),
-				inventoryBlueprint.getProductType().getTypeName());
+		                         inventoryBlueprint.getProductType().getTypeName());
 	}
 
 	private static void assertCandidateBlueprint(final CandidateBlueprint blueprint, final int id, final int producedTypeId, final String name) {
@@ -268,8 +268,8 @@ public class BlueprintServiceTest {
 	public void listNoCandidateBlueprints() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
-				new PageImpl<>(Collections.<InventoryBlueprintType> emptyList()));
-		
+		                                                                                   new PageImpl<>(Collections.<InventoryBlueprintType> emptyList()));
+
 		final Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
 		assertTrue(out.getContent().isEmpty());
 	}
@@ -278,7 +278,7 @@ public class BlueprintServiceTest {
 	public void listSingleCandidateBlueprint() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
-				new PageImpl<>(Collections.singletonList(INVENTORY_BLUEPRINT_1)));
+		                                                                                   new PageImpl<>(Collections.singletonList(INVENTORY_BLUEPRINT_1)));
 
 		final Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
 		assertEquals(1, out.getNumberOfElements());
@@ -292,7 +292,7 @@ public class BlueprintServiceTest {
 	public void listCandidateBlueprints() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
-				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_2, INVENTORY_BLUEPRINT_1)));
+		                                                                                   new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_2, INVENTORY_BLUEPRINT_1)));
 
 		final Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
 		assertEquals(2, out.getNumberOfElements());
@@ -307,7 +307,7 @@ public class BlueprintServiceTest {
 	public void listCandidateBlueprintsPaged() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprints(page)).thenReturn(
-				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_1, INVENTORY_BLUEPRINT_2), page, 34));
+		                                                                                   new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_1, INVENTORY_BLUEPRINT_2), page, 34));
 
 		final Page<CandidateBlueprint> out = this.service.listCandidateBlueprints(page);
 		assertEquals(2, out.getNumberOfElements());
@@ -327,7 +327,7 @@ public class BlueprintServiceTest {
 	public void findNoCandidateBlueprints() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("s", page)).thenReturn(
-				new PageImpl<>(Collections.<InventoryBlueprintType> emptyList()));
+		                                                                                                new PageImpl<>(Collections.<InventoryBlueprintType> emptyList()));
 
 		final Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("s", page);
 		assertTrue(out.getContent().isEmpty());
@@ -337,7 +337,7 @@ public class BlueprintServiceTest {
 	public void findSingleCandidateBlueprint() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("q", page)).thenReturn(
-				new PageImpl<>(Collections.singletonList(INVENTORY_BLUEPRINT_1)));
+		                                                                                                new PageImpl<>(Collections.singletonList(INVENTORY_BLUEPRINT_1)));
 
 		final Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("q", page);
 		assertEquals(1, out.getNumberOfElements());
@@ -351,7 +351,7 @@ public class BlueprintServiceTest {
 	public void findCandidateBlueprints() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("z", page)).thenReturn(
-				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_2, INVENTORY_BLUEPRINT_1)));
+		                                                                                                new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_2, INVENTORY_BLUEPRINT_1)));
 
 		final Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("z", page);
 		assertEquals(2, out.getNumberOfElements());
@@ -366,7 +366,7 @@ public class BlueprintServiceTest {
 	public void findCandidateBlueprintsPaged() {
 		final PageRequest page = new PageRequest(0, 2);
 		when(this.inventoryBlueprintTypeRepository.findUnknownBlueprintsBySearch("p", page)).thenReturn(
-				new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_1, INVENTORY_BLUEPRINT_2), page, 34));
+		                                                                                                new PageImpl<>(Arrays.asList(INVENTORY_BLUEPRINT_1, INVENTORY_BLUEPRINT_2), page, 34));
 
 		final Page<CandidateBlueprint> out = this.service.findCandidateBlueprints("p", page);
 		assertEquals(2, out.getNumberOfElements());
@@ -419,7 +419,7 @@ public class BlueprintServiceTest {
 
 	@Test(expected=BlueprintNotFoundException.class)
 	public void editNonExistingBlueprint() {
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, null);
 	}
 
 	@Test
@@ -427,7 +427,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(1));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b).touchLastUpdated();
@@ -441,7 +441,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(2));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), 3, 4, 5, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b, never()).touchLastUpdated();
@@ -455,7 +455,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(1));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b).touchLastUpdated();
@@ -469,7 +469,7 @@ public class BlueprintServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		when(b.getSaleValue()).thenReturn(new BigDecimal(2));
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), new BigDecimal(2), null, null, null, null);
 
 		verify(b).setSaleValue(new BigDecimal(2));
 		verify(b, never()).touchLastUpdated();
@@ -482,7 +482,7 @@ public class BlueprintServiceTest {
 	public void editBlueprintNumberPerRun() {
 		final Blueprint b = mock(Blueprint.class);
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), null, 3, null, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, 3, null, null, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
 		verify(b, never()).touchLastUpdated();
@@ -495,7 +495,7 @@ public class BlueprintServiceTest {
 	public void editBlueprintHours() {
 		final Blueprint b = mock(Blueprint.class);
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), null, null, 4, null);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, null, 4, null, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
 		verify(b, never()).touchLastUpdated();
@@ -508,7 +508,7 @@ public class BlueprintServiceTest {
 	public void editBlueprintMaterialEfficiency() {
 		final Blueprint b = mock(Blueprint.class);
 		when(this.blueprintRepository.findOne(1)).thenReturn(b);
-		this.service.editBlueprint(new BlueprintIdReference(1), null, null, null, 5);
+		this.service.editBlueprint(new BlueprintIdReference(1), null, null, null, 5, null);
 
 		verify(b, never()).setSaleValue(any(BigDecimal.class));
 		verify(b, never()).touchLastUpdated();

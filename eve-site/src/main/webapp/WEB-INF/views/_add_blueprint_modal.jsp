@@ -23,7 +23,7 @@
 			</fieldset>
 			
 			<div class="control-group">
-				<label class="control-label" for="saleValue">Sale Value:</label>
+				<label class="control-label" for="saleValue">Sale Value per <span class="number">1</span>:</label>
 				<div class="controls">
 					<div class="input-append">
 						<input type="text" name="saleValue" value="${form.saleValue}" required="required" 
@@ -34,7 +34,7 @@
 			</div>
 			
 			<div class="control-group">
-				<label class="control-label" for="numberPerRun">Number per run:</label>
+				<label class="control-label" for="numberPerRun">Number of runs:</label>
 				
 				<div class="controls">
 					<input type="number" min="1" name="numberPerRun" value="${form.numberPerRun}" required="required" pattern="[1-9][0-9]*" />
@@ -89,6 +89,7 @@
 				$('#blueprint-id').val(map[selectedName].id);
 				$('#new-blueprint-image-container').empty();
 				$('#new-blueprint-image-container').append('<img src="'+map[selectedName].imageURI+'" />');
+			$('#new-blueprint label[for="saleValue"] > span').text(map[selectedName].producedQuantity);
 				
 				return selectedName;
 			}, minLength: 3
