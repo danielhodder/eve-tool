@@ -37,17 +37,17 @@ public final class BlueprintsController {
 		final BlueprintSummary blueprintInformation = this.blueprintService.getBlueprint(new BlueprintIdReference(id));
 
 		return new ModelAndView("blueprints/show", "view", new BlueprintView(blueprintInformation,
-				this.typeService.getRequiredTypes(blueprintInformation), new BlueprintForm(blueprintInformation)));
+		                                                                     this.typeService.getRequiredTypes(blueprintInformation), new BlueprintForm(blueprintInformation)));
 	}
 
 	@RequestMapping(value="/blueprints/{id}", method=RequestMethod.POST)
 	public String updateBlueprint(@PathVariable("id") final int id,
 			@ModelAttribute final BlueprintForm form) {
 		this.blueprintService.editBlueprint(new BlueprintIdReference(id),
-											form.getSaleValue(),
-											form.getNumberPerRun(),
-											form.getProductionEffiecincy(),
-											form.getMaterialEfficency());
+		                                    form.getSaleValue(),
+		                                    form.getNumberPerRun(),
+		                                    form.getProductionEffiecincy(),
+		                                    form.getMaterialEfficency());
 
 		return "redirect:/blueprints/" + id;
 	}
@@ -55,9 +55,9 @@ public final class BlueprintsController {
 	@RequestMapping(value = "/blueprints/search")
 	public @ResponseBody
 	List<BlueprintSearchResult> searchBlueprint(
-			@RequestParam("blueprint-name") final String blueprintName) {
+	                                            @RequestParam("blueprint-name") final String blueprintName) {
 		final Page<CandidateBlueprint> blueprints = this.blueprintService.findCandidateBlueprints(blueprintName,
-				new PageRequest(0, 10));
+		                                                                                          new PageRequest(0, 10));
 
 		final List<BlueprintSearchResult> resultList = new LinkedList<>();
 
@@ -74,8 +74,8 @@ public final class BlueprintsController {
 			@RequestParam("blueprint-id") final int blueprintId,
 			@ModelAttribute final BlueprintForm form) {
 		this.blueprintService.createBlueprint(new BlueprintIdReference(
-				blueprintId), form.getSaleValue(), form.getNumberPerRun(), form
-				.getProductionEffiecincy(), form.getMaterialEfficency());
+		                                                               blueprintId), form.getSaleValue(), form.getNumberPerRun(), form
+		                                                               .getProductionEffiecincy(), form.getMaterialEfficency());
 
 		return new RedirectView(returnUri);
 	}
@@ -112,10 +112,10 @@ public final class BlueprintsController {
 
 		public BlueprintForm() {}
 		public BlueprintForm(final BlueprintSummary summary) {
-			this.setSaleValue(summary.getSaleValue());
-			this.setNumberPerRun(summary.getNumberPerRun());
-			this.setMaterialEfficency(summary.getMaterialEfficiency());
-			this.setProductionEffiecincy(summary.getProductionEfficiency());
+			setSaleValue(summary.getSaleValue());
+			setNumberPerRun(summary.getNumberPerRun());
+			setMaterialEfficency(summary.getMaterialEfficiency());
+			setProductionEffiecincy(summary.getProductionEfficiency());
 		}
 		public BigDecimal getSaleValue() {
 			return this.saleValue;
@@ -147,12 +147,14 @@ public final class BlueprintsController {
 		private final String name;
 		private final String imageURI;
 		private final int id;
+		private final int producedQuantity;
 
 		public BlueprintSearchResult(final CandidateBlueprint blueprint) {
 			this.name = blueprint.getName();
 			this.id = blueprint.getId();
 			this.imageURI = BlueprintsController.this.imageURILocator
 					.getUriForTypeID(blueprint.getProducedTypeID(), 32);
+			this.producedQuantity = blueprint.getProducedQuantity();
 		}
 
 		public String getName() {
@@ -165,6 +167,10 @@ public final class BlueprintsController {
 
 		public String getImageURI() {
 			return this.imageURI;
+		}
+
+		public int getProducedQuantity() {
+			return this.producedQuantity;
 		}
 	}
 }

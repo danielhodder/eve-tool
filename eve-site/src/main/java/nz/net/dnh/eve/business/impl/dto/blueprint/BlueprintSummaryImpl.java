@@ -92,7 +92,7 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 	public boolean equals(final Object obj) {
 		return obj instanceof BlueprintSummaryImpl
 				&& this.blueprint
-						.equals(((BlueprintSummaryImpl) obj).blueprint);
+				.equals(((BlueprintSummaryImpl) obj).blueprint);
 	}
 
 	@Override
@@ -103,6 +103,11 @@ public class BlueprintSummaryImpl implements BlueprintSummary {
 	@Override
 	public int getProducedTypeID() {
 		return this.blueprint.getBlueprintType().getProductTypeID();
+	}
+
+	@Override
+	public int getProducedQuantity() {
+		return this.blueprint.getProducedQuantity();
 	}
 
 }

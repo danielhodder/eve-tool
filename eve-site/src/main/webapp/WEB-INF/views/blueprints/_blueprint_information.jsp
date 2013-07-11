@@ -47,7 +47,18 @@
 				<small>Sale price last updated:	${dateFormatter.format(blueprint.saleValueLastUpdated)}</small>
 			</h3>
 
-			<h3>Number per production run: ${blueprint.numberPerRun}</h3>
+			<c:choose>
+				<c:when test="${blueprint.producedQuantity > 1}">
+					<h3>
+						Number per production run: ${blueprint.numberPerRun * blueprint.producedQuantity}. 
+						<small>${blueprint.numberPerRun} runs with ${blueprint.producedQuantity} units each</small>
+					</h3>
+				</c:when>
+				
+				<c:otherwise>
+					<h3>Number per production run: ${blueprint.numberPerRun}</h3>
+				</c:otherwise>
+			</c:choose>
 
 			<h3>
 				Takes: ${blueprint.hours} <abbr title="This is approximate">hours</abbr>

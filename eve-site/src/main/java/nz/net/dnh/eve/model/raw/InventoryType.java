@@ -27,7 +27,7 @@ public class InventoryType implements Serializable {
 	public static final String UNKNOWN_TYPES_SQL = "SELECT DISTINCT brt.inventoryType FROM BlueprintRequiredType brt LEFT OUTER JOIN brt.type t WHERE t.cost IS NULL";
 	public static final String MINERAL_SQL = " AND brt.inventoryType.group.groupName = '"
 			+ InventoryGroup.MINERAL_GROUP + "'";
-	public static final String COMPONENT_SQL = " AND brt.inventoryType.group.groupName != '"+InventoryGroup.MINERAL_GROUP+"'";
+	public static final String COMPONENT_SQL = " AND brt.inventoryType.group.groupName != '" + InventoryGroup.MINERAL_GROUP + "'";
 
 	private static final long serialVersionUID = 1L;
 
@@ -119,6 +119,13 @@ public class InventoryType implements Serializable {
 		this.capacity = capacity;
 	}
 
+	/**
+	 * From wiki.eve-id.net:
+	 * 
+	 * Portion size of item, if applicable. Portion size is size of group for
+	 * reprocessing purposes, for example. It also represents the number of
+	 * units produced by a production run of the item.
+	 */
 	public Integer getPortionSize() {
 		return this.portionSize;
 	}

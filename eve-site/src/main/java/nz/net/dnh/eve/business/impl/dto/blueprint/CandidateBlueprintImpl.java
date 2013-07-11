@@ -41,4 +41,9 @@ public class CandidateBlueprintImpl implements CandidateBlueprint {
 		return this.inventoryBlueprint.getProductTypeID();
 	}
 
+	@Override
+	public int getProducedQuantity() {
+		return this.inventoryBlueprint.getProducedQuantity();
+	}
+
 }

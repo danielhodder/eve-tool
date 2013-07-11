@@ -169,4 +169,4 @@ CREATE VIEW invCategories AS
   SELECT * FROM `eve-dump`.invCategories;
 
 CREATE VIEW invBlueprintTypes AS
-  SELECT * FROM `eve-dump`.invBlueprintTypes;
+  SELECT invBlueprintTypes.* FROM `eve-dump`.invBlueprintTypes;

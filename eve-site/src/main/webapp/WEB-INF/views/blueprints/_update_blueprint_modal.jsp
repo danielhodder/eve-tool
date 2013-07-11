@@ -17,7 +17,7 @@
 		</div>
 		<div class="modal-body">
 			<div class="control-group">
-				<label class="control-label" for="saleValue">Sale Value:</label>
+				<label class="control-label" for="saleValue">Sale Value per ${blueprint.producedQuantity}:</label>
 				<div class="controls">
 					<div class="input-append">
 						<input type="text" name="saleValue" value="${form.saleValue}" required="required" 
@@ -28,7 +28,7 @@
 			</div>
 			
 			<div class="control-group">
-				<label class="control-label" for="numberPerRun">Number per run:</label>
+				<label class="control-label" for="numberPerRun">Number of runs:</label>
 				
 				<div class="controls">
 					<input type="number" min="1" name="numberPerRun" value="${form.numberPerRun}" required="required" pattern="[1-9][0-9]*" />
