@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
@@ -25,7 +24,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedMap;
 
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintIdReference;
@@ -354,15 +353,21 @@ public class TypeServiceTest {
 
 		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(ref);
 
-		final Map<Component, Integer> requiredComponents = requiredTypes.getRequiredComponents();
-		assertEquals(2, requiredComponents.size());
-		assertThat(requiredComponents, hasEntry(component("Type 1", COST_1, LAST_UPDATED_1, false, 1), 5));
-		assertThat(requiredComponents, hasEntry(component("Component 2", null, null, true, 13), 1));
+		final SortedMap<Component, Integer> requiredComponents = requiredTypes.getRequiredComponents();
+		final Matcher<AbstractType> type1Component = component("Type 1", COST_1, LAST_UPDATED_1, false, 1);
+		final Matcher<AbstractType> component2Component = component("Component 2", null, null, true, 13);
+		// Sorted by name
+		assertThat(requiredComponents.keySet(), contains(component2Component, type1Component));
+		assertThat(requiredComponents, hasEntry(type1Component, 5));
+		assertThat(requiredComponents, hasEntry(component2Component, 1));
 
-		final Map<Mineral, Integer> requiredMinerals = requiredTypes.getRequiredMinerals();
-		assertEquals(2, requiredMinerals.size());
-		assertThat(requiredMinerals, hasEntry(mineral("Type 2", COST_2, LAST_UPDATED_2, false, 2), 14));
-		assertThat(requiredMinerals, hasEntry(mineral("Mineral 2", null, null, true, 14), 3));
+		final SortedMap<Mineral, Integer> requiredMinerals = requiredTypes.getRequiredMinerals();
+		final Matcher<AbstractType> type1Mineral = mineral("Type 2", COST_2, LAST_UPDATED_2, false, 2);
+		final Matcher<AbstractType> mineral2Mineral = mineral("Mineral 2", null, null, true, 14);
+		// Sorted by name
+		assertThat(requiredMinerals.keySet(), contains(mineral2Mineral, type1Mineral));
+		assertThat(requiredMinerals, hasEntry(type1Mineral, 14));
+		assertThat(requiredMinerals, hasEntry(mineral2Mineral, 3));
 	}
 
 	@Test

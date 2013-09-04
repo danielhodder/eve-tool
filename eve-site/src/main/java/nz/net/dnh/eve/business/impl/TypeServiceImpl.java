@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintReference;
@@ -120,8 +122,8 @@ public class TypeServiceImpl implements TypeService {
 	@Override
 	public RequiredTypes getRequiredTypes(final BlueprintReference blueprintRef) {
 		final Blueprint blueprint = this.blueprintResolverService.toBlueprint(blueprintRef);
-		final Map<Component, Integer> requiredComponents = new HashMap<>();
-		final Map<Mineral, Integer> requiredMinerals = new HashMap<>();
+		final SortedMap<Component, Integer> requiredComponents = new TreeMap<>();
+		final SortedMap<Mineral, Integer> requiredMinerals = new TreeMap<>();
 
 		for (final BlueprintRequiredType requiredType : blueprint.getRequiredTypes()) {
 			final int units = requiredType.getUnits();

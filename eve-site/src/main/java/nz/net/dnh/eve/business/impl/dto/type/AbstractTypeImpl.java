@@ -3,12 +3,11 @@ package nz.net.dnh.eve.business.impl.dto.type;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.Mineral;
 import nz.net.dnh.eve.model.domain.Type;
 
-public abstract class AbstractTypeImpl implements AbstractType {
+public abstract class AbstractTypeImpl extends AbstractSortableTypeImpl {
 
 	public static class MineralImpl extends AbstractTypeImpl implements Mineral {
 		public MineralImpl(final Type type) {

@@ -3,12 +3,11 @@ package nz.net.dnh.eve.business.impl.dto.type;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.Mineral;
 import nz.net.dnh.eve.model.raw.InventoryType;
 
-public abstract class AbstractMissingTypeImpl implements AbstractType {
+public abstract class AbstractMissingTypeImpl extends AbstractSortableTypeImpl {
 	public static class MissingMineralImpl extends AbstractMissingTypeImpl
 			implements Mineral {
 		public MissingMineralImpl(final InventoryType inventoryType) {

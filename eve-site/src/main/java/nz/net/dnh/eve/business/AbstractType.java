@@ -9,7 +9,7 @@ import java.util.Date;
  * @see Component
  * @see Mineral
  */
-public interface AbstractType extends TypeReference {
+public interface AbstractType extends TypeReference, Comparable<AbstractType> {
 	/**
 	 * @return The name of the type
 	 */
