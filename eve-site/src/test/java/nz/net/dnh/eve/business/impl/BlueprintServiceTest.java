@@ -42,6 +42,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -231,7 +232,7 @@ public class BlueprintServiceTest {
 
 	@Test
 	public void listNoSummaries() {
-		when(this.blueprintRepository.findAll()).thenReturn(Collections.<Blueprint> emptyList());
+		when(this.blueprintRepository.findAll(any(Sort.class))).thenReturn(Collections.<Blueprint> emptyList());
 
 		final List<BlueprintSummary> out = this.service.listSummaries();
 
@@ -240,7 +241,8 @@ public class BlueprintServiceTest {
 
 	@Test
 	public void listSingleSummary() {
-		when(this.blueprintRepository.findAll()).thenReturn(Collections.<Blueprint> singletonList(BLUEPRINT_1));
+		when(this.blueprintRepository.findAll(new Sort("blueprintType.productType.typeName"))).thenReturn(
+				Collections.<Blueprint> singletonList(BLUEPRINT_1));
 
 		final List<BlueprintSummary> out = this.service.listSummaries();
 
@@ -250,7 +252,8 @@ public class BlueprintServiceTest {
 
 	@Test
 	public void listSummaries() {
-		when(this.blueprintRepository.findAll()).thenReturn(Arrays.<Blueprint> asList(BLUEPRINT_1, BLUEPRINT_2));
+		when(this.blueprintRepository.findAll(new Sort("blueprintType.productType.typeName"))).thenReturn(
+				Arrays.<Blueprint> asList(BLUEPRINT_1, BLUEPRINT_2));
 
 		final List<BlueprintSummary> out = this.service.listSummaries();
 

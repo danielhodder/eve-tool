@@ -17,7 +17,7 @@ public interface BlueprintService {
 	/**
 	 * Retrieve summary information about all blueprints in the system
 	 * 
-	 * @return summaries of all blueprints
+	 * @return summaries of all blueprints, ordered by name
 	 */
 	public List<BlueprintSummary> listSummaries();
 

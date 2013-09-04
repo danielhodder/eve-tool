@@ -19,12 +19,14 @@ import nz.net.dnh.eve.model.raw.InventoryType;
 
 @Entity
 @NamedQueries({
-		@NamedQuery(name = "Type.findAllMinerals", query = "select t from Type t where t.type.group.groupName = '"
-				+ InventoryGroup.MINERAL_GROUP + "'"),
-		@NamedQuery(name = "Type.findAllComponents", query = "select t from Type t where t.type.group.groupName != '"
-				+ InventoryGroup.MINERAL_GROUP + "'"),
-		@NamedQuery(name = "Type.findAllAutoUpdatingTypes", query = "select t from Type t where t.autoUpdate = true") })
+ @NamedQuery(name = "Type.findAllMinerals", query = Type.TYPE_ALL_QUERY_PREFIX + '=' + Type.TYPE_ALL_QUERY_SUFFIX),
+		@NamedQuery(name = "Type.findAllComponents", query = Type.TYPE_ALL_QUERY_PREFIX + "!=" + Type.TYPE_ALL_QUERY_SUFFIX),
+		@NamedQuery(name = "Type.findAllAutoUpdatingTypes", query = Type.TYPE_BASE_QUERY + "t.autoUpdate = true") })
 public class Type extends AbstractLastUpdatedBean implements Serializable {
+	public static final String TYPE_BASE_QUERY = "select t from Type t where ";
+	public static final String TYPE_ALL_QUERY_PREFIX = TYPE_BASE_QUERY + "t.type.group.groupName ";
+	public static final String TYPE_ALL_QUERY_SUFFIX = "'" + InventoryGroup.MINERAL_GROUP + "' order by t.type.typeName";
+
 	private static final long serialVersionUID = 1L;
 
 	@Id

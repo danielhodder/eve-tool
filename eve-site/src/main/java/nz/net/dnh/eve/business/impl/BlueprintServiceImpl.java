@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class BlueprintServiceImpl implements BlueprintService, BlueprintResolverService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintServiceImpl.class);
+
+	private static final Sort SORT_BY_NAME = new Sort("blueprintType.productType.typeName");
 
 	@Autowired
 	private BlueprintRepository blueprintRepository;
@@ -46,7 +49,7 @@ public class BlueprintServiceImpl implements BlueprintService, BlueprintResolver
 
 	@Override
 	public List<BlueprintSummary> listSummaries() {
-		final List<Blueprint> blueprints = this.blueprintRepository.findAll();
+		final List<Blueprint> blueprints = this.blueprintRepository.findAll(SORT_BY_NAME);
 		final List<BlueprintSummary> blueprintSummaries = new ArrayList<>(
 				blueprints.size());
 		for (final Blueprint blueprint : blueprints) {

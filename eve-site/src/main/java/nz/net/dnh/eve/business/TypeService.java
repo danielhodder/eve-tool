@@ -12,19 +12,24 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TypeService {
 	/**
-	 * List the minerals in the system, optionally including minerals which are referenced by blueprints but missing from the database.
-	 *
-	 * @param includeMissing Whether to include minerals that are missing from the database
-	 * @return The list of minerals
+	 * List the minerals in the system, optionally including minerals which are
+	 * referenced by blueprints but missing from the database.
+	 * 
+	 * @param includeMissing
+	 *            Whether to include minerals that are missing from the database
+	 * @return The list of minerals, ordered by name
 	 * @see #listMissingTypes()
 	 */
 	public List<Mineral> listMinerals(boolean includeMissing);
 
 	/**
-	 * List the components in the system, optionally including components which are referenced by blueprints but missing from the database.
-	 *
-	 * @param includeMissing Whether to include components that are missing from the database
-	 * @return The list of components
+	 * List the components in the system, optionally including components which
+	 * are referenced by blueprints but missing from the database.
+	 * 
+	 * @param includeMissing
+	 *            Whether to include components that are missing from the
+	 *            database
+	 * @return The list of components, ordered by name
 	 * @see #listMissingTypes()
 	 */
 	public List<Component> listComponents(boolean includeMissing);

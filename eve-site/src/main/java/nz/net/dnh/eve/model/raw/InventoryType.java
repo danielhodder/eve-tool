@@ -17,17 +17,20 @@ import javax.validation.constraints.NotNull;
 @Table(name = "invTypes")
 @NamedQueries({
 		@NamedQuery(name = "InventoryType.findUnknownMineralsForBlueprint", query = InventoryType.UNKNOWN_TYPES_SQL
-				+ InventoryType.MINERAL_SQL + " AND brt.blueprint = :blueprint"),
-		@NamedQuery(name = "InventoryType.findUnknownMinerals", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.MINERAL_SQL),
+				+ InventoryType.MINERAL_SQL + " AND brt.blueprint = :blueprint" + InventoryType.ORDER_BY_NAME),
+		@NamedQuery(name = "InventoryType.findUnknownMinerals", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.MINERAL_SQL
+				+ InventoryType.ORDER_BY_NAME),
 		@NamedQuery(name = "InventoryType.findUnknownComponentsForBlueprint", query = InventoryType.UNKNOWN_TYPES_SQL
-				+ InventoryType.COMPONENT_SQL + " AND brt.blueprint = :blueprint"),
-		@NamedQuery(name = "InventoryType.findUnknownComponents", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.COMPONENT_SQL) })
+				+ InventoryType.COMPONENT_SQL + " AND brt.blueprint = :blueprint" + InventoryType.ORDER_BY_NAME),
+		@NamedQuery(name = "InventoryType.findUnknownComponents", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.COMPONENT_SQL
+				+ InventoryType.ORDER_BY_NAME) })
 public class InventoryType implements Serializable {
 	// t.cost is not a nullable column, so this really checks whether t is null
 	public static final String UNKNOWN_TYPES_SQL = "SELECT DISTINCT brt.inventoryType FROM BlueprintRequiredType brt LEFT OUTER JOIN brt.type t WHERE t.cost IS NULL";
 	public static final String MINERAL_SQL = " AND brt.inventoryType.group.groupName = '"
 			+ InventoryGroup.MINERAL_GROUP + "'";
 	public static final String COMPONENT_SQL = " AND brt.inventoryType.group.groupName != '" + InventoryGroup.MINERAL_GROUP + "'";
+	public static final String ORDER_BY_NAME = " ORDER BY brt.inventoryType.typeName";
 
 	private static final long serialVersionUID = 1L;
 
