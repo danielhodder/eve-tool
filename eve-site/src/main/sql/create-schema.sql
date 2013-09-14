@@ -50,6 +50,7 @@ CREATE TABLE Blueprint (
   saleValue decimal(65,2) NOT NULL,
   materialEfficiency int(11) NOT NULL,
   lastUpdated TIMESTAMP NOT NULL,
+  automaticallyUpdateSalePrice bit(1) not null default 0,
   PRIMARY KEY (blueprintTypeID)
 ) ENGINE=InnoDB;
 
@@ -117,13 +118,14 @@ SELECT
     LEFT OUTER JOIN BlueprintTypeDecomposition btd ON btd.blueprintTypeID = bp.blueprintTypeID AND btd.materialTypeID = ram.requiredTypeID
   WHERE
     ramA.activityName = 'Manufacturing'
-    AND ramC.categoryName = 'Commodity';
+    AND ramC.categoryName != 'Skill';
 
 
 CREATE TABLE Type (
   typeID int(11) NOT NULL,
   cost decimal(65,2) NOT NULL,
   lastUpdated TIMESTAMP NOT NULL,
+  autoUpdate bit(1) not null default 0,
   PRIMARY KEY (typeID)
 ) ENGINE=InnoDB;
 
@@ -147,7 +149,7 @@ CREATE VIEW BlueprintCosts AS
     bp.blueprintTypeID AS blueprintTypeID,
     btc.blueprintName AS blueprintName,
     # This makes my head hurt, MySQL doesn't return null if there are null values present, so we need to do it ourselves
-    if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,--TODO take decomposition into account
+    if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,
     calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun) as hours,
     cast((((ral.costPerHour * calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun)) + ral.costInstall) / bp.numberPerRun) as decimal(65,2)) AS otherCost
   from Blueprint bp
