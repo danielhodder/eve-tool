@@ -2,6 +2,7 @@ package nz.net.dnh.eve.model.domain;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -49,6 +50,7 @@ public class BlueprintRequiredType implements Serializable {
 	@JoinColumn(name = "materialBlueprintTypeID", insertable = false, updatable = false)
 	private InventoryBlueprintType materialBlueprintType;
 
+	@Column(columnDefinition = "bigint")
 	private boolean decomposed;
 
 	/** @return the blueprint which requires this type */
@@ -123,7 +125,7 @@ public class BlueprintRequiredType implements Serializable {
 	public String toString() {
 		return "BlueprintType [blueprint="
 				+ this.blueprint.getBlueprintTypeID() + ", type="
-				+ this.type.getTypeID() + ", units=" + this.units + "]";
+				+ this.type.getTypeID() + ", units=" + this.units +", decomposed="+this.decomposed+"]";
 	}
 
 	@Override

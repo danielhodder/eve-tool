@@ -18,6 +18,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,9 +48,12 @@ import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.ComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.MineralImpl;
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
+import nz.net.dnh.eve.model.domain.BlueprintTypeDecomposition;
+import nz.net.dnh.eve.model.domain.BlueprintTypeDecomposition.BlueprintTypePK;
 import nz.net.dnh.eve.model.domain.Type;
 import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
+import nz.net.dnh.eve.model.repository.BlueprintTypeDecompositionRepository;
 import nz.net.dnh.eve.model.repository.InventoryTypeRepository;
 import nz.net.dnh.eve.model.repository.TypeRepository;
 
@@ -88,6 +92,9 @@ public class TypeServiceTest {
 
 	@Mock
 	private BlueprintResolverService blueprintResolverService;
+
+	@Mock
+	private BlueprintTypeDecompositionRepository blueprintTypeDecompositionRepository;
 
 	private static Matcher<AbstractType> component(final String name, final BigDecimal cost, final Date lastUpdated, final boolean missing,
 			final int id) {
@@ -608,6 +615,99 @@ public class TypeServiceTest {
 								DecompositionState.NOT_DECOMPOSED,
 								requiredType(requiredMineralType, 54, null, DecompositionState.NEVER_DECOMPOSED)),
 						requiredType(requiredMineralType, 14, null, DecompositionState.NEVER_DECOMPOSED)));
+	}
+
+	@Test
+	public void enableDecompositionOnType() {
+		final BlueprintIdReference blueprintReference = new BlueprintIdReference(43);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredBlueprint = mock(Blueprint.class);
+		final BlueprintRequiredType requiredType = createRequiredType(b, this.type1, this.component1, 1, false,
+				mock(InventoryBlueprintType.class), requiredBlueprint);
+		when(b.getRequiredTypes()).thenReturn(Collections.singleton(requiredType));
+		when(this.blueprintResolverService.toBlueprint(blueprintReference)).thenReturn(b);
+		when(this.type1.getType()).thenReturn(this.component1);
+		
+		this.typeService.updateRequiredType(blueprintReference, new ComponentImpl(this.type1), true);
+		
+		verify(this.blueprintTypeDecompositionRepository).save(new BlueprintTypeDecomposition(b, this.component1));
+	}
+
+	@Test
+	public void enableDecompositionOnTypeAlreadyEnabled() {
+		final BlueprintIdReference blueprintReference = new BlueprintIdReference(43);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredBlueprint = mock(Blueprint.class);
+		final BlueprintRequiredType requiredType = createRequiredType(b, this.type1, this.component1, 1, false,
+				mock(InventoryBlueprintType.class), requiredBlueprint);
+		when(b.getRequiredTypes()).thenReturn(Collections.singleton(requiredType));
+		when(this.blueprintResolverService.toBlueprint(blueprintReference)).thenReturn(b);
+		when(this.type1.getType()).thenReturn(this.component1);
+		when(this.blueprintTypeDecompositionRepository.findOne(new BlueprintTypePK(b, this.component1))).thenReturn(
+				new BlueprintTypeDecomposition(b, this.component1));
+
+		this.typeService.updateRequiredType(blueprintReference, new ComponentImpl(this.type1), true);
+
+		verify(this.blueprintTypeDecompositionRepository, never()).save(any(BlueprintTypeDecomposition.class));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void enableDecompositionOnTypeWhenNotRequired() {
+		final BlueprintIdReference blueprintReference = new BlueprintIdReference(43);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredBlueprint = mock(Blueprint.class);
+		final BlueprintRequiredType requiredType = createRequiredType(b, this.type1, this.component1, 1, false,
+				mock(InventoryBlueprintType.class), requiredBlueprint);
+		when(b.getRequiredTypes()).thenReturn(Collections.singleton(requiredType));
+		when(this.blueprintResolverService.toBlueprint(blueprintReference)).thenReturn(b);
+
+		this.typeService.updateRequiredType(blueprintReference, new ComponentImpl(this.type2), true);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void enableDecompositionOnTypeWhenNotConfigured() {
+		final BlueprintIdReference blueprintReference = new BlueprintIdReference(43);
+		final Blueprint b = mock(Blueprint.class);
+		final BlueprintRequiredType requiredType = createRequiredType(b, this.type1, this.component1, 1, false,
+				mock(InventoryBlueprintType.class), null);
+		when(b.getRequiredTypes()).thenReturn(Collections.singleton(requiredType));
+		when(this.blueprintResolverService.toBlueprint(blueprintReference)).thenReturn(b);
+
+		this.typeService.updateRequiredType(blueprintReference, new ComponentImpl(this.type1), true);
+	}
+
+	@Test
+	public void disableDecompositionOnType() {
+		final BlueprintIdReference blueprintReference = new BlueprintIdReference(43);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredBlueprint = mock(Blueprint.class);
+		final BlueprintRequiredType requiredType = createRequiredType(b, this.type1, this.component1, 1, false,
+				mock(InventoryBlueprintType.class), requiredBlueprint);
+		when(b.getRequiredTypes()).thenReturn(Collections.singleton(requiredType));
+		when(this.blueprintResolverService.toBlueprint(blueprintReference)).thenReturn(b);
+		when(this.type1.getType()).thenReturn(this.component1);
+		when(this.blueprintTypeDecompositionRepository.findOne(new BlueprintTypePK(b, this.component1))).thenReturn(
+				new BlueprintTypeDecomposition(b, this.component1));
+
+		this.typeService.updateRequiredType(blueprintReference, new ComponentImpl(this.type1), false);
+
+		verify(this.blueprintTypeDecompositionRepository).delete(new BlueprintTypeDecomposition(b, this.component1));
+	}
+
+	@Test
+	public void disableDecompositionOnTypeAlreadyDisabled() {
+		final BlueprintIdReference blueprintReference = new BlueprintIdReference(43);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredBlueprint = mock(Blueprint.class);
+		final BlueprintRequiredType requiredType = createRequiredType(b, this.type1, this.component1, 1, false,
+				mock(InventoryBlueprintType.class), requiredBlueprint);
+		when(b.getRequiredTypes()).thenReturn(Collections.singleton(requiredType));
+		when(this.blueprintResolverService.toBlueprint(blueprintReference)).thenReturn(b);
+		when(this.type1.getType()).thenReturn(this.component1);
+
+		this.typeService.updateRequiredType(blueprintReference, new ComponentImpl(this.type1), false);
+
+		verify(this.blueprintTypeDecompositionRepository, never()).delete(any(BlueprintTypeDecomposition.class));
 	}
 
 	@Test

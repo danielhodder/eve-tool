@@ -34,9 +34,12 @@ import nz.net.dnh.eve.market.eve_central.EveCentralMarketStatResponse;
 import nz.net.dnh.eve.market.eve_central.EveCentralMarketStatResponse.MarketStatData;
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
+import nz.net.dnh.eve.model.domain.BlueprintTypeDecomposition;
+import nz.net.dnh.eve.model.domain.BlueprintTypeDecomposition.BlueprintTypePK;
 import nz.net.dnh.eve.model.domain.Type;
 import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
+import nz.net.dnh.eve.model.repository.BlueprintTypeDecompositionRepository;
 import nz.net.dnh.eve.model.repository.InventoryTypeRepository;
 import nz.net.dnh.eve.model.repository.TypeRepository;
 
@@ -53,6 +56,9 @@ public class TypeServiceImpl implements TypeService {
 
 	@Autowired
 	private InventoryTypeRepository inventoryTypeRepository;
+
+	@Autowired
+	private BlueprintTypeDecompositionRepository blueprintTypeDecompositionRepository;
 
 	@Autowired
 	private BlueprintResolverService blueprintResolverService;
@@ -361,5 +367,28 @@ public class TypeServiceImpl implements TypeService {
 		}
 
 		return types;
+	}
+
+	@Override
+	public void updateRequiredType(final BlueprintReference blueprint, final TypeReference type, final boolean decompose) {
+		final Blueprint blueprintBean = this.blueprintResolverService.toBlueprint(blueprint);
+		final InventoryType inventoryType = toInventoryType(type);
+		assertTypeRequired(blueprintBean, inventoryType);
+		final BlueprintTypePK key = new BlueprintTypePK(blueprintBean, inventoryType);
+
+		final BlueprintTypeDecomposition existingDecomposition = this.blueprintTypeDecompositionRepository.findOne(key);
+		if (decompose && existingDecomposition == null) {
+				this.blueprintTypeDecompositionRepository.save(new BlueprintTypeDecomposition(key));
+		} else if (!decompose && existingDecomposition != null) {
+			this.blueprintTypeDecompositionRepository.delete(existingDecomposition);
+		}
+	}
+
+	private static void assertTypeRequired(final Blueprint blueprintBean, final InventoryType inventoryType) {
+		for (final BlueprintRequiredType requiredType : blueprintBean.getRequiredTypes()) {
+			if (requiredType.getInventoryType().equals(inventoryType))
+				return;
+		}
+		throw new IllegalArgumentException("Type " + inventoryType + " is not required by " + blueprintBean);
 	}
 }

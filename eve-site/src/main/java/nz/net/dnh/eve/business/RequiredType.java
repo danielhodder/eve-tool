@@ -2,8 +2,9 @@ package nz.net.dnh.eve.business;
 
 import java.util.List;
 
-/** TODO javadoc*/
+/** Represents a single type required by a blueprint for its construction */
 public class RequiredType<T extends AbstractType> implements Comparable<RequiredType<T>> {
+	/** Whether this required type is currently decomposed, or whether it could be decomposed in the future */
 	public static enum DecompositionState {
 		/** The blueprint exists, and this required type should be replaced with it */
 		DECOMPOSED,
@@ -34,19 +35,39 @@ public class RequiredType<T extends AbstractType> implements Comparable<Required
 		this.typeBlueprintRequiredTypes = typeBlueprintRequiredTypes;
 	}
 
+	/**
+	 * @return The type the blueprint requires for its construction
+	 */
 	public T getType() {
 		return this.type;
 	}
 
-	// TODO doc - this is multiplied by the units of the parent required type
+	/**
+	 * Get the number of this {@link #getType() type} required to construct the blueprint. If the blueprint was not the root of the
+	 * {@link RequiredTypes} tree, these units will already be multiplied by the number of units of the parent.
+	 * <p>
+	 * e.g. if A requires 5 of B and B requires 5 of C, when the required types of A are returned, the units of C will be returned as 25.
+	 * 
+	 * @return The number of this type required to construct the blueprint
+	 */
 	public int getUnits() {
 		return this.units;
 	}
 
+	/**
+	 * @return whether this required type is currently decomposed, or whether it could be decomposed in the future
+	 */
 	public DecompositionState getDecompositionState() {
 		return this.decompositionState;
 	}
 
+	/**
+	 * Get the types this type's {@link #getTypeBlueprint() blueprint} requires to create it if it is being {@link #getDecompositionState()
+	 * decomposed}. Will be valued if {@link #getDecompositionState()} is {@link DecompositionState#DECOMPOSED} or
+	 * {@link DecompositionState#NOT_DECOMPOSED}, and null otherwise.
+	 * 
+	 * @return The types this type requires to create it if it is being decomposed, or null if no blueprint is found
+	 */
 	public List<RequiredType<? extends AbstractType>> getTypeBlueprintRequiredTypes() {
 		return this.typeBlueprintRequiredTypes;
 	}

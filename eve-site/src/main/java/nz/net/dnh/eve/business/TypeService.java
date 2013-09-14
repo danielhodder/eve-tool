@@ -64,7 +64,19 @@ public interface TypeService {
 	 */
 	public RequiredTypes getRequiredTypes(BlueprintReference blueprint);
 
-	// TODO change decomposition state???
+	/**
+	 * Set whether the given type should be decomposed when building the given blueprint.
+	 * 
+	 * @param blueprint
+	 *            The blueprint which requires the type
+	 * @param type
+	 *            The required type
+	 * @param decompose
+	 *            True if the type should be decomposed when building the given blueprint
+	 * @throws IllegalArgumentException
+	 *             if the blueprint does not require the type
+	 */
+	public void updateRequiredType(BlueprintReference blueprint, TypeReference type, boolean decompose);
 
 	/**
 	 * Get the mineral with the given id (from {@link Mineral#getId()})

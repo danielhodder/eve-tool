@@ -78,12 +78,13 @@ CREATE VIEW BlueprintSubTypeRequirements AS
   GROUP BY bp.blueprintTypeID, itm.materialTypeID;
 
 CREATE VIEW BlueprintTypes AS
-  SELECT
+SELECT
     bp.blueprintTypeID as blueprintTypeID,
     itm.materialTypeID as materialTypeID,
     calculate_materials(itm.quantity - ifnull(bstr.rawQuantity, 0), ibt.wasteFactor, bp.materialEfficiency) as units,
     mat.typeName,
-    materialBlueprintType.blueprintTypeID as materialBlueprintTypeID
+    materialBlueprintType.blueprintTypeID as materialBlueprintTypeID,
+    btd.blueprintTypeID IS NOT NULL as decomposed
   FROM Blueprint bp
     JOIN `eve-dump`.invBlueprintTypes ibt ON ibt.blueprintTypeID = bp.blueprintTypeID
     JOIN `eve-dump`.invTypes it ON it.typeID = ibt.productTypeID
@@ -93,6 +94,7 @@ CREATE VIEW BlueprintTypes AS
       ON bstr.blueprintTypeId = bp.blueprintTypeID
       AND bstr.materialTypeID = itm.materialTypeID
     LEFT OUTER JOIN `eve-dump`.invBlueprintTypes materialBlueprintType ON materialBlueprintType.productTypeID = itm.materialTypeID
+    LEFT OUTER JOIN BlueprintTypeDecomposition btd ON btd.blueprintTypeID = bp.blueprintTypeID AND btd.materialTypeID = itm.materialTypeID
   WHERE
     bstr.rawQuantity IS NULL OR itm.quantity - bstr.rawQuantity != 0
   UNION
@@ -101,7 +103,8 @@ CREATE VIEW BlueprintTypes AS
     ram.requiredTypeID as materialTypeID,
     ram.quantity as units,
     ramT.typeName,
-    materialBlueprintType.blueprintTypeID as materialBlueprintTypeID
+    materialBlueprintType.blueprintTypeID as materialBlueprintTypeID,
+    btd.blueprintTypeID IS NOT NULL as decomposed
   FROM Blueprint bp
     JOIN `eve-dump`.invBlueprintTypes ibt ON ibt.blueprintTypeID = bp.blueprintTypeID
     JOIN `eve-dump`.invTypes it ON it.typeID = ibt.blueprintTypeID
@@ -110,8 +113,8 @@ CREATE VIEW BlueprintTypes AS
     JOIN `eve-dump`.invGroups ramG ON ramG.groupID = ramT.groupID
     JOIN `eve-dump`.invCategories ramC ON ramC.categoryID = ramG.categoryID
     JOIN `eve-dump`.ramActivities ramA on ramA.activityID = ram.activityID
-    -- TODO 3: should this be in the view or queried by hibernate? the info is there after all...
     LEFT OUTER JOIN `eve-dump`.invBlueprintTypes materialBlueprintType ON materialBlueprintType.productTypeID = ram.requiredTypeID
+    LEFT OUTER JOIN BlueprintTypeDecomposition btd ON btd.blueprintTypeID = bp.blueprintTypeID AND btd.materialTypeID = ram.requiredTypeID
   WHERE
     ramA.activityName = 'Manufacturing'
     AND ramC.categoryName = 'Commodity';
