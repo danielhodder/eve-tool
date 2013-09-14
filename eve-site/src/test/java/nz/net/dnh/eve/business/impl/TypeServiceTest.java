@@ -163,18 +163,15 @@ public class TypeServiceTest {
 	}
 
 	private static BlueprintRequiredType createRequiredType(final Blueprint b, final Type type, final InventoryType inventoryType,
-			final int units) {
-		final BlueprintRequiredType requiredType = new BlueprintRequiredType() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public InventoryType getInventoryType() {
-				return inventoryType;
-			}
-		};
+			final int units, final boolean decomposed, final InventoryBlueprintType materialBlueprintType, final Blueprint materialBlueprint) {
+		final BlueprintRequiredType requiredType = new BlueprintRequiredType();
+		requiredType.setInventoryType(inventoryType);
 		requiredType.setBlueprint(b);
 		requiredType.setType(type);
 		requiredType.setUnits(units);
+		requiredType.setDecomposed(decomposed);
+		requiredType.setMaterialBlueprintType(materialBlueprintType);
+		requiredType.setMaterialBlueprint(materialBlueprint);
 		return requiredType;
 	}
 
@@ -412,11 +409,11 @@ public class TypeServiceTest {
 		// Setup 4 required types, one of which has an InventoryBlueprintType but no configured Blueprint
 		final BlueprintReference ref = new BlueprintIdReference(6);
 		final Blueprint b = mock(Blueprint.class);
-		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5);
-		requiredComponent.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
-		final BlueprintRequiredType requiredMissingComponent = createRequiredType(b, null, this.component2, 1);
-		final BlueprintRequiredType requiredMissingMineral = createRequiredType(b, null, this.mineral2, 3);
+		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5, false,
+				mock(InventoryBlueprintType.class), null);
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14, false, null, null);
+		final BlueprintRequiredType requiredMissingComponent = createRequiredType(b, null, this.component2, 1, false, null, null);
+		final BlueprintRequiredType requiredMissingMineral = createRequiredType(b, null, this.mineral2, 3, false, null, null);
 		when(b.getRequiredTypes()).thenReturn(
 				Arrays.asList(requiredComponent, requiredMineral, requiredMissingComponent, requiredMissingMineral));
 		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
@@ -452,19 +449,18 @@ public class TypeServiceTest {
 		final BlueprintReference ref = new BlueprintIdReference(6);
 		final Blueprint b = mock(Blueprint.class);
 		final Blueprint requiredComponentBlueprint = mock(Blueprint.class);
-		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5);
-		requiredComponent.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		requiredComponent.setMaterialBlueprint(requiredComponentBlueprint);
-		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
-		final BlueprintRequiredType requiredMissingComponent = createRequiredType(b, null, this.component2, 1);
-		requiredMissingComponent.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		final BlueprintRequiredType requiredMissingMineral = createRequiredType(b, null, this.mineral2, 3);
+		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5, true,
+				mock(InventoryBlueprintType.class), requiredComponentBlueprint);
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14, false, null, null);
+		final BlueprintRequiredType requiredMissingComponent = createRequiredType(b, null, this.component2, 1, false,
+				mock(InventoryBlueprintType.class), null);
+		final BlueprintRequiredType requiredMissingMineral = createRequiredType(b, null, this.mineral2, 3, false, null, null);
 		when(b.getRequiredTypes()).thenReturn(
 				Arrays.asList(requiredComponent, requiredMineral, requiredMissingComponent, requiredMissingMineral));
 		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
 		
 		final BlueprintRequiredType requiredComponentRequiredMineral = createRequiredType(requiredComponentBlueprint, this.type2,
-				this.mineral1, 7);
+				this.mineral1, 7, false, null, null);
 		when(requiredComponentBlueprint.getRequiredTypes()).thenReturn(Collections.singletonList(requiredComponentRequiredMineral));
 
 		final AbstractType type1Component = new ComponentImpl(this.type1);
@@ -483,7 +479,6 @@ public class TypeServiceTest {
 		assertThat(resolvedRequiredTypes, hasEntry(mineral2Mineral, 3));
 
 		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
-		// TODO set decomposition state up somewhere
 		assertThat(
 				requiredTypesTree,
 				contains(
@@ -501,27 +496,25 @@ public class TypeServiceTest {
 		final Blueprint b = mock(Blueprint.class);
 		final Blueprint requiredBlueprint1 = mock(Blueprint.class);
 		final Blueprint requiredBlueprint2 = mock(Blueprint.class);
-		final BlueprintRequiredType requiredComponent1 = createRequiredType(b, this.type1, this.component1, 5);
-		requiredComponent1.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		requiredComponent1.setMaterialBlueprint(requiredBlueprint1);
+		final BlueprintRequiredType requiredComponent1 = createRequiredType(b, this.type1, this.component1, 5, true,
+				mock(InventoryBlueprintType.class), requiredBlueprint1);
 		final Type component2Type = mock(Type.class);
 		when(component2Type.getTypeName()).thenReturn("Type 1.5");
-		final BlueprintRequiredType requiredComponent2 = createRequiredType(b, component2Type, this.component2, 6);
-		requiredComponent2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		requiredComponent2.setMaterialBlueprint(requiredBlueprint2);
+		final BlueprintRequiredType requiredComponent2 = createRequiredType(b, component2Type, this.component2, 6, true,
+				mock(InventoryBlueprintType.class), requiredBlueprint2);
 
-		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14, false, null, null);
 		when(b.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1, requiredComponent2, requiredMineral));
 		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
 
-		final BlueprintRequiredType requiredComponent1Mineral = createRequiredType(requiredBlueprint1, this.type2, this.mineral1, 7);
+		final BlueprintRequiredType requiredComponent1Mineral = createRequiredType(requiredBlueprint1, this.type2, this.mineral1, 7, false,
+				null, null);
 		final BlueprintRequiredType requiredComponent1Component2 = createRequiredType(requiredBlueprint1, component2Type, this.component2,
-				8);
-		requiredComponent1Component2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		requiredComponent1Component2.setMaterialBlueprint(requiredBlueprint2);
+				8, true, mock(InventoryBlueprintType.class), requiredBlueprint2);
 		when(requiredBlueprint1.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1Mineral, requiredComponent1Component2));
 
-		final BlueprintRequiredType requiredComponent2Mineral = createRequiredType(requiredBlueprint2, this.type2, this.mineral1, 9);
+		final BlueprintRequiredType requiredComponent2Mineral = createRequiredType(requiredBlueprint2, this.type2, this.mineral1, 9, false,
+				null, null);
 		when(requiredBlueprint2.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent2Mineral));
 
 
@@ -538,7 +531,6 @@ public class TypeServiceTest {
 		assertThat(resolvedRequiredTypes, hasEntry(requiredMineralType, 463));
 		
 		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
-		// TODO set decomposition state up somewhere
 		assertThat(
 				requiredTypesTree,
 				contains(
@@ -560,32 +552,30 @@ public class TypeServiceTest {
 	@Test
 	public void getRequiredComponentsWithDecompositionDisabled() {
 		// Setup 3 required types A/B/C where A and B are configured blueprints, mainBlueprint->A,B,C, A->B,C and B->C, and B has been
-		// configured to never be decomposed
+		// configured to not be decomposed in either place
 		final BlueprintReference ref = new BlueprintIdReference(6);
 		final Blueprint b = mock(Blueprint.class);
 		final Blueprint requiredBlueprint1 = mock(Blueprint.class);
 		final Blueprint requiredBlueprint2 = mock(Blueprint.class);
-		final BlueprintRequiredType requiredComponent1 = createRequiredType(b, this.type1, this.component1, 5);
-		requiredComponent1.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		requiredComponent1.setMaterialBlueprint(requiredBlueprint1);
+		final BlueprintRequiredType requiredComponent1 = createRequiredType(b, this.type1, this.component1, 5, true,
+				mock(InventoryBlueprintType.class), requiredBlueprint1);
 		final Type component2Type = mock(Type.class);
 		when(component2Type.getTypeName()).thenReturn("Type 1.5");
-		final BlueprintRequiredType requiredComponent2 = createRequiredType(b, component2Type, this.component2, 6);
-		requiredComponent2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		requiredComponent2.setMaterialBlueprint(requiredBlueprint2);
+		final BlueprintRequiredType requiredComponent2 = createRequiredType(b, component2Type, this.component2, 6, false,
+				mock(InventoryBlueprintType.class), requiredBlueprint2);
 
-		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14, false, null, null);
 		when(b.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1, requiredComponent2, requiredMineral));
 		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
 
-		final BlueprintRequiredType requiredComponent1Mineral = createRequiredType(requiredBlueprint1, this.type2, this.mineral1, 7);
+		final BlueprintRequiredType requiredComponent1Mineral = createRequiredType(requiredBlueprint1, this.type2, this.mineral1, 7, false,
+				null, null);
 		final BlueprintRequiredType requiredComponent1Component2 = createRequiredType(requiredBlueprint1, component2Type, this.component2,
-				8);
-		requiredComponent1Component2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
-		requiredComponent1Component2.setMaterialBlueprint(requiredBlueprint2);
+				8, false, mock(InventoryBlueprintType.class), requiredBlueprint2);
 		when(requiredBlueprint1.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1Mineral, requiredComponent1Component2));
 
-		final BlueprintRequiredType requiredComponent2Mineral = createRequiredType(requiredBlueprint2, this.type2, this.mineral1, 9);
+		final BlueprintRequiredType requiredComponent2Mineral = createRequiredType(requiredBlueprint2, this.type2, this.mineral1, 9, false,
+				null, null);
 		when(requiredBlueprint2.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent2Mineral));
 
 		final AbstractType requiredComponent1Type = new ComponentImpl(this.type1);
@@ -595,14 +585,13 @@ public class TypeServiceTest {
 		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(ref);
 		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
 
-		assertEquals(resolvedRequiredTypes.keySet(), contains(requiredComponent2Type, requiredMineralType));
+		assertThat(resolvedRequiredTypes.keySet(), contains(requiredComponent2Type, requiredMineralType));
 		// 14 from the original required type, 5*7 from 5x required component 1
 		assertThat(resolvedRequiredTypes, hasEntry(requiredMineralType, 49));
 		// 6 from the original required type, 5*8 from 5x required component 1
 		assertThat(resolvedRequiredTypes, hasEntry(requiredComponent2Type, 46));
 
 		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
-		// TODO set decomposition state up somewhere
 		assertThat(
 				requiredTypesTree,
 				contains(
@@ -612,7 +601,7 @@ public class TypeServiceTest {
 								new BlueprintSummaryImpl(requiredBlueprint1),
 								DecompositionState.DECOMPOSED,
 								requiredType(requiredComponent2Type, 40, new BlueprintSummaryImpl(requiredBlueprint2),
-										DecompositionState.DECOMPOSED,
+										DecompositionState.NOT_DECOMPOSED,
 										requiredType(requiredMineralType, 360, null, DecompositionState.NEVER_DECOMPOSED)),
 								requiredType(requiredMineralType, 35, null, DecompositionState.NEVER_DECOMPOSED)),
 						requiredType(requiredComponent2Type, 6, new BlueprintSummaryImpl(requiredBlueprint2),

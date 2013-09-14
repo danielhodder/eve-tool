@@ -49,6 +49,8 @@ public class BlueprintRequiredType implements Serializable {
 	@JoinColumn(name = "materialBlueprintTypeID", insertable = false, updatable = false)
 	private InventoryBlueprintType materialBlueprintType;
 
+	private boolean decomposed;
+
 	/** @return the blueprint which requires this type */
 	public Blueprint getBlueprint() {
 		return this.blueprint;
@@ -70,6 +72,10 @@ public class BlueprintRequiredType implements Serializable {
 	/** @return the type required by the blueprint in eve's inventory, never null */
 	public InventoryType getInventoryType() {
 		return this.inventoryType;
+	}
+
+	public void setInventoryType(final InventoryType inventoryType) {
+		this.inventoryType = inventoryType;
 	}
 
 	/** @return the number of the given {@link #getType() type} required by this {@link #getBlueprint() blueprint} */
@@ -103,6 +109,14 @@ public class BlueprintRequiredType implements Serializable {
 
 	public void setMaterialBlueprintType(final InventoryBlueprintType materialBlueprintType) {
 		this.materialBlueprintType = materialBlueprintType;
+	}
+
+	public boolean isDecomposed() {
+		return this.decomposed;
+	}
+
+	public void setDecomposed(final boolean decomposed) {
+		this.decomposed = decomposed;
 	}
 
 	@Override

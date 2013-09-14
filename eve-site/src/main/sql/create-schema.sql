@@ -53,6 +53,12 @@ CREATE TABLE Blueprint (
   PRIMARY KEY (blueprintTypeID)
 ) ENGINE=InnoDB;
 
+CREATE TABLE BlueprintTypeDecomposition (
+  blueprintTypeID int(11) NOT NULL,
+  materialTypeID int(11) NOT NULL,
+  PRIMARY KEY (blueprintTypeID,materialTypeID)
+) ENGINE=InnoDB;
+
 CREATE VIEW BlueprintSubTypeRequirements AS
   SELECT
     bp.blueprintTypeID as blueprintTypeID,

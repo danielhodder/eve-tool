@@ -152,8 +152,8 @@ public class TypeServiceImpl implements TypeService {
 			final List<RequiredType<? extends AbstractType>> typeRequiredTypes;
 			if (materialBlueprint != null) {
 				typeBlueprint = new BlueprintSummaryImpl(materialBlueprint);
-				typeRequiredTypes = addRequiredTypes(materialBlueprint, resolvedRequiredTypes, units);
-				if (Boolean.TRUE)// TODO
+				typeRequiredTypes = addRequiredTypes(materialBlueprint, requiredType.isDecomposed() ? resolvedRequiredTypes : null, units);
+				if (requiredType.isDecomposed())
 					decompositionState = DecompositionState.DECOMPOSED;
 				else
 					decompositionState = DecompositionState.NOT_DECOMPOSED;
@@ -165,7 +165,9 @@ public class TypeServiceImpl implements TypeService {
 				else
 					decompositionState = DecompositionState.NEVER_DECOMPOSED;
 			}
-			if (decompositionState != DecompositionState.DECOMPOSED) {
+			// resolvedRequiredTypes will be null if this blueprint is not being decomposed - this means we don't want to count any required
+			// types on this blueprint
+			if (resolvedRequiredTypes != null && decompositionState != DecompositionState.DECOMPOSED) {
 				final Integer existingUnits = resolvedRequiredTypes.get(type);
 				final int resolvedUnits = existingUnits == null ? units : existingUnits + units;
 				resolvedRequiredTypes.put(type, resolvedUnits);
