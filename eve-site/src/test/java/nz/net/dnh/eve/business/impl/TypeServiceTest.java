@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
@@ -22,17 +24,23 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.SortedMap;
 
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintIdReference;
 import nz.net.dnh.eve.business.BlueprintReference;
+import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.Mineral;
+import nz.net.dnh.eve.business.RequiredType;
+import nz.net.dnh.eve.business.RequiredType.DecompositionState;
 import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.business.TypeIdReference;
+import nz.net.dnh.eve.business.impl.dto.blueprint.BlueprintSummaryImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMineralImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.ComponentImpl;
@@ -40,12 +48,15 @@ import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.MineralImpl;
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
 import nz.net.dnh.eve.model.domain.Type;
+import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
 import nz.net.dnh.eve.model.repository.InventoryTypeRepository;
 import nz.net.dnh.eve.model.repository.TypeRepository;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +103,63 @@ public class TypeServiceTest {
 			final int id) {
 		return allOf(hasProperty("id", equalTo(id)), hasProperty("name", equalTo(name)), hasProperty("cost", equalTo(cost)),
 				hasProperty("costLastUpdated", equalTo(lastUpdated)), hasProperty("missing", equalTo(missing)));
+	}
+
+	private static Matcher<RequiredType<?>> requiredType(final AbstractType type, final int units,
+			final BlueprintSummary blueprintSummary, final DecompositionState decompositionState) {
+		return requiredType(type, units, blueprintSummary, decompositionState, (Matcher<RequiredType<?>>[]) null);
+
+	}
+
+	@SafeVarargs
+	private static Matcher<RequiredType<? extends AbstractType>> requiredType(final AbstractType type, final int units,
+			final BlueprintSummary blueprintSummary, final DecompositionState decompositionState,
+			final Matcher<RequiredType<?>>... requiredTypes) {
+		final Matcher<?> requiredTypesMatcher;
+		if (requiredTypes == null)
+			requiredTypesMatcher = nullValue();
+		else
+			requiredTypesMatcher = contains(requiredTypes);
+		return new TypeSafeDiagnosingMatcher<RequiredType<?>>() {
+
+			@Override
+			public void describeTo(final Description description) {
+				description.appendText("Required type with type ").appendValue(type).appendText(" and units ").appendValue(units)
+						.appendText(" and blueprint ").appendValue(blueprintSummary).appendText(" and decomposition state ")
+						.appendValue(decompositionState);
+				if (requiredTypes == null) {
+					description.appendText(" and no required types");
+				} else {
+					description.appendText(" and required types ").appendList("[", ",", "]", Arrays.asList(requiredTypes));
+				}
+			}
+
+			@Override
+			protected boolean matchesSafely(final RequiredType<?> item, final Description mismatchDescription) {
+				if (!type.equals(item.getType())) {
+					mismatchDescription.appendText("Type was ").appendValue(item.getType());
+					return false;
+				}
+				if (units != item.getUnits()) {
+					mismatchDescription.appendText("Units was ").appendValue(item.getUnits());
+					return false;
+				}
+				if (!Objects.equals(blueprintSummary, item.getTypeBlueprint())) {
+					mismatchDescription.appendValue("Blueprint summary was ").appendValue(item.getTypeBlueprint());
+					return false;
+				}
+				if (decompositionState != item.getDecompositionState()) {
+					mismatchDescription.appendValue("Decomposition state was ").appendValue(item.getDecompositionState());
+					return false;
+				}
+				if (!requiredTypesMatcher.matches(item.getTypeBlueprintRequiredTypes())) {
+					mismatchDescription.appendText("required types: ");
+					requiredTypesMatcher.describeMismatch(item.getTypeBlueprintRequiredTypes(), mismatchDescription);
+					return false;
+				}
+				return true;
+			}
+		};
 	}
 
 	private static BlueprintRequiredType createRequiredType(final Blueprint b, final Type type, final InventoryType inventoryType,
@@ -340,34 +408,217 @@ public class TypeServiceTest {
 	}
 
 	@Test
-	public void getRequiredComponents() {
+	public void getRequiredComponentsWithoutDecomposition() {
+		// Setup 4 required types, one of which has an InventoryBlueprintType but no configured Blueprint
 		final BlueprintReference ref = new BlueprintIdReference(6);
 		final Blueprint b = mock(Blueprint.class);
 		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5);
+		requiredComponent.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
 		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
 		final BlueprintRequiredType requiredMissingComponent = createRequiredType(b, null, this.component2, 1);
 		final BlueprintRequiredType requiredMissingMineral = createRequiredType(b, null, this.mineral2, 3);
 		when(b.getRequiredTypes()).thenReturn(
 				Arrays.asList(requiredComponent, requiredMineral, requiredMissingComponent, requiredMissingMineral));
 		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+		
+		final AbstractType type1Component = new ComponentImpl(this.type1);
+		final AbstractType component2Component = new MissingComponentImpl(this.component2);
+		final AbstractType type2Mineral = new MineralImpl(this.type2);
+		final AbstractType mineral2Mineral = new MissingMineralImpl(this.mineral2);
 
 		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(ref);
+		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
 
-		final SortedMap<Component, Integer> requiredComponents = requiredTypes.getRequiredComponents();
-		final Matcher<AbstractType> type1Component = component("Type 1", COST_1, LAST_UPDATED_1, false, 1);
-		final Matcher<AbstractType> component2Component = component("Component 2", null, null, true, 13);
 		// Sorted by name
-		assertThat(requiredComponents.keySet(), contains(component2Component, type1Component));
-		assertThat(requiredComponents, hasEntry(type1Component, 5));
-		assertThat(requiredComponents, hasEntry(component2Component, 1));
+		assertThat(resolvedRequiredTypes.keySet(), contains(component2Component, mineral2Mineral, type1Component, type2Mineral));
+		assertThat(resolvedRequiredTypes, hasEntry(type1Component, 5));
+		assertThat(resolvedRequiredTypes, hasEntry(component2Component, 1));
+		assertThat(resolvedRequiredTypes, hasEntry(type2Mineral, 14));
+		assertThat(resolvedRequiredTypes, hasEntry(mineral2Mineral, 3));
+		
+		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
+		assertThat(
+				requiredTypesTree,
+				contains(requiredType(component2Component, 1, null, DecompositionState.NEVER_DECOMPOSED),
+						requiredType(mineral2Mineral, 3, null, DecompositionState.NEVER_DECOMPOSED),
+						requiredType(type1Component, 5, null, DecompositionState.NOT_CONFIGURED),
+						requiredType(type2Mineral, 14, null, DecompositionState.NEVER_DECOMPOSED)));
+	}
 
-		final SortedMap<Mineral, Integer> requiredMinerals = requiredTypes.getRequiredMinerals();
-		final Matcher<AbstractType> type1Mineral = mineral("Type 2", COST_2, LAST_UPDATED_2, false, 2);
-		final Matcher<AbstractType> mineral2Mineral = mineral("Mineral 2", null, null, true, 14);
+	@Test
+	public void getRequiredComponentsWithDecomposition() {
+		// Setup 4 required types, where 1 has an InventoryBlueprintType and no Blueprint, and another has a fully-configured Blueprint
+		// which requires a previously-referenced type
+		final BlueprintReference ref = new BlueprintIdReference(6);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredComponentBlueprint = mock(Blueprint.class);
+		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5);
+		requiredComponent.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		requiredComponent.setMaterialBlueprint(requiredComponentBlueprint);
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
+		final BlueprintRequiredType requiredMissingComponent = createRequiredType(b, null, this.component2, 1);
+		requiredMissingComponent.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		final BlueprintRequiredType requiredMissingMineral = createRequiredType(b, null, this.mineral2, 3);
+		when(b.getRequiredTypes()).thenReturn(
+				Arrays.asList(requiredComponent, requiredMineral, requiredMissingComponent, requiredMissingMineral));
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+		
+		final BlueprintRequiredType requiredComponentRequiredMineral = createRequiredType(requiredComponentBlueprint, this.type2,
+				this.mineral1, 7);
+		when(requiredComponentBlueprint.getRequiredTypes()).thenReturn(Collections.singletonList(requiredComponentRequiredMineral));
+
+		final AbstractType type1Component = new ComponentImpl(this.type1);
+		final AbstractType component2Component = new MissingComponentImpl(this.component2);
+		final AbstractType type2Mineral = new MineralImpl(this.type2);
+		final AbstractType mineral2Mineral = new MissingMineralImpl(this.mineral2);
+
+		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(ref);
+		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
+
 		// Sorted by name
-		assertThat(requiredMinerals.keySet(), contains(mineral2Mineral, type1Mineral));
-		assertThat(requiredMinerals, hasEntry(type1Mineral, 14));
-		assertThat(requiredMinerals, hasEntry(mineral2Mineral, 3));
+		assertThat(resolvedRequiredTypes.keySet(), contains(component2Component, mineral2Mineral, type2Mineral));
+		assertThat(resolvedRequiredTypes, hasEntry(component2Component, 1));
+		// 14 from the original required type, 5*7 from 5x required components
+		assertThat(resolvedRequiredTypes, hasEntry(type2Mineral, 49));
+		assertThat(resolvedRequiredTypes, hasEntry(mineral2Mineral, 3));
+
+		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
+		// TODO set decomposition state up somewhere
+		assertThat(
+				requiredTypesTree,
+				contains(
+						requiredType(component2Component, 1, null, DecompositionState.NOT_CONFIGURED),
+						requiredType(mineral2Mineral, 3, null, DecompositionState.NEVER_DECOMPOSED),
+						requiredType(type1Component, 5, new BlueprintSummaryImpl(requiredComponentBlueprint),
+								DecompositionState.DECOMPOSED, requiredType(type2Mineral, 35, null, DecompositionState.NEVER_DECOMPOSED)),
+						requiredType(type2Mineral, 14, null, DecompositionState.NEVER_DECOMPOSED)));
+	}
+
+	@Test
+	public void getRequiredComponentsWithDeepDecomposition() {
+		// Setup 3 required types A/B/C where A and B are configured blueprints, mainBlueprint->A,B,C, A->B,C and B->C
+		final BlueprintReference ref = new BlueprintIdReference(6);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredBlueprint1 = mock(Blueprint.class);
+		final Blueprint requiredBlueprint2 = mock(Blueprint.class);
+		final BlueprintRequiredType requiredComponent1 = createRequiredType(b, this.type1, this.component1, 5);
+		requiredComponent1.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		requiredComponent1.setMaterialBlueprint(requiredBlueprint1);
+		final Type component2Type = mock(Type.class);
+		when(component2Type.getTypeName()).thenReturn("Type 1.5");
+		final BlueprintRequiredType requiredComponent2 = createRequiredType(b, component2Type, this.component2, 6);
+		requiredComponent2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		requiredComponent2.setMaterialBlueprint(requiredBlueprint2);
+
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
+		when(b.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1, requiredComponent2, requiredMineral));
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+
+		final BlueprintRequiredType requiredComponent1Mineral = createRequiredType(requiredBlueprint1, this.type2, this.mineral1, 7);
+		final BlueprintRequiredType requiredComponent1Component2 = createRequiredType(requiredBlueprint1, component2Type, this.component2,
+				8);
+		requiredComponent1Component2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		requiredComponent1Component2.setMaterialBlueprint(requiredBlueprint2);
+		when(requiredBlueprint1.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1Mineral, requiredComponent1Component2));
+
+		final BlueprintRequiredType requiredComponent2Mineral = createRequiredType(requiredBlueprint2, this.type2, this.mineral1, 9);
+		when(requiredBlueprint2.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent2Mineral));
+
+
+		final AbstractType requiredComponent1Type = new ComponentImpl(this.type1);
+		final AbstractType requiredComponent2Type = new ComponentImpl(component2Type);
+		final AbstractType requiredMineralType = new MineralImpl(this.type2);
+
+		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(ref);
+		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
+
+		assertEquals(Collections.singleton(requiredMineralType), resolvedRequiredTypes.keySet());
+		// 14 from the original required type, 5*7 from 5x required component 1, 6*9 from 6x required component 2, 5 * 8 * 9 from 5x
+		// required component 1->8x component 2
+		assertThat(resolvedRequiredTypes, hasEntry(requiredMineralType, 463));
+		
+		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
+		// TODO set decomposition state up somewhere
+		assertThat(
+				requiredTypesTree,
+				contains(
+						requiredType(
+								requiredComponent1Type,
+								5,
+								new BlueprintSummaryImpl(requiredBlueprint1),
+								DecompositionState.DECOMPOSED,
+								requiredType(requiredComponent2Type, 40, new BlueprintSummaryImpl(requiredBlueprint2),
+										DecompositionState.DECOMPOSED,
+										requiredType(requiredMineralType, 360, null, DecompositionState.NEVER_DECOMPOSED)),
+								requiredType(requiredMineralType, 35, null, DecompositionState.NEVER_DECOMPOSED)),
+						requiredType(requiredComponent2Type, 6, new BlueprintSummaryImpl(requiredBlueprint2),
+								DecompositionState.DECOMPOSED,
+								requiredType(requiredMineralType, 54, null, DecompositionState.NEVER_DECOMPOSED)),
+						requiredType(requiredMineralType, 14, null, DecompositionState.NEVER_DECOMPOSED)));
+	}
+
+	@Test
+	public void getRequiredComponentsWithDecompositionDisabled() {
+		// Setup 3 required types A/B/C where A and B are configured blueprints, mainBlueprint->A,B,C, A->B,C and B->C, and B has been
+		// configured to never be decomposed
+		final BlueprintReference ref = new BlueprintIdReference(6);
+		final Blueprint b = mock(Blueprint.class);
+		final Blueprint requiredBlueprint1 = mock(Blueprint.class);
+		final Blueprint requiredBlueprint2 = mock(Blueprint.class);
+		final BlueprintRequiredType requiredComponent1 = createRequiredType(b, this.type1, this.component1, 5);
+		requiredComponent1.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		requiredComponent1.setMaterialBlueprint(requiredBlueprint1);
+		final Type component2Type = mock(Type.class);
+		when(component2Type.getTypeName()).thenReturn("Type 1.5");
+		final BlueprintRequiredType requiredComponent2 = createRequiredType(b, component2Type, this.component2, 6);
+		requiredComponent2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		requiredComponent2.setMaterialBlueprint(requiredBlueprint2);
+
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14);
+		when(b.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1, requiredComponent2, requiredMineral));
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+
+		final BlueprintRequiredType requiredComponent1Mineral = createRequiredType(requiredBlueprint1, this.type2, this.mineral1, 7);
+		final BlueprintRequiredType requiredComponent1Component2 = createRequiredType(requiredBlueprint1, component2Type, this.component2,
+				8);
+		requiredComponent1Component2.setMaterialBlueprintType(mock(InventoryBlueprintType.class));
+		requiredComponent1Component2.setMaterialBlueprint(requiredBlueprint2);
+		when(requiredBlueprint1.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1Mineral, requiredComponent1Component2));
+
+		final BlueprintRequiredType requiredComponent2Mineral = createRequiredType(requiredBlueprint2, this.type2, this.mineral1, 9);
+		when(requiredBlueprint2.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent2Mineral));
+
+		final AbstractType requiredComponent1Type = new ComponentImpl(this.type1);
+		final AbstractType requiredComponent2Type = new ComponentImpl(component2Type);
+		final AbstractType requiredMineralType = new MineralImpl(this.type2);
+
+		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(ref);
+		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
+
+		assertEquals(resolvedRequiredTypes.keySet(), contains(requiredComponent2Type, requiredMineralType));
+		// 14 from the original required type, 5*7 from 5x required component 1
+		assertThat(resolvedRequiredTypes, hasEntry(requiredMineralType, 49));
+		// 6 from the original required type, 5*8 from 5x required component 1
+		assertThat(resolvedRequiredTypes, hasEntry(requiredComponent2Type, 46));
+
+		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
+		// TODO set decomposition state up somewhere
+		assertThat(
+				requiredTypesTree,
+				contains(
+						requiredType(
+								requiredComponent1Type,
+								5,
+								new BlueprintSummaryImpl(requiredBlueprint1),
+								DecompositionState.DECOMPOSED,
+								requiredType(requiredComponent2Type, 40, new BlueprintSummaryImpl(requiredBlueprint2),
+										DecompositionState.DECOMPOSED,
+										requiredType(requiredMineralType, 360, null, DecompositionState.NEVER_DECOMPOSED)),
+								requiredType(requiredMineralType, 35, null, DecompositionState.NEVER_DECOMPOSED)),
+						requiredType(requiredComponent2Type, 6, new BlueprintSummaryImpl(requiredBlueprint2),
+								DecompositionState.NOT_DECOMPOSED,
+								requiredType(requiredMineralType, 54, null, DecompositionState.NEVER_DECOMPOSED)),
+						requiredType(requiredMineralType, 14, null, DecompositionState.NEVER_DECOMPOSED)));
 	}
 
 	@Test

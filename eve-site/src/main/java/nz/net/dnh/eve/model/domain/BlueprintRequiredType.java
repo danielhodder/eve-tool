@@ -6,8 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
 
 import org.hibernate.annotations.NotFound;
@@ -38,6 +40,16 @@ public class BlueprintRequiredType implements Serializable {
 
 	private int units;
 
+	@OneToOne
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "materialBlueprintTypeID")
+	private Blueprint materialBlueprint;
+
+	@OneToOne
+	@JoinColumn(name = "materialBlueprintTypeID", insertable = false, updatable = false)
+	private InventoryBlueprintType materialBlueprintType;
+
+	/** @return the blueprint which requires this type */
 	public Blueprint getBlueprint() {
 		return this.blueprint;
 	}
@@ -46,6 +58,7 @@ public class BlueprintRequiredType implements Serializable {
 		this.blueprint = blueprint;
 	}
 
+	/** @return the type required by the blueprint, may be null if the type is not in the system */
 	public Type getType() {
 		return this.type;
 	}
@@ -54,16 +67,42 @@ public class BlueprintRequiredType implements Serializable {
 		this.type = type;
 	}
 
+	/** @return the type required by the blueprint in eve's inventory, never null */
 	public InventoryType getInventoryType() {
 		return this.inventoryType;
 	}
 
+	/** @return the number of the given {@link #getType() type} required by this {@link #getBlueprint() blueprint} */
 	public int getUnits() {
 		return this.units;
 	}
 
 	public void setUnits(final int units) {
 		this.units = units;
+	}
+
+	/**
+	 * @return the blueprint which could manufacture the {@link #getType() required type}, may be null if no blueprint can manufacutre the
+	 *         type or the blueprint is not in the system
+	 */
+	public Blueprint getMaterialBlueprint() {
+		return this.materialBlueprint;
+	}
+
+	public void setMaterialBlueprint(final Blueprint materialBlueprint) {
+		this.materialBlueprint = materialBlueprint;
+	}
+
+	/**
+	 * @return the blueprint which could manufacture the {@link #getType() required type} in eve's inventory, may be null if no blueprint
+	 *         can manufacture the type
+	 */
+	public InventoryBlueprintType getMaterialBlueprintType() {
+		return this.materialBlueprintType;
+	}
+
+	public void setMaterialBlueprintType(final InventoryBlueprintType materialBlueprintType) {
+		this.materialBlueprintType = materialBlueprintType;
 	}
 
 	@Override

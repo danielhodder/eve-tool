@@ -3,6 +3,7 @@ package nz.net.dnh.eve.business.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +12,17 @@ import java.util.TreeMap;
 
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintReference;
+import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.MarketPrice;
 import nz.net.dnh.eve.business.MarketPrices;
 import nz.net.dnh.eve.business.Mineral;
+import nz.net.dnh.eve.business.RequiredType;
+import nz.net.dnh.eve.business.RequiredType.DecompositionState;
 import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.business.TypeReference;
 import nz.net.dnh.eve.business.TypeService;
+import nz.net.dnh.eve.business.impl.dto.blueprint.BlueprintSummaryImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMineralImpl;
@@ -30,6 +35,7 @@ import nz.net.dnh.eve.market.eve_central.EveCentralMarketStatResponse.MarketStat
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
 import nz.net.dnh.eve.model.domain.Type;
+import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
 import nz.net.dnh.eve.model.repository.InventoryTypeRepository;
 import nz.net.dnh.eve.model.repository.TypeRepository;
@@ -122,32 +128,70 @@ public class TypeServiceImpl implements TypeService {
 	@Override
 	public RequiredTypes getRequiredTypes(final BlueprintReference blueprintRef) {
 		final Blueprint blueprint = this.blueprintResolverService.toBlueprint(blueprintRef);
-		final SortedMap<Component, Integer> requiredComponents = new TreeMap<>();
-		final SortedMap<Mineral, Integer> requiredMinerals = new TreeMap<>();
+		final SortedMap<AbstractType, Integer> resolvedRequiredTypes = new TreeMap<>();
 
+		final List<RequiredType<? extends AbstractType>> requiredTypes = addRequiredTypes(blueprint, resolvedRequiredTypes, 1);
+
+		return new RequiredTypes(requiredTypes, resolvedRequiredTypes);
+	}
+
+	private List<RequiredType<? extends AbstractType>> addRequiredTypes(final Blueprint blueprint,
+			final SortedMap<AbstractType, Integer> resolvedRequiredTypes, final int unitsMultiplier) {
+		final List<RequiredType<? extends AbstractType>> requiredTypes = new ArrayList<>();
 		for (final BlueprintRequiredType requiredType : blueprint.getRequiredTypes()) {
-			final int units = requiredType.getUnits();
-			final Type type = requiredType.getType();
+			final int units = requiredType.getUnits() * unitsMultiplier;
+			final Type typeDto = requiredType.getType();
 			final InventoryType inventoryType = requiredType.getInventoryType();
-			if (inventoryType.isMineral()) {
-				final Mineral mineral;
-				if (type != null) {
-					mineral = new MineralImpl(type);
-				} else {
-					mineral = new MissingMineralImpl(inventoryType);
-				}
-				requiredMinerals.put(mineral, units);
+			final Blueprint materialBlueprint = requiredType.getMaterialBlueprint();
+			final InventoryBlueprintType materialBlueprintType = requiredType.getMaterialBlueprintType();
+
+			final AbstractType type = toBusinessType(typeDto, inventoryType);
+
+			final BlueprintSummary typeBlueprint;
+			final DecompositionState decompositionState;
+			final List<RequiredType<? extends AbstractType>> typeRequiredTypes;
+			if (materialBlueprint != null) {
+				typeBlueprint = new BlueprintSummaryImpl(materialBlueprint);
+				typeRequiredTypes = addRequiredTypes(materialBlueprint, resolvedRequiredTypes, units);
+				if (Boolean.TRUE)// TODO
+					decompositionState = DecompositionState.DECOMPOSED;
+				else
+					decompositionState = DecompositionState.NOT_DECOMPOSED;
 			} else {
-				final Component component;
-				if (type != null) {
-					component = new ComponentImpl(type);
-				} else {
-					component = new MissingComponentImpl(inventoryType);
-				}
-				requiredComponents.put(component, units);
+				typeBlueprint = null;
+				typeRequiredTypes = null;
+				if (materialBlueprintType != null)
+					decompositionState = DecompositionState.NOT_CONFIGURED;
+				else
+					decompositionState = DecompositionState.NEVER_DECOMPOSED;
+			}
+			if (decompositionState != DecompositionState.DECOMPOSED) {
+				final Integer existingUnits = resolvedRequiredTypes.get(type);
+				final int resolvedUnits = existingUnits == null ? units : existingUnits + units;
+				resolvedRequiredTypes.put(type, resolvedUnits);
+			}
+			requiredTypes.add(new RequiredType<AbstractType>(type, units, typeBlueprint, decompositionState, typeRequiredTypes));
+		}
+		Collections.sort(requiredTypes);
+		return requiredTypes;
+	}
+
+	private AbstractType toBusinessType(final Type typeDto, final InventoryType inventoryType) {
+		final AbstractType type;
+		if (inventoryType.isMineral()) {
+			if (typeDto != null) {
+				type = new MineralImpl(typeDto);
+			} else {
+				type = new MissingMineralImpl(inventoryType);
+			}
+		} else {
+			if (typeDto != null) {
+				type = new ComponentImpl(typeDto);
+			} else {
+				type = new MissingComponentImpl(inventoryType);
 			}
 		}
-		return new RequiredTypes(requiredComponents, requiredMinerals);
+		return type;
 	}
 
 	@Override
@@ -276,8 +320,8 @@ public class TypeServiceImpl implements TypeService {
 			final TypeReference typeReference = typeIds.get(responseType
 					.getId());
 
-			AbstractType businessType;
 			final Type type = toType(typeReference);
+			AbstractType businessType;
 			if (type == null) {
 				final InventoryType inventoryType = toInventoryType(typeReference);
 

@@ -76,7 +76,8 @@ CREATE VIEW BlueprintTypes AS
     bp.blueprintTypeID as blueprintTypeID,
     itm.materialTypeID as materialTypeID,
     calculate_materials(itm.quantity - ifnull(bstr.rawQuantity, 0), ibt.wasteFactor, bp.materialEfficiency) as units,
-    mat.typeName
+    mat.typeName,
+    materialBlueprintType.blueprintTypeID as materialBlueprintTypeID
   FROM Blueprint bp
     JOIN `eve-dump`.invBlueprintTypes ibt ON ibt.blueprintTypeID = bp.blueprintTypeID
     JOIN `eve-dump`.invTypes it ON it.typeID = ibt.productTypeID
@@ -85,6 +86,7 @@ CREATE VIEW BlueprintTypes AS
     LEFT OUTER JOIN BlueprintSubTypeRequirements bstr 
       ON bstr.blueprintTypeId = bp.blueprintTypeID
       AND bstr.materialTypeID = itm.materialTypeID
+    LEFT OUTER JOIN `eve-dump`.invBlueprintTypes materialBlueprintType ON materialBlueprintType.productTypeID = itm.materialTypeID
   WHERE
     bstr.rawQuantity IS NULL OR itm.quantity - bstr.rawQuantity != 0
   UNION
@@ -92,7 +94,8 @@ CREATE VIEW BlueprintTypes AS
     bp.blueprintTypeID as blueprintTypeID,
     ram.requiredTypeID as materialTypeID,
     ram.quantity as units,
-    ramT.typeName
+    ramT.typeName,
+    materialBlueprintType.blueprintTypeID as materialBlueprintTypeID
   FROM Blueprint bp
     JOIN `eve-dump`.invBlueprintTypes ibt ON ibt.blueprintTypeID = bp.blueprintTypeID
     JOIN `eve-dump`.invTypes it ON it.typeID = ibt.blueprintTypeID
@@ -101,6 +104,8 @@ CREATE VIEW BlueprintTypes AS
     JOIN `eve-dump`.invGroups ramG ON ramG.groupID = ramT.groupID
     JOIN `eve-dump`.invCategories ramC ON ramC.categoryID = ramG.categoryID
     JOIN `eve-dump`.ramActivities ramA on ramA.activityID = ram.activityID
+    -- TODO 3: should this be in the view or queried by hibernate? the info is there after all...
+    LEFT OUTER JOIN `eve-dump`.invBlueprintTypes materialBlueprintType ON materialBlueprintType.productTypeID = ram.requiredTypeID
   WHERE
     ramA.activityName = 'Manufacturing'
     AND ramC.categoryName = 'Commodity';
@@ -133,7 +138,7 @@ CREATE VIEW BlueprintCosts AS
     bp.blueprintTypeID AS blueprintTypeID,
     btc.blueprintName AS blueprintName,
     # This makes my head hurt, MySQL doesn't return null if there are null values present, so we need to do it ourselves
-    if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,
+    if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,--TODO take decomposition into account
     calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun) as hours,
     cast((((ral.costPerHour * calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun)) + ral.costInstall) / bp.numberPerRun) as decimal(65,2)) AS otherCost
   from Blueprint bp

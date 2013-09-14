@@ -64,6 +64,8 @@ public interface TypeService {
 	 */
 	public RequiredTypes getRequiredTypes(BlueprintReference blueprint);
 
+	// TODO change decomposition state???
+
 	/**
 	 * Get the mineral with the given id (from {@link Mineral#getId()})
 	 *

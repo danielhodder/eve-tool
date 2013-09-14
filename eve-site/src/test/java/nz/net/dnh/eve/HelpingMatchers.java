@@ -19,6 +19,14 @@ public class HelpingMatchers {
 	public static <E> Matcher<Iterable<? extends E>> contains(final Matcher<? super E>... items) {
 		return Matchers.contains(items);
 	}
+	
+	/**
+	 * @see Matchers#contains(T...)
+	 */
+	@SafeVarargs
+	public static <E> Matcher<Iterable<? extends E>> contains(final E... items) {
+		return Matchers.contains(items);
+	}
 
 	/**
 	 * @see Matchers#containsInAnyOrder(Matcher...)
