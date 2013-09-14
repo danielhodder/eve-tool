@@ -2,11 +2,13 @@ package nz.net.dnh.eve.web.blueprint;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import nz.net.dnh.eve.business.BlueprintIdReference;
 import nz.net.dnh.eve.business.BlueprintService;
 import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.CandidateBlueprint;
+import nz.net.dnh.eve.business.TypeIdReference;
 import nz.net.dnh.eve.business.TypeService;
 import nz.net.dnh.eve.web.view.ImageURILocater;
 
@@ -91,9 +93,11 @@ public final class BlueprintsController {
 	 * Saves the decomposition state of the blueprint given the typeID -> boolean mappings
 	 */
 	@RequestMapping(value = "/blueprints/{id}/decomposition", method = RequestMethod.POST)
-	public View saveDecompositionChanges(@PathVariable("id") final long id,
+	public View saveDecompositionChanges(@PathVariable("id") final int id,
 			final BlueprintDecompositionForm decompositionStatus, final Errors errors) {
-		// TODO Update the blueprint with the new decomposition values
+		for (final Entry<Integer, Boolean> decomposition : decompositionStatus.getDecompositionStatus().entrySet()) {
+			this.typeService.updateRequiredType(new BlueprintIdReference(id), new TypeIdReference(decomposition.getKey()), decomposition.getValue());
+		}
 
 		return new RedirectView("/blueprints/" + id);
 	}

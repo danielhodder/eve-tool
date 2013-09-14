@@ -11,7 +11,9 @@
 		
 		<span class="decomposition-state">
 			<c:if test="${requiredType.decompositionState.toString() == 'DECOMPOSED'}">
-				ME: ${requiredType.typeBlueprint.materialEfficiency}
+				ME: ${requiredType.typeBlueprint.materialEfficiency},
+				PE: ${requiredType.typeBlueprint.productionEfficiency},
+				${requiredType.typeBlueprint.producedQuantity} per run,
 			</c:if>
 		</span>
 		
