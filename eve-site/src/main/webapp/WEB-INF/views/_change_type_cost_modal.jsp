@@ -25,7 +25,7 @@
 				<div class="controls">
 					<div class="input-append">
 						<input type="text" name="cost" value="" required="required"
-							pattern="[0-9]+\.[0-9]{2}" title="Please enter a currency including the cost to two decimal places" />
+							pattern="[0-9]+(\.[0-9]{1,2})?" title="Please enter a currency including the cost to two decimal places" />
 						<span class="add-on">ISK</span>
 					</div>
 				</div>
