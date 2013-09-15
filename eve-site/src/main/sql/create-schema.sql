@@ -4,7 +4,7 @@
 DROP VIEW IF EXISTS invBlueprintTypes, invCategories, invGroups, invTypes, BlueprintSummary, BlueprintCosts, BlueprintTypeCosts;
 DROP TABLE IF EXISTS Type;
 DROP VIEW IF EXISTS BlueprintTypes, BlueprintSubTypeRequirements;
-DROP TABLE IF EXISTS Blueprint;
+DROP TABLE IF EXISTS Blueprint, BlueprintTypeDecomposition;
 DROP FUNCTION IF EXISTS calculate_materials;
 DROP FUNCTION IF EXISTS calculate_production_time_hours;
 
@@ -150,6 +150,7 @@ CREATE VIEW BlueprintCosts AS
     btc.blueprintName AS blueprintName,
     # This makes my head hurt, MySQL doesn't return null if there are null values present, so we need to do it ourselves
     if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,
+    #TODO take decomposition into account
     calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun) as hours,
     cast((((ral.costPerHour * calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun)) + ral.costInstall) / bp.numberPerRun) as decimal(65,2)) AS otherCost
   from Blueprint bp

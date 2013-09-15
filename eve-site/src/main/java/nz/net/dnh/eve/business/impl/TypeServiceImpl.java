@@ -3,26 +3,19 @@ package nz.net.dnh.eve.business.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintReference;
-import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.MarketPrice;
 import nz.net.dnh.eve.business.MarketPrices;
 import nz.net.dnh.eve.business.Mineral;
-import nz.net.dnh.eve.business.RequiredType;
-import nz.net.dnh.eve.business.RequiredType.DecompositionState;
 import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.business.TypeReference;
 import nz.net.dnh.eve.business.TypeService;
-import nz.net.dnh.eve.business.impl.dto.blueprint.BlueprintSummaryImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMineralImpl;
@@ -37,7 +30,6 @@ import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
 import nz.net.dnh.eve.model.domain.BlueprintTypeDecomposition;
 import nz.net.dnh.eve.model.domain.BlueprintTypeDecomposition.BlueprintTypePK;
 import nz.net.dnh.eve.model.domain.Type;
-import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
 import nz.net.dnh.eve.model.repository.BlueprintTypeDecompositionRepository;
 import nz.net.dnh.eve.model.repository.InventoryTypeRepository;
@@ -62,6 +54,9 @@ public class TypeServiceImpl implements TypeService {
 
 	@Autowired
 	private BlueprintResolverService blueprintResolverService;
+
+	@Autowired
+	private BlueprintRequiredTypesService blueprintRequiredTypesService;
 
 	@Autowired
 	private EveCentralMarketStatRequester eveCentralMarketStatRequester;
@@ -126,80 +121,14 @@ public class TypeServiceImpl implements TypeService {
 	public List<? extends AbstractType> listMissingTypes(final BlueprintReference blueprintRef) {
 		final Blueprint blueprint = this.blueprintResolverService.toBlueprint(blueprintRef);
 		final List<AbstractType> missingTypes = new ArrayList<>();
-		TypeServiceImpl.addMinerals(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(blueprint), missingTypes);
-		TypeServiceImpl.addComponents(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(blueprint), missingTypes);
+		addMinerals(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(blueprint), missingTypes);
+		addComponents(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(blueprint), missingTypes);
 		return missingTypes;
 	}
 
 	@Override
-	public RequiredTypes getRequiredTypes(final BlueprintReference blueprintRef) {
-		final Blueprint blueprint = this.blueprintResolverService.toBlueprint(blueprintRef);
-		final SortedMap<AbstractType, Integer> resolvedRequiredTypes = new TreeMap<>();
-
-		final List<RequiredType<? extends AbstractType>> requiredTypes = addRequiredTypes(blueprint, resolvedRequiredTypes, 1);
-
-		return new RequiredTypes(requiredTypes, resolvedRequiredTypes);
-	}
-
-	private List<RequiredType<? extends AbstractType>> addRequiredTypes(final Blueprint blueprint,
-			final SortedMap<AbstractType, Integer> resolvedRequiredTypes, final int unitsMultiplier) {
-		final List<RequiredType<? extends AbstractType>> requiredTypes = new ArrayList<>();
-		for (final BlueprintRequiredType requiredType : blueprint.getRequiredTypes()) {
-			final int units = requiredType.getUnits() * unitsMultiplier;
-			final Type typeDto = requiredType.getType();
-			final InventoryType inventoryType = requiredType.getInventoryType();
-			final Blueprint materialBlueprint = requiredType.getMaterialBlueprint();
-			final InventoryBlueprintType materialBlueprintType = requiredType.getMaterialBlueprintType();
-
-			final AbstractType type = toBusinessType(typeDto, inventoryType);
-
-			final BlueprintSummary typeBlueprint;
-			final DecompositionState decompositionState;
-			final List<RequiredType<? extends AbstractType>> typeRequiredTypes;
-			if (materialBlueprint != null) {
-				typeBlueprint = new BlueprintSummaryImpl(materialBlueprint);
-				typeRequiredTypes = addRequiredTypes(materialBlueprint, requiredType.isDecomposed() ? resolvedRequiredTypes : null, units);
-				if (requiredType.isDecomposed())
-					decompositionState = DecompositionState.DECOMPOSED;
-				else
-					decompositionState = DecompositionState.NOT_DECOMPOSED;
-			} else {
-				typeBlueprint = null;
-				typeRequiredTypes = null;
-				if (materialBlueprintType != null)
-					decompositionState = DecompositionState.NOT_CONFIGURED;
-				else
-					decompositionState = DecompositionState.NEVER_DECOMPOSED;
-			}
-			// resolvedRequiredTypes will be null if this blueprint is not being decomposed - this means we don't want to count any required
-			// types on this blueprint
-			if (resolvedRequiredTypes != null && decompositionState != DecompositionState.DECOMPOSED) {
-				final Integer existingUnits = resolvedRequiredTypes.get(type);
-				final int resolvedUnits = existingUnits == null ? units : existingUnits + units;
-				resolvedRequiredTypes.put(type, resolvedUnits);
-			}
-			requiredTypes.add(new RequiredType<AbstractType>(type, units, typeBlueprint, decompositionState, typeRequiredTypes));
-		}
-		Collections.sort(requiredTypes);
-		return requiredTypes;
-	}
-
-	private AbstractType toBusinessType(final Type typeDto, final InventoryType inventoryType) {
-		final AbstractType type;
-		if (inventoryType.isMineral()) {
-			if (typeDto != null) {
-				type = new MineralImpl(typeDto);
-			} else {
-				type = new MissingMineralImpl(inventoryType);
-			}
-		} else {
-			if (typeDto != null) {
-				type = new ComponentImpl(typeDto);
-			} else {
-				type = new MissingComponentImpl(inventoryType);
-			}
-		}
-		return type;
+	public RequiredTypes getRequiredTypes(final BlueprintReference blueprint) {
+		return this.blueprintRequiredTypesService.getRequiredTypes(this.blueprintResolverService.toBlueprint(blueprint));
 	}
 
 	@Override

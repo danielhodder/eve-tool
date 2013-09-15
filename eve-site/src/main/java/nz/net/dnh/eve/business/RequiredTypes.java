@@ -1,5 +1,6 @@
 package nz.net.dnh.eve.business;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -9,11 +10,15 @@ import java.util.SortedMap;
 public class RequiredTypes {
 	private final List<RequiredType<? extends AbstractType>> requiredTypesTree;
 	private final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes;
+	private final List<RequiredBlueprint> requiredBlueprints;
 
 	public RequiredTypes(final List<RequiredType<? extends AbstractType>> requiredTypesTree,
-			final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes) {
-		this.requiredTypesTree = requiredTypesTree;
-		this.resolvedRequiredTypes = resolvedRequiredTypes;
+			final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes,
+ final List<RequiredBlueprint> requiredBlueprints) {
+		this.requiredTypesTree = Collections.unmodifiableList(requiredTypesTree);
+		this.resolvedRequiredTypes = Collections.unmodifiableSortedMap(resolvedRequiredTypes);
+		this.requiredBlueprints = Collections.unmodifiableList(requiredBlueprints);
+
 	}
 
 	/**
@@ -26,6 +31,16 @@ public class RequiredTypes {
 	 */
 	public List<RequiredType<? extends AbstractType>> getRequiredTypesTree() {
 		return this.requiredTypesTree;
+	}
+
+	/**
+	 * Get the other blueprints which are configured to be decomposed to create this blueprint.
+	 * 
+	 * @return A list of blueprints which must be made in order to make this blueprint. May be empty, never null.
+	 * @see RequiredType#getDecompositionState()
+	 */
+	public List<RequiredBlueprint> getRequiredBlueprints() {
+		return this.requiredBlueprints;
 	}
 
 	/**

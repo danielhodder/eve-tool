@@ -6,7 +6,10 @@ import java.util.List;
 public class RequiredType<T extends AbstractType> implements Comparable<RequiredType<T>> {
 	/** Whether this required type is currently decomposed, or whether it could be decomposed in the future */
 	public static enum DecompositionState {
-		/** The blueprint exists, and this required type should be replaced with it */
+		/**
+		 * The blueprint exists, and this required type should be replaced with it. The blueprint will exist in
+		 * {@link RequiredTypes#getRequiredBlueprints()}
+		 */
 		DECOMPOSED,
 		/** The blueprint exists, but this required type should <b>not</b> be replaced with it */
 		NOT_DECOMPOSED,
@@ -43,10 +46,8 @@ public class RequiredType<T extends AbstractType> implements Comparable<Required
 	}
 
 	/**
-	 * Get the number of this {@link #getType() type} required to construct the blueprint. If the blueprint was not the root of the
-	 * {@link RequiredTypes} tree, these units will already be multiplied by the number of units of the parent.
-	 * <p>
-	 * e.g. if A requires 5 of B and B requires 5 of C, when the required types of A are returned, the units of C will be returned as 25.
+	 * Get the number of this {@link #getType() type} required to construct the blueprint. These units are not multiplied by the number of
+	 * blueprints required.
 	 * 
 	 * @return The number of this type required to construct the blueprint
 	 */
@@ -85,4 +86,25 @@ public class RequiredType<T extends AbstractType> implements Comparable<Required
 	public int compareTo(final RequiredType<T> o) {
 		return this.type.compareTo(o.type);
 	}
+
+	@Override
+	public int hashCode() {
+		return this.type.hashCode();
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof RequiredType))
+			return false;
+		final RequiredType<?> other = (RequiredType<?>) obj;
+		return this.type.equals(other.type) && this.units == other.units;
+	}
+
+	@Override
+	public String toString() {
+		return "RequiredType [type=" + this.type + ", units=" + this.units + ", typeBlueprint=" + this.typeBlueprint
+				+ ", decompositionState=" + this.decompositionState + ", typeBlueprintRequiredTypes=" + this.typeBlueprintRequiredTypes
+				+ "]";
+	}
+
 }
