@@ -6,7 +6,7 @@
 <table class="table table-striped table-hover types image-table click-row">
 	<thead>
 		<tr>
-			<th style="width: 323px;">Name</th>
+			<th style="width: 323px;" colspan="2">Name</th>
 			<th class="text-right">Number of runs</th>
 			<th class="text-right">Cost to run</th>
 			<th class="text-right">Number of items Produced</th>
@@ -17,9 +17,9 @@
 	<tbody>
 		<c:forEach items="${blueprints}" var="blueprint">
 			<tr>
+				<td><img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.typeBlueprint.id, 32)}" />" /></td>
 				<td>
 					<a href="<c:url value="/blueprints/${blueprint.typeBlueprint.id}" />">
-						<img src="<c:out value="${imageURILocator.getUriForTypeID(blueprint.typeBlueprint.id, 32)}" />" />
 						${blueprint.typeBlueprint.name}
 					</a>
 				</td>
