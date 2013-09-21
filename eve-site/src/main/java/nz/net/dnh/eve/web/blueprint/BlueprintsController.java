@@ -8,6 +8,7 @@ import nz.net.dnh.eve.business.BlueprintIdReference;
 import nz.net.dnh.eve.business.BlueprintService;
 import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.CandidateBlueprint;
+import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.business.TypeIdReference;
 import nz.net.dnh.eve.business.TypeService;
 import nz.net.dnh.eve.web.view.ImageURILocater;
@@ -39,10 +40,9 @@ public final class BlueprintsController {
 	@RequestMapping(value = "/blueprints/{id}", method = RequestMethod.GET)
 	public ModelAndView showBlueprint(@PathVariable("id") final int id) {
 		final BlueprintSummary blueprintInformation = this.blueprintService.getBlueprint(new BlueprintIdReference(id));
+		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(blueprintInformation);
 
-		return new ModelAndView("blueprints/show", "view", new BlueprintView(blueprintInformation,
-				this.typeService.getRequiredTypes(blueprintInformation),
-				new BlueprintForm(blueprintInformation)));
+		return new ModelAndView("blueprints/show", "view", new BlueprintView(blueprintInformation, requiredTypes, new BlueprintForm(blueprintInformation)));
 	}
 
 	@RequestMapping(value = "/blueprints/{id}", method = RequestMethod.POST)

@@ -36,44 +36,9 @@
 		<section role="blueprints">
 			<h2>Required Blueprints</h2>
 			
-			<table class="table table-striped table-hover types image-table click-row">
-				<thead>
-					<tr>
-						<th style="width: 323px;">Name</th>
-						<th class="text-right">Number of runs</th>
-						<th class="text-right">Cost to run</th>
-						<th class="text-right">Number of items Produced</th>
-						<th class="text-right">Number of items left after production of ${view.blueprint.name}</th>
-					</tr>
-				</thead>
-				
-				<tbody>
-					<tr>
-						<td>
-							<a href="<c:url value="/blueprints/22457" />">
-								<img src="<c:out value="${imageURILocator.getUriForTypeID(22457, 32)}" />" />
-								Sabre Blueprint
-							</a>
-						</td>
-						<td class="text-right">1</td>
-						<td class="text-right">??? ISK</td>
-						<td class="text-right">1</td>
-						<td class="text-right">0</td>
-					</tr>
-					
-					<tr>
-						<td>
-							<a href="<c:url value="/blueprints/16243" />">
-								<img src="<c:out value="${imageURILocator.getUriForTypeID(16243, 32)}" />" />
-								Thrasher Blueprint
-							</a>
-						</td>
-						<td class="text-right">1</td>
-						<td class="text-right">??? ISK</td>
-						<td class="text-right">1</td>
-						<td class="text-right">0</td>
-				</tbody>
-			</table>
+			<tiles:insertTemplate template="_required_blueprints.jsp">
+				<tiles:putAttribute name="blueprints" value="${view.requiredTypes.requiredBlueprints}" />
+			</tiles:insertTemplate>
 		</section>
 		
 		<section role="components">
@@ -84,8 +49,7 @@
 			</h2>
 			<tiles:insertTemplate template="_type_list.jsp">
 				<tiles:putAttribute name="typeName">Name</tiles:putAttribute>
-				<tiles:putAttribute name="types"
-					value="${view.requiredTypes.resolvedRequiredTypes}" />
+				<tiles:putAttribute name="types" value="${view.requiredTypes.resolvedRequiredTypes}" />
 				<tiles:putAttribute name="blueprint" value="${view.blueprint}" />
 			</tiles:insertTemplate>
 		</section>
