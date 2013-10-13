@@ -26,7 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public final class BlueprintsController {
+public final class BlueprintsController extends UserSpecicificController {
 	@Autowired
 	private ImageURILocater imageURILocator;
 	@Autowired private BlueprintService blueprintService;
