@@ -12,13 +12,16 @@
 					<span class="icon-bar"></span>
 			</a> 
 			<a class="brand" href="<s:url value="/" />">EVE Blueprint Tool</a>
-			<div class="nav-collapse collapse">
-				<ul class="nav">
-					<li class="active"><a href='<s:url value="/" />'>Home</a></li>
-					<li><a href="#new-blueprint" data-toggle="modal">Add a blueprint</a></li>
-				</ul>
-			</div>
 			
+			<div class="nav-collapse collapse">
+				<security:authorize access="isAuthenticated()">
+					<ul class="nav">
+						<li class="active"><a href='<s:url value="/" />'>Home</a></li>
+						<li><a href="#new-blueprint" data-toggle="modal">Add a blueprint</a></li>
+					</ul>
+				</security:authorize>
+			</div>
+				
 			<form class="navbar-form pull-right">
 				<button type="submit" id="update-prices" class="btn btn-danger">Update All Prices</button>
 			</form>
