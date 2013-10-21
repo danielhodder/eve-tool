@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import nz.net.dnh.eve.business.AbstractType;
+import nz.net.dnh.eve.business.BlueprintReference;
 import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.RequiredType;
 import nz.net.dnh.eve.business.RequiredType.DecompositionState;
@@ -13,7 +14,7 @@ import nz.net.dnh.eve.business.impl.dependencies.BlueprintDependencyState;
 import nz.net.dnh.eve.business.impl.dependencies.BlueprintNode;
 import nz.net.dnh.eve.business.impl.dependencies.Graph;
 import nz.net.dnh.eve.business.impl.dependencies.RootBlueprintNode;
-import nz.net.dnh.eve.business.impl.dto.blueprint.BlueprintSummaryImpl;
+import nz.net.dnh.eve.business.impl.dto.blueprint.RequiredBlueprintSummaryImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMineralImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.ComponentImpl;
@@ -24,6 +25,7 @@ import nz.net.dnh.eve.model.domain.Type;
 import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class BlueprintRequiredTypesServiceImpl implements BlueprintRequiredTypesService {
 
+	@Autowired
+	private BlueprintResolverService blueprintResolverService;
+
 	@Override
-	public RequiredTypes getRequiredTypes(final Blueprint blueprint) {
+	public RequiredTypes getRequiredTypes(final BlueprintReference ref) {
+		final Blueprint blueprint = this.blueprintResolverService.toBlueprint(ref);
 		final BlueprintNode rootNode = new RootBlueprintNode(blueprint);
 		final Graph<Blueprint, BlueprintDependencyState, BlueprintNode> dependencyGraph = new Graph<>(rootNode);
 		final List<RequiredType<? extends AbstractType>> requiredTypes = addRequiredTypes(blueprint, dependencyGraph);
@@ -59,7 +65,7 @@ public class BlueprintRequiredTypesServiceImpl implements BlueprintRequiredTypes
 			final DecompositionState decompositionState;
 			final List<RequiredType<? extends AbstractType>> typeRequiredTypes;
 			if (materialBlueprint != null) {
-				typeBlueprint = new BlueprintSummaryImpl(materialBlueprint);
+				typeBlueprint = new RequiredBlueprintSummaryImpl(materialBlueprint, 1);
 				BlueprintNode graphNode = null;
 				if (requiredType.isDecomposed()) {
 					decompositionState = DecompositionState.DECOMPOSED;

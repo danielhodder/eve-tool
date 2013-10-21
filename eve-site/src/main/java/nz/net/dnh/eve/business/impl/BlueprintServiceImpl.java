@@ -47,6 +47,8 @@ public class BlueprintServiceImpl implements BlueprintService {
 	private EveCentralMarketStatRequester marketDataRepository;
 	@Autowired
 	private BlueprintResolverService blueprintResolverService;
+	@Autowired
+	private BlueprintRequiredTypesService blueprintRequiredTypesService;
 
 	@Override
 	public List<BlueprintSummary> listSummaries() {
@@ -54,7 +56,7 @@ public class BlueprintServiceImpl implements BlueprintService {
 		final List<BlueprintSummary> blueprintSummaries = new ArrayList<>(
 				blueprints.size());
 		for (final Blueprint blueprint : blueprints) {
-			blueprintSummaries.add(new BlueprintSummaryImpl(blueprint));
+			blueprintSummaries.add(new BlueprintSummaryImpl(blueprint, this.blueprintRequiredTypesService));
 		}
 		return blueprintSummaries;
 	}
@@ -102,7 +104,7 @@ public class BlueprintServiceImpl implements BlueprintService {
 			LOGGER.warn("You already had a blueprint summary, why are you asking for another one?");
 			return (BlueprintSummary) blueprintReference;
 		}
-		return new BlueprintSummaryImpl(this.blueprintResolverService.toBlueprint(blueprintReference));
+		return new BlueprintSummaryImpl(this.blueprintResolverService.toBlueprint(blueprintReference), this.blueprintRequiredTypesService);
 	}
 
 	@Override
@@ -125,7 +127,7 @@ public class BlueprintServiceImpl implements BlueprintService {
 		final Blueprint newBlueprint = new Blueprint(blueprintReference.getId(), numberPerRun, productionEfficiency, saleValue,
 				materialEfficiency, automaticallyUpdateSalePrice);
 		final Blueprint savedBlueprint = this.blueprintRepository.save(newBlueprint);
-		return new BlueprintSummaryImpl(savedBlueprint);
+		return new BlueprintSummaryImpl(savedBlueprint, this.blueprintRequiredTypesService);
 	}
 
 	@Override
@@ -157,7 +159,7 @@ public class BlueprintServiceImpl implements BlueprintService {
 		}
 
 		final Blueprint savedBlueprint = this.blueprintRepository.save(blueprint);
-		return new BlueprintSummaryImpl(savedBlueprint);
+		return new BlueprintSummaryImpl(savedBlueprint, this.blueprintRequiredTypesService);
 	}
 
 	@Override
@@ -178,7 +180,7 @@ public class BlueprintServiceImpl implements BlueprintService {
 		final ArrayList<BlueprintSummary> blueprintSummaries = new ArrayList<>(blueprints.size());
 		
 		for (final Blueprint b : blueprints) {
-			blueprintSummaries.add(new BlueprintSummaryImpl(b));
+			blueprintSummaries.add(new BlueprintSummaryImpl(b, this.blueprintRequiredTypesService));
 		}
 		
 		return blueprintSummaries;

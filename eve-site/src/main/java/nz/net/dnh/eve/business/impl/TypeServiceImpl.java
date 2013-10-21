@@ -13,7 +13,6 @@ import nz.net.dnh.eve.business.Component;
 import nz.net.dnh.eve.business.MarketPrice;
 import nz.net.dnh.eve.business.MarketPrices;
 import nz.net.dnh.eve.business.Mineral;
-import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.business.TypeReference;
 import nz.net.dnh.eve.business.TypeService;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl;
@@ -54,9 +53,6 @@ public class TypeServiceImpl implements TypeService {
 
 	@Autowired
 	private BlueprintResolverService blueprintResolverService;
-
-	@Autowired
-	private BlueprintRequiredTypesService blueprintRequiredTypesService;
 
 	@Autowired
 	private EveCentralMarketStatRequester eveCentralMarketStatRequester;
@@ -124,11 +120,6 @@ public class TypeServiceImpl implements TypeService {
 		addMinerals(this.inventoryTypeRepository.findUnknownMineralsForBlueprint(blueprint), missingTypes);
 		addComponents(this.inventoryTypeRepository.findUnknownComponentsForBlueprint(blueprint), missingTypes);
 		return missingTypes;
-	}
-
-	@Override
-	public RequiredTypes getRequiredTypes(final BlueprintReference blueprint) {
-		return this.blueprintRequiredTypesService.getRequiredTypes(this.blueprintResolverService.toBlueprint(blueprint));
 	}
 
 	@Override

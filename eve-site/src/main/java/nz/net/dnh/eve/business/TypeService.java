@@ -55,16 +55,6 @@ public interface TypeService {
 	public List<? extends AbstractType> listMissingTypes(BlueprintReference blueprint);
 
 	/**
-	 * Get the minerals and components required to build the given blueprint,
-	 * and their quantities.
-	 *
-	 * @param blueprint
-	 *            The blueprint to retrieve required types for
-	 * @return The required minerals and components
-	 */
-	public RequiredTypes getRequiredTypes(BlueprintReference blueprint);
-
-	/**
 	 * Set whether the given type should be decomposed when building the given blueprint.
 	 * 
 	 * @param blueprint

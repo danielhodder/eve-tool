@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 
 import nz.net.dnh.eve.business.RequiredBlueprint;
 import nz.net.dnh.eve.business.RequiredType;
+import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.model.domain.Blueprint;
+import nz.net.dnh.eve.model.domain.BlueprintCostSummary;
 
 /** Blueprint summary used when returning a {@link RequiredBlueprint} or {@link RequiredType} */
 public class RequiredBlueprintSummaryImpl extends AbstractBlueprintSummary {
@@ -22,9 +24,20 @@ public class RequiredBlueprintSummaryImpl extends AbstractBlueprintSummary {
 	}
 
 	@Override
-	public BigDecimal getMaterialCost() {
-		// This also makes getTotalCost(), getProfit() and getProfitPercentage() unavailable
-		throw new UnsupportedOperationException("Material cost is not available for required blueprints");
+	public RequiredTypes getRequiredTypes() {
+		// This also makes getMaterialCost(), getTotalCost(), getProfit() and getProfitPercentage() unavailable
+		// TODO have a different interface for this case...
+		throw new UnsupportedOperationException("Required types are not available for required blueprints");
+	}
+
+	@Override
+	public BigDecimal getRunningCost() {
+		final BlueprintCostSummary costSummary = this.blueprint.getCostSummary();
+		final BigDecimal costPerHour = costSummary.getCostPerHour();
+		final BigDecimal installCost = costSummary.getInstallCost();
+		final BigDecimal hours = new BigDecimal(getHours());
+		final BigDecimal numberPerRun = new BigDecimal(getNumberPerRun());
+		return costPerHour.multiply(hours).add(installCost).divide(numberPerRun);
 	}
 
 	@Override

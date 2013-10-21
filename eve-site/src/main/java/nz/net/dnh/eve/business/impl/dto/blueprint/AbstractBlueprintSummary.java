@@ -2,10 +2,11 @@ package nz.net.dnh.eve.business.impl.dto.blueprint;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map.Entry;
 
+import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.model.domain.Blueprint;
-import nz.net.dnh.eve.model.domain.BlueprintCostSummary;
 
 public abstract class AbstractBlueprintSummary implements BlueprintSummary {
 
@@ -102,13 +103,16 @@ public abstract class AbstractBlueprintSummary implements BlueprintSummary {
 	}
 
 	@Override
-	public BigDecimal getRunningCost() {
-		final BlueprintCostSummary costSummary = this.blueprint.getCostSummary();
-		final BigDecimal costPerHour = costSummary.getCostPerHour();
-		final BigDecimal installCost = costSummary.getInstallCost();
-		final BigDecimal hours = new BigDecimal(getHours());
-		final BigDecimal numberPerRun = new BigDecimal(getNumberPerRun());
-		return costPerHour.multiply(hours).add(installCost).divide(numberPerRun);// TODO rounding
+	public BigDecimal getMaterialCost() {
+		BigDecimal materialCost = BigDecimal.ZERO;
+		for (final Entry<? extends AbstractType, Integer> requiredType : getRequiredTypes().getResolvedRequiredTypes().entrySet()) {
+			final BigDecimal requiredTypeCost = requiredType.getKey().getCost();
+			if (requiredTypeCost == null)
+				return null;
+			final BigDecimal requiredUnits = BigDecimal.valueOf(requiredType.getValue());
+			materialCost = materialCost.add(requiredTypeCost.multiply(requiredUnits));
+		}
+		return materialCost;
 	}
 
 }

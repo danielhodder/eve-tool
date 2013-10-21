@@ -40,7 +40,7 @@ public final class BlueprintsController {
 	@RequestMapping(value = "/blueprints/{id}", method = RequestMethod.GET)
 	public ModelAndView showBlueprint(@PathVariable("id") final int id) {
 		final BlueprintSummary blueprintInformation = this.blueprintService.getBlueprint(new BlueprintIdReference(id));
-		final RequiredTypes requiredTypes = this.typeService.getRequiredTypes(blueprintInformation);
+		final RequiredTypes requiredTypes = blueprintInformation.getRequiredTypes();
 
 		return new ModelAndView("blueprints/show", "view", new BlueprintView(blueprintInformation, requiredTypes, new BlueprintForm(blueprintInformation)));
 	}

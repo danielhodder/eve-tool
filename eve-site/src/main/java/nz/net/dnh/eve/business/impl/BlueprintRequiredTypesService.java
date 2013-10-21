@@ -1,8 +1,9 @@
 package nz.net.dnh.eve.business.impl;
 
+import nz.net.dnh.eve.business.BlueprintReference;
 import nz.net.dnh.eve.business.RequiredTypes;
-import nz.net.dnh.eve.model.domain.Blueprint;
 
 public interface BlueprintRequiredTypesService {
-	RequiredTypes getRequiredTypes(Blueprint blueprint);
+	// TODO caching wrapper
+	RequiredTypes getRequiredTypes(BlueprintReference blueprint);
 }

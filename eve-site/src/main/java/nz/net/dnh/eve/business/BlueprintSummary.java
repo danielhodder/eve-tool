@@ -68,4 +68,11 @@ public interface BlueprintSummary extends BlueprintInformation {
 	 * @return
 	 */
 	public boolean isAutomaticallyUpdateSalePrice();
+
+	/**
+	 * Get the minerals and components required to build the given blueprint, and their quantities.
+	 * 
+	 * @return The required minerals and components
+	 */
+	public RequiredTypes getRequiredTypes();
 }
