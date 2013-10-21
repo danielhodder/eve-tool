@@ -1,7 +1,8 @@
 -- NB: Replace `eve-dump` with the database of your eve dump
 
 -- Clear out the schema first (this is the reverse order that these objects are defined in this file)
-DROP VIEW IF EXISTS invBlueprintTypes, invCategories, invGroups, invTypes, BlueprintSummary, BlueprintCosts, BlueprintTypeCosts;
+-- TODO check all the right ones are dropped...
+DROP VIEW IF EXISTS invBlueprintTypes, invCategories, invGroups, invTypes, BlueprintCosts, BlueprintTypeCosts;
 DROP TABLE IF EXISTS Type;
 DROP VIEW IF EXISTS BlueprintTypes, BlueprintSubTypeRequirements;
 DROP TABLE IF EXISTS Blueprint, BlueprintTypeDecomposition;
@@ -118,7 +119,9 @@ SELECT
     LEFT OUTER JOIN `eve-dump`.invBlueprintTypes materialBlueprintType ON materialBlueprintType.productTypeID = ram.requiredTypeID
     LEFT OUTER JOIN BlueprintTypeDecomposition btd ON btd.blueprintTypeID = bp.blueprintTypeID AND btd.materialTypeID = ram.requiredTypeID
   WHERE
-    ramA.activityName = 'Manufacturing'
+    -- Filter out quantities already accounted for in the previous query TODO make this sucker actually work
+    NOT EXISTS (select * from `eve-dump`.invTypeMaterials itm where itm.typeID = ibt.productTypeID and itm.materialTypeID = ram.requiredTypeID)
+    AND ramA.activityName = 'Manufacturing'
     AND ramC.categoryName != 'Skill';
 
 
@@ -149,7 +152,6 @@ CREATE VIEW BlueprintTypeCosts AS
 CREATE VIEW BlueprintCosts AS
   select
     bp.blueprintTypeID AS blueprintTypeID,
-    btc.blueprintName AS blueprintName,
     # This makes my head hurt, MySQL doesn't return null if there are null values present, so we need to do it ourselves
     if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,
     calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency) as hoursForSingleRun,
@@ -159,10 +161,9 @@ CREATE VIEW BlueprintCosts AS
     EXISTS(select blueprintTypeID from BlueprintTypeDecomposition btd where btd.blueprintTypeID=bp.blueprintTypeID) AS containsDecomposed
   from Blueprint bp
     join `eve-dump`.invBlueprintTypes ibt on ibt.blueprintTypeID = bp.blueprintTypeID
-    left join BlueprintTypeCosts btc on btc.blueprintTypeID = bp.blueprintTypeID
+    # Ignore the cost of materials if they're decomposed - java will sort that out for us
+    left outer join BlueprintTypeCosts btc on btc.blueprintTypeID = bp.blueprintTypeID and btc.decomposed = 0
     JOIN `eve-dump`.ramAssemblyLines ral ON ral.assemblyLineID = 1 # They're all the same!
-  # Ignore the cost of materials if they're decomposed - java will sort that out for us
-  where btc.decomposed = 0
   group by bp.blueprintTypeID;
 
 
