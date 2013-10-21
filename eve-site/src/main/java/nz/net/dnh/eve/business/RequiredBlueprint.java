@@ -50,7 +50,7 @@ public class RequiredBlueprint {
 	}
 	
 	public BigDecimal getProductionCost() {
-		return null;// TODO
+		return this.typeBlueprint.getRunningCost();
 	}
 
 	/**

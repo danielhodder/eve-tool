@@ -13,8 +13,7 @@ public class RequiredTypes {
 	private final List<RequiredBlueprint> requiredBlueprints;
 
 	public RequiredTypes(final List<RequiredType<? extends AbstractType>> requiredTypesTree,
-			final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes,
- final List<RequiredBlueprint> requiredBlueprints) {
+			final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes, final List<RequiredBlueprint> requiredBlueprints) {
 		this.requiredTypesTree = Collections.unmodifiableList(requiredTypesTree);
 		this.resolvedRequiredTypes = Collections.unmodifiableSortedMap(resolvedRequiredTypes);
 		this.requiredBlueprints = Collections.unmodifiableList(requiredBlueprints);

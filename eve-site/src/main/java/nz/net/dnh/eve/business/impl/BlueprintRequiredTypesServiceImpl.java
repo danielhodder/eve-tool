@@ -65,7 +65,7 @@ public class BlueprintRequiredTypesServiceImpl implements BlueprintRequiredTypes
 					decompositionState = DecompositionState.DECOMPOSED;
 					// Add a dependency on the parent blueprint to this type in the dependency graph, if we are tracking dependencies
 					if (dependencyGraph != null) {
-						graphNode = new BlueprintNode(materialBlueprint, typeBlueprint, type);
+						graphNode = new BlueprintNode(materialBlueprint, type);
 						dependencyGraph.addDependency(graphNode, blueprint);
 					}
 				} else {

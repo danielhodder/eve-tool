@@ -2,8 +2,6 @@ package nz.net.dnh.eve.business.impl;
 
 import static nz.net.dnh.eve.HelpingMatchers.contains;
 import static nz.net.dnh.eve.HelpingMatchers.hasEntry;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -136,6 +134,8 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 	public void getRequiredComponentsWithoutDecomposition() {
 		// Setup 4 required types, one of which has an InventoryBlueprintType but no configured Blueprint
 		final Blueprint b = mock(Blueprint.class);
+		when(b.getProducedQuantity()).thenReturn(1);
+		when(b.getNumberPerRun()).thenReturn(1);
 		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5, false,
 				mock(InventoryBlueprintType.class), null);
 		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14, false, null, null);
@@ -150,7 +150,7 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		final AbstractType mineral2Mineral = new MissingMineralImpl(this.mineral2);
 
 		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(b);
-		assertThat(requiredTypes.getRequiredBlueprints(), is(empty()));
+		assertThat(requiredTypes.getRequiredBlueprints(), contains(requiredBlueprint(1, 1, 1, b)));
 
 		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
 		// Sorted by name
@@ -174,6 +174,8 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		// Setup 4 required types, where 1 has an InventoryBlueprintType and no Blueprint, and another has a fully-configured Blueprint
 		// which requires a previously-referenced type
 		final Blueprint b = mock(Blueprint.class);
+		when(b.getProducedQuantity()).thenReturn(1);
+		when(b.getNumberPerRun()).thenReturn(3);
 		final Blueprint requiredComponentBlueprint = mock(Blueprint.class);
 		when(requiredComponentBlueprint.getProducedQuantity()).thenReturn(2);
 		final BlueprintRequiredType requiredComponent = createRequiredType(b, this.type1, this.component1, 5, true,
@@ -196,15 +198,17 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 
 		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(b);
 
-		assertThat(requiredTypes.getRequiredBlueprints(), contains(requiredBlueprint(5, 6, 3, requiredComponentBlueprint)));
+		assertThat(requiredTypes.getRequiredBlueprints(),
+				contains(requiredBlueprint(3, 3, 3, b), requiredBlueprint(15, 16, 8, requiredComponentBlueprint)));
 
 		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
 		// Sorted by name
 		assertThat(resolvedRequiredTypes.keySet(), contains(component2Component, mineral2Mineral, type2Mineral));
-		assertThat(resolvedRequiredTypes, hasEntry(component2Component, 1));
-		// 14 from the original required type, 3*7 from 3x required component runs (producing 2x components each)
-		assertThat(resolvedRequiredTypes, hasEntry(type2Mineral, 35));
-		assertThat(resolvedRequiredTypes, hasEntry(mineral2Mineral, 3));
+		assertThat(resolvedRequiredTypes, hasEntry(component2Component, 3));
+		// 3*14 from the original required type, 8*7 from 3x required component runs (producing 2x components each)
+		assertThat(resolvedRequiredTypes, hasEntry(type2Mineral, 98));
+		// 3 runs * 3 required
+		assertThat(resolvedRequiredTypes, hasEntry(mineral2Mineral, 9));
 
 		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
 		assertThat(
@@ -222,6 +226,8 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		// Setup 3 required types A/B/C where A and B are configured blueprints, mainBlueprint->A,B,C, A->B,C and B->C
 		// The blueprint for A produces 2 items every time it is run, the blueprint for B produces 4 items every time it is run
 		final Blueprint b = mock(Blueprint.class);
+		when(b.getProducedQuantity()).thenReturn(1);
+		when(b.getNumberPerRun()).thenReturn(1);
 		final Blueprint requiredBlueprint1 = mock(Blueprint.class);
 		when(requiredBlueprint1.getProducedQuantity()).thenReturn(2);
 		final Blueprint requiredBlueprint2 = mock(Blueprint.class);
@@ -257,7 +263,8 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		// 6 requiredComponent2 from A + 3*8 requiredComponent2 from 3 runs*requiredComponent1 = 30, requiredComponent2 produces 7 per run,
 		// so 35 should be produced from 5 runs
 		assertThat(requiredBlueprints,
-				contains(requiredBlueprint(5, 6, 3, requiredBlueprint1), requiredBlueprint(30, 35, 5, requiredBlueprint2)));
+				contains(requiredBlueprint(1, 1, 1, b), requiredBlueprint(5, 6, 3, requiredBlueprint1),
+						requiredBlueprint(30, 35, 5, requiredBlueprint2)));
 
 		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
 		assertEquals(Collections.singleton(requiredMineralType), resolvedRequiredTypes.keySet());
@@ -286,6 +293,8 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		// Setup 3 required types A/B/C where A and B are configured blueprints, mainBlueprint->A,B,C, A->B,C and B->C, and B has been
 		// configured to not be decomposed in either place
 		final Blueprint b = mock(Blueprint.class);
+		when(b.getProducedQuantity()).thenReturn(67);
+		when(b.getNumberPerRun()).thenReturn(2);
 		final Blueprint requiredBlueprint1 = mock(Blueprint.class);
 		final Blueprint requiredBlueprint2 = mock(Blueprint.class);
 		when(requiredBlueprint1.getProducedQuantity()).thenReturn(1);
@@ -315,14 +324,15 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		final AbstractType requiredMineralType = new MineralImpl(this.type2);
 
 		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(b);
-		assertThat(requiredTypes.getRequiredBlueprints(), contains(requiredBlueprint(5, 5, 5, requiredBlueprint1)));
+		assertThat(requiredTypes.getRequiredBlueprints(),
+				contains(requiredBlueprint(134, 134, 2, b), requiredBlueprint(10, 10, 10, requiredBlueprint1)));
 
 		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
 		assertThat(resolvedRequiredTypes.keySet(), contains(requiredComponent2Type, requiredMineralType));
-		// 14 from the original required type, 5*7 from 5x required component 1
-		assertThat(resolvedRequiredTypes, hasEntry(requiredMineralType, 49));
-		// 6 from the original required type, 5*8 from 5x required component 1
-		assertThat(resolvedRequiredTypes, hasEntry(requiredComponent2Type, 46));
+		// 2*14 from the original required type, 10*7 from 2x5x required component 1
+		assertThat(resolvedRequiredTypes, hasEntry(requiredMineralType, 98));
+		// 2*6 from the original required type, 10*8 from 2x5x required component 1
+		assertThat(resolvedRequiredTypes, hasEntry(requiredComponent2Type, 92));
 
 		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
 		assertThat(

@@ -23,10 +23,11 @@ BEGIN
   RETURN materialAmount + wasteEffect;
 END$$
 
--- Calculates the production time, in hours, rounded up, for an entire run of a blueprint
+-- Calculates the production time, in hours, unrounded, for a single run of a blueprint.
+-- To calculate the exact number of hours, multiply this by the number of runs then take the next-highest integer.
 CREATE FUNCTION calculate_production_time_hours (baseProductionTime INT(11), productivityModifier INT(11), 
-    productionEfficiency INT(11), numberPerRun INT(11))
-  RETURNS INT(11) DETERMINISTIC
+    productionEfficiency INT(11))
+  RETURNS DOUBLE DETERMINISTIC
 BEGIN
   # ImplantModifier=1.0 (ignore for now)
   # ProductionSlotModifier=1.0 (NPC stations are always 0)
@@ -38,7 +39,7 @@ BEGIN
   ELSE
     SET efficiencyEffect = productionEfficiency / (1 + productionEfficiency);
   END IF;
-  RETURN CEIL(baseProductionTime * (1 - (productivityModifier / baseProductionTime) * efficiencyEffect) * numberPerRun * 0.8 / 3600);
+  RETURN baseProductionTime * (1 - (productivityModifier / baseProductionTime) * efficiencyEffect) * 0.8 / 3600;
 END$$
 
 delimiter ;
@@ -136,7 +137,8 @@ CREATE VIEW BlueprintTypeCosts AS
     it.typeName AS blueprintName,
     mt.typeName AS typeName,
     bt.units AS units,
-    (bt.units * t.cost) AS cost
+    (bt.units * t.cost) AS cost,
+    bt.decomposed AS decomposed
   from Blueprint bp
     join BlueprintTypes bt on bt.blueprintTypeID = bp.blueprintTypeID
     left outer join Type t on t.typeID = bt.materialTypeID
@@ -150,29 +152,17 @@ CREATE VIEW BlueprintCosts AS
     btc.blueprintName AS blueprintName,
     # This makes my head hurt, MySQL doesn't return null if there are null values present, so we need to do it ourselves
     if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,
-    #TODO take decomposition into account
-    calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun) as hours,
-    cast((((ral.costPerHour * calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency, bp.numberPerRun)) + ral.costInstall) / bp.numberPerRun) as decimal(65,2)) AS otherCost
+    calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency) as hoursForSingleRun,
+    cast(ral.costPerHour AS decimal(19,2)) AS costPerHour,
+    cast(ral.costInstall AS decimal(19,2)) AS installCost,
+    bp.saleValue AS saleValue,
+    EXISTS(select blueprintTypeID from BlueprintTypeDecomposition btd where btd.blueprintTypeID=bp.blueprintTypeID) AS containsDecomposed
   from Blueprint bp
     join `eve-dump`.invBlueprintTypes ibt on ibt.blueprintTypeID = bp.blueprintTypeID
     left join BlueprintTypeCosts btc on btc.blueprintTypeID = bp.blueprintTypeID
     JOIN `eve-dump`.ramAssemblyLines ral ON ral.assemblyLineID = 1 # They're all the same!
-  group by bp.blueprintTypeID;
-
-
-CREATE VIEW BlueprintSummary AS
-  select
-    bp.blueprintTypeID AS blueprintTypeID,
-    bc.blueprintName AS blueprintName,
-    bc.materialCost AS materialCost,
-    bc.otherCost AS otherCost,
-    cast((bc.materialCost + bc.otherCost) as decimal(65,2)) AS cost,
-    bc.hours AS hours,
-    bp.saleValue AS saleValue,
-    cast((bp.saleValue - (bc.materialCost + bc.otherCost)) as decimal(65,2)) AS profit,
-    cast(((100 * (bp.saleValue - (bc.materialCost + bc.otherCost))) / bp.saleValue) as decimal(5,2)) AS profitPercentage
-  from Blueprint bp
-    join BlueprintCosts bc on bp.blueprintTypeID = bc.blueprintTypeID
+  # Ignore the cost of materials if they're decomposed - java will sort that out for us
+  where btc.decomposed = 0
   group by bp.blueprintTypeID;
 
 

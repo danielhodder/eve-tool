@@ -7,18 +7,17 @@ import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.RequiredBlueprint;
 import nz.net.dnh.eve.business.RequiredType;
+import nz.net.dnh.eve.business.impl.dto.blueprint.RequiredBlueprintSummaryImpl;
 import nz.net.dnh.eve.model.domain.Blueprint;
 
 public class BlueprintNode extends AbstractNode<Blueprint, BlueprintDependencyState> {
 
-	private final Blueprint blueprint;
-	private final BlueprintSummary blueprintSummary;
+	protected final Blueprint blueprint;
 	private final AbstractType blueprintType;
 	private List<RequiredType<? extends AbstractType>> requiredTypes;
 
-	public BlueprintNode(final Blueprint blueprint, final BlueprintSummary blueprintSummary, final AbstractType blueprintType) {
+	public BlueprintNode(final Blueprint blueprint, final AbstractType blueprintType) {
 		this.blueprint = blueprint;
-		this.blueprintSummary = blueprintSummary;
 		this.blueprintType = blueprintType;
 	}
 
@@ -37,25 +36,28 @@ public class BlueprintNode extends AbstractNode<Blueprint, BlueprintDependencySt
 	protected void doApply(final BlueprintDependencyState state) {
 		if (this.requiredTypes == null)
 			throw new IllegalStateException("Required types not set for blueprint " + this.blueprint);
-		final int runs = getBlueprintCount(state);
+		final int runs = getBlueprintCountAndUpdateState(state);
 		for (final RequiredType<? extends AbstractType> requiredType : this.requiredTypes) {
 			incrementMapValue(state.getCounts(), requiredType.getType(), runs * requiredType.getUnits());
 		}
 	}
 
-	protected int getBlueprintCount(final BlueprintDependencyState state) {
+	private int getBlueprintCountAndUpdateState(final BlueprintDependencyState state) {
+		final int requiredBlueprints = getRequiredBlueprints(state);
+
+		final int producedQuantity = this.blueprint.getProducedQuantity();
+		// divide requiredBlueprints by producedQuantity, rounding up
+		final int runs = (requiredBlueprints + producedQuantity - 1) / producedQuantity;
+
+		state.getRequiredBlueprints().add(new RequiredBlueprint(new RequiredBlueprintSummaryImpl(this.blueprint, runs), requiredBlueprints, runs * producedQuantity, runs));
+		return runs;
+	}
+
+	protected int getRequiredBlueprints(final BlueprintDependencyState state) {
 		final Integer requiredBlueprints = state.getCounts().remove(this.blueprintType);
 		if (requiredBlueprints == null)
 			throw new IllegalStateException("Blueprint " + this.blueprintType + " not found in counts " + state.getCounts());
-
-		final int producedQuantity = this.blueprint.getProducedQuantity();
-		int runs = requiredBlueprints / producedQuantity;
-		if (runs * producedQuantity < requiredBlueprints)
-			runs++;
-		assert runs * producedQuantity >= requiredBlueprints;
-
-		state.getRequiredBlueprints().add(new RequiredBlueprint(this.blueprintSummary, requiredBlueprints, runs * producedQuantity, runs));
-		return runs;
+		return requiredBlueprints;
 	}
 
 	@Override

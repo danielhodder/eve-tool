@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
  * Read-only view of the costs of making a blueprint
  */
 @Entity
-@Table(name = "BlueprintSummary")
+@Table(name = "BlueprintCosts")
 public class BlueprintCostSummary implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -30,18 +30,16 @@ public class BlueprintCostSummary implements Serializable {
 
 	private BigDecimal materialCost;
 
-	private BigDecimal otherCost;
+	private BigDecimal costPerHour;
 
-	@Column(name = "cost")
-	private BigDecimal totalCost;
+	private BigDecimal installCost;
 
 	private BigDecimal saleValue;
 
-	private BigDecimal profit;
+	private double hoursForSingleRun;
 
-	private BigDecimal profitPercentage;
-
-	private int hours;
+	@Column(columnDefinition = "INT")
+	private boolean containsDecomposed;
 
 	public int getBlueprintTypeID() {
 		return this.blueprintTypeID;
@@ -61,37 +59,32 @@ public class BlueprintCostSummary implements Serializable {
 		return this.materialCost;
 	}
 
-	public BigDecimal getOtherCost() {
-		return this.otherCost;
+	public BigDecimal getCostPerHour() {
+		return this.costPerHour;
 	}
 
-	public BigDecimal getTotalCost() {
-		return this.totalCost;
+	public BigDecimal getInstallCost() {
+		return this.installCost;
 	}
 
 	public BigDecimal getSaleValue() {
 		return this.saleValue;
 	}
 
-	public BigDecimal getProfit() {
-		return this.profit;
+	public double getHoursForSingleRun() {
+		return this.hoursForSingleRun;
 	}
 
-	public BigDecimal getProfitPercentage() {
-		return this.profitPercentage;
-	}
-
-	public int getHours() {
-		return this.hours;
+	public boolean isContainsDecomposed() {
+		return this.containsDecomposed;
 	}
 
 	@Override
 	public String toString() {
-		return "BlueprintCosts [blueprintTypeID=" + this.blueprintTypeID
-				+ ", materialCost=" + this.materialCost + ", otherCost="
-				+ this.otherCost + ", totalCost=" + this.totalCost
-				+ ", saleValue=" + this.saleValue + ", profit=" + this.profit
-				+ ", profitPercentage=" + this.profitPercentage + ", hours=" + this.hours + "]";
+		return "BlueprintCosts [blueprintTypeID=" + this.blueprintTypeID + ", materialCost=" + this.materialCost + ", installCost="
+				+ this.installCost + ", costPerHour=" + this.costPerHour + ", saleValue=" + this.saleValue + ", hoursForSingleRun="
+				+ this.hoursForSingleRun
+				+ ", containsDecomposed=" + this.containsDecomposed + "]";
 	}
 
 	@Override
