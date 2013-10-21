@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	// Set to 30 days
+	private static final int RememberMeTokenValifityTime = 3600 * 24 * 30;
+
 	@Override
 	protected void registerAuthentication(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
@@ -33,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.formLogin()
 						.loginPage("/login")
 							.defaultSuccessUrl("/")
-						.permitAll();
+						.permitAll().and()
+				.rememberMe()
+						.tokenValiditySeconds(RememberMeTokenValifityTime);
 	}
 }
