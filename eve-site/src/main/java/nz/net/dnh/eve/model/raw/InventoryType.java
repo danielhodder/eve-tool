@@ -56,11 +56,7 @@ public class InventoryType implements Serializable {
 
 	private Integer portionSize;
 
-	private Integer raceID;
-
 	private BigDecimal basePrice;
-
-	private Integer published;
 
 	private Integer marketGroupID;
 
@@ -137,28 +133,12 @@ public class InventoryType implements Serializable {
 		this.portionSize = portionSize;
 	}
 
-	public Integer getRaceID() {
-		return this.raceID;
-	}
-
-	public void setRaceID(final Integer raceID) {
-		this.raceID = raceID;
-	}
-
 	public BigDecimal getBasePrice() {
 		return this.basePrice;
 	}
 
 	public void setBasePrice(final BigDecimal basePrice) {
 		this.basePrice = basePrice;
-	}
-
-	public Integer getPublished() {
-		return this.published;
-	}
-
-	public void setPublished(final Integer published) {
-		this.published = published;
 	}
 
 	public Integer getMarketGroupID() {
@@ -179,14 +159,9 @@ public class InventoryType implements Serializable {
 
 	@Override
 	public String toString() {
-		return "InventoryType [typeID=" + this.typeID + ", group=" + this.group
-				+ ", typeName=" + this.typeName + ", description="
-				+ this.description + ", mass=" + this.mass + ", volume="
-				+ this.volume + ", capacity=" + this.capacity
-				+ ", portionSize=" + this.portionSize + ", raceID="
-				+ this.raceID + ", basePrice=" + this.basePrice
-				+ ", published=" + this.published + ", marketGroupID="
-				+ this.marketGroupID + ", chanceOfDuplicating="
+		return "InventoryType [typeID=" + this.typeID + ", group=" + this.group + ", typeName=" + this.typeName + ", description="
+				+ this.description + ", mass=" + this.mass + ", volume=" + this.volume + ", capacity=" + this.capacity + ", portionSize="
+				+ this.portionSize + ", basePrice=" + this.basePrice + ", marketGroupID=" + this.marketGroupID + ", chanceOfDuplicating="
 				+ this.chanceOfDuplicating + "]";
 	}
 
