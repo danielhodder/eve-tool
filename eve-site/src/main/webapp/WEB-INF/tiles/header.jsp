@@ -25,6 +25,22 @@
 			<form class="navbar-form pull-right">
 				<button type="submit" id="update-prices" class="btn btn-danger">Update All Prices</button>
 			</form>
+			
+			<security:authorize access="isAuthenticated()">
+				<ul class="nav pull-right">
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<c:out value="${currentAuthentcationHolder.currentAuthentication.principal}" />
+							<b class="caret"></b>
+						</a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="<c:url value="/logout" />">Logout</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</security:authorize>
 			<!--/.nav-collapse -->
 		</div>
 	</div>
