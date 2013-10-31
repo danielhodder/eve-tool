@@ -9,5 +9,6 @@ package nz.net.dnh.eve.authorization;
  * @author Daniel Hodder (danielh)
  * 
  */
+@SuppressWarnings("serial")
 public class UserNotLoggedInException extends AuthorizationException {
 }
