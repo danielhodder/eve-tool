@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 
@@ -35,7 +36,10 @@
 						</a>
 						<ul class="dropdown-menu">
 							<li>
-								<a href="<c:url value="/logout" />">Logout</a>
+								<%-- We need to do crazy things here since spring expects the logout request to be a POST not a GET --%>
+								<a href="#" id="logout-link">Logout</a>
+								<c:url value="/logout" var="logoutURL" />
+								<form:form action="${logoutURL}" method="post" id="logout-form" cssClass="hidden"></form:form>
 							</li>
 						</ul>
 					</li>
@@ -62,7 +66,12 @@
 			});
 			
 			return false;
-		})
+		});
+		
+		$('#logout-link').click(function () {
+			$('#logout-form').submit();
+			return false;
+		});
 	});
 </script>
 

@@ -21,6 +21,9 @@
 	    <script src="<c:url value="/resources/javascript/modal_addons.js" />"></script>
 	    <script src="<c:url value="/resources/javascript/bootstrap_radio_button_field.js" />"></script>
 <%-- 	    <script src="<c:url value="/resources/javascript/bootstrapSwitch.js" />"></script> --%>
+
+		<meta name="csrx-param" content="${_csrf.parameterName}">
+		<meta name="csrx-token" content="${_csrf.token}">
 		
 		<tilesx:useAttribute id="styles" name="styles" classname="java.util.List" ignore="true" />
 		<c:forEach var="cssName" items="${styles}">

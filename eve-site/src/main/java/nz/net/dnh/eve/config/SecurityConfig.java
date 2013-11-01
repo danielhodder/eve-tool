@@ -28,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
+		// @formatter:off
 		http
 				.authorizeRequests()
 						.antMatchers(POST, "/j_spring_security_check").permitAll()
@@ -39,5 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						.permitAll().and()
 				.rememberMe()
 						.tokenValiditySeconds(RememberMeTokenValifityTime);
+		// @formatter:on
 	}
 }
