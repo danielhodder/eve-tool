@@ -3,8 +3,11 @@ package nz.net.dnh.eve.web.view;
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintReference;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component("imageURILocator")
 public final class ImageURILocater {
 	@Value("${eve.imageBaseURI}")
 	private String baseLocatorURI;

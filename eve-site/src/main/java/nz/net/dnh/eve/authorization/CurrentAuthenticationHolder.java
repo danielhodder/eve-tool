@@ -1,5 +1,7 @@
 package nz.net.dnh.eve.authorization;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -10,8 +12,10 @@ import org.springframework.stereotype.Component;
  * 
  * @author danielh
  */
-@Component
+@Component("currentAuthenticationHolder")
 public class CurrentAuthenticationHolder {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CurrentAuthenticationHolder.class);
+	
 	/**
 	 * Gets the current authentication from the {@link SecurityContextHolder}.
 	 * 
@@ -19,6 +23,10 @@ public class CurrentAuthenticationHolder {
 	 * @see SecurityContext#getAuthentication()
 	 */
 	public Authentication getCurrentAuthentication() {
-		return SecurityContextHolder.getContext().getAuthentication();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		LOGGER.trace("The current authentication is {}", authentication);
+
+		return authentication;
 	}
 }

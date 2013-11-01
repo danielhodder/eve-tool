@@ -31,7 +31,7 @@
 				<ul class="nav pull-right">
 					<li class="dropdown">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-							<c:out value="${currentAuthentcationHolder.currentAuthentication.principal}" />
+							<c:out value="${currentAuthenticationHolder.currentAuthentication.principal.username}" />
 							<b class="caret"></b>
 						</a>
 						<ul class="dropdown-menu">

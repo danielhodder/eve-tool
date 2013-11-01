@@ -6,10 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Properties;
 
 import nz.net.dnh.eve.web.view.DateFormatDelegate;
-import nz.net.dnh.eve.web.view.DurationFormatter;
-import nz.net.dnh.eve.web.view.ImageURILocater;
 import nz.net.dnh.eve.web.view.NumberFormatter;
-import nz.net.dnh.eve.web.view.VersionReader;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -38,11 +35,6 @@ public class RootConfig {
 				new ClassPathResource("/static.properties"),
 				RootConfig.getOverrideResource() });
 		return ppc;
-	}
-
-	@Bean
-	public static ImageURILocater imageURILocator() {
-		return new ImageURILocater();
 	}
 
 	@Bean
@@ -78,16 +70,6 @@ public class RootConfig {
 	@Bean
 	public static DateFormatDelegate dateTimeFormatter() {
 		return new DateFormatDelegate(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a"));
-	}
-
-	@Bean
-	public static DurationFormatter durationFormatter() {
-		return new DurationFormatter();
-	}
-
-	@Bean
-	public static VersionReader versionReader() {
-		return new VersionReader();
 	}
 
 	private static Resource getOverrideResource() {
