@@ -13,6 +13,8 @@ import nz.net.dnh.eve.model.raw.InventoryType;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.mysema.query.annotations.QueryInit;
+
 /**
  * Represents a type required to build a blueprint
  */
@@ -34,6 +36,7 @@ public class BlueprintRequiredType implements Serializable {
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "materialTypeID", insertable = false, updatable = false)
+	@QueryInit("*")
 	private InventoryType inventoryType;
 
 	private int units;

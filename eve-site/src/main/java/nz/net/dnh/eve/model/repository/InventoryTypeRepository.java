@@ -6,10 +6,11 @@ import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.raw.InventoryType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 public interface InventoryTypeRepository extends
-		JpaRepository<InventoryType, Integer> {
+		JpaRepository<InventoryType, Integer>, QueryDslPredicateExecutor<InventoryType>, InventoryTypeRepositoryCustom {
 	/**
 	 * List the minerals that are required for the given blueprint but not present
 	 * in our system.
@@ -21,15 +22,7 @@ public interface InventoryTypeRepository extends
 	 */
 	public List<InventoryType> findUnknownMineralsForBlueprint(
 			@Param("blueprint") Blueprint blueprint);
-
-	/**
-	 * List the minerals that are required by any blueprint but not present in our
-	 * system.
-	 * 
-	 * @return The list of raw minerals required by any blueprint that are not
-	 *         known to our system
-	 */
-	public List<InventoryType> findUnknownMinerals();
+	
 	/**
 	 * List the components that are required for the given blueprint but not present
 	 * in our system.

@@ -20,6 +20,7 @@
         <org.slf4j-version>1.7.2</org.slf4j-version>
         <ch.qos.logback-version>1.0.7</ch.qos.logback-version>
         <org.apache.tiles-version>3.0.1</org.apache.tiles-version>
+        <querydsl.version>2.9.0</querydsl.version>
     </properties>
     <repositories>
         <repository>
@@ -39,6 +40,26 @@
         </repository>
     </repositories>
     <dependencies>
+    	<!-- QueryDSL -->
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>${querydsl.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>${querydsl.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+		</dependency> 
+    	
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -217,10 +238,46 @@
     </dependencies>
     <build>
         <plugins> 
+        	<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>selenium-maven-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start-server</goal>
+                        </goals>
+                        <configuration>
+                            <background>true</background>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
             <plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.0</version>
+				<executions>
+      <execution>
+        <id>tomcat-run</id>
+        <goals>
+          <goal>run-war-only</goal>
+        </goals>
+        <phase>pre-integration-test</phase>
+        <configuration>
+          <fork>true</fork>
+        </configuration>
+      </execution>
+      <execution>
+        <id>tomcat-shutdown</id>
+        <goals>
+          <goal>shutdown</goal>
+        </goals>
+        <phase>post-integration-test</phase>
+      </execution>
+    </executions>
 			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -251,6 +308,33 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+            	<artifactId>maven-surefire-plugin</artifactId>
+            	<executions>
+            		<execution>
+            			<phase>test</phase>
+            			<configuration>
+            				<skip>true</skip>
+            			</configuration>
+            		</execution>
+            	</executions>
+            </plugin>
+            <plugin>
+			    <groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+				<version>1.0.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-sources/java</outputDirectory>
+							<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>
+		    </plugin>
         </plugins>
     </build>
 </project>

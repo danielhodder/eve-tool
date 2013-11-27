@@ -13,12 +13,14 @@ import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
+import com.mysema.query.annotations.QueryInit;
+
 @Entity
 @Table(name = "invTypes")
 @NamedQueries({
 		@NamedQuery(name = "InventoryType.findUnknownMineralsForBlueprint", query = InventoryType.UNKNOWN_TYPES_SQL
 				+ InventoryType.MINERAL_SQL + " AND brt.blueprint = :blueprint"),
-		@NamedQuery(name = "InventoryType.findUnknownMinerals", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.MINERAL_SQL),
+//		@NamedQuery(name = "InventoryType.findUnknownMinerals", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.MINERAL_SQL),
 		@NamedQuery(name = "InventoryType.findUnknownComponentsForBlueprint", query = InventoryType.UNKNOWN_TYPES_SQL
 				+ InventoryType.COMPONENT_SQL + " AND brt.blueprint = :blueprint"),
 		@NamedQuery(name = "InventoryType.findUnknownComponents", query = InventoryType.UNKNOWN_TYPES_SQL + InventoryType.COMPONENT_SQL) })
@@ -37,6 +39,7 @@ public class InventoryType implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "groupID", updatable = false, insertable = false)
+	@QueryInit("*")
 	private InventoryGroup group;
 
 	@Max(100)
