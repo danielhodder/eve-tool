@@ -33,9 +33,9 @@ public class RequiredTypes {
 	}
 
 	/**
-	 * Get the other blueprints which are configured to be decomposed to create this blueprint.
+	 * Get the blueprints which are configured to be decomposed to create this blueprint, including this blueprint.
 	 * 
-	 * @return A list of blueprints which must be made in order to make this blueprint. May be empty, never null.
+	 * @return A list of blueprints which must be made in order to make this blueprint. Never null or empty
 	 * @see RequiredType#getDecompositionState()
 	 */
 	public List<RequiredBlueprint> getRequiredBlueprints() {
