@@ -4,12 +4,11 @@ import java.math.BigDecimal;
 
 import nz.net.dnh.eve.business.RequiredBlueprint;
 import nz.net.dnh.eve.business.RequiredType;
-import nz.net.dnh.eve.business.RequiredTypes;
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintCostSummary;
 
 /** Blueprint summary used when returning a {@link RequiredBlueprint} or {@link RequiredType} */
-public class RequiredBlueprintSummaryImpl extends AbstractBlueprintSummary {
+public class RequiredBlueprintSummaryImpl extends AbstractBlueprintImpl {
 
 	private final int runs;
 
@@ -21,13 +20,6 @@ public class RequiredBlueprintSummaryImpl extends AbstractBlueprintSummary {
 	@Override
 	public int getNumberPerRun() {
 		return this.runs;
-	}
-
-	@Override
-	public RequiredTypes getRequiredTypes() {
-		// This also makes getMaterialCost(), getTotalCost(), getProfit() and getProfitPercentage() unavailable
-		// TODO have a different interface for this case...
-		throw new UnsupportedOperationException("Required types are not available for required blueprints");
 	}
 
 	@Override

@@ -6,10 +6,10 @@ import java.util.List;
 
 import nz.net.dnh.eve.business.AbstractType;
 import nz.net.dnh.eve.business.BlueprintReference;
-import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.RequiredType;
 import nz.net.dnh.eve.business.RequiredType.DecompositionState;
 import nz.net.dnh.eve.business.RequiredTypes;
+import nz.net.dnh.eve.business.UnresolvedBlueprint;
 import nz.net.dnh.eve.business.impl.dependencies.BlueprintDependencyState;
 import nz.net.dnh.eve.business.impl.dependencies.BlueprintNode;
 import nz.net.dnh.eve.business.impl.dependencies.Graph;
@@ -61,7 +61,7 @@ public class BlueprintRequiredTypesServiceImpl implements BlueprintRequiredTypes
 
 			final AbstractType type = toBusinessType(typeDto, inventoryType);
 
-			final BlueprintSummary typeBlueprint;
+			final UnresolvedBlueprint typeBlueprint;
 			final DecompositionState decompositionState;
 			final List<RequiredType<? extends AbstractType>> typeRequiredTypes;
 			if (materialBlueprint != null) {

@@ -25,11 +25,12 @@ public class RequiredType<T extends AbstractType> implements Comparable<Required
 
 	private final T type;
 	private final int units;
-	private final BlueprintSummary typeBlueprint;
+	private final UnresolvedBlueprint typeBlueprint;
 	private final DecompositionState decompositionState;
 	private final List<RequiredType<? extends AbstractType>> typeBlueprintRequiredTypes;
 
-	public RequiredType(final T type, final int units, final BlueprintSummary typeBlueprint, final DecompositionState decompositionState,
+	public RequiredType(final T type, final int units, final UnresolvedBlueprint typeBlueprint,
+			final DecompositionState decompositionState,
 			final List<RequiredType<? extends AbstractType>> typeBlueprintRequiredTypes) {
 		this.type = type;
 		this.units = units;
@@ -78,7 +79,7 @@ public class RequiredType<T extends AbstractType> implements Comparable<Required
 	 * 
 	 * @return The blueprint which can create this required type, or null if no blueprint creates the required type
 	 */
-	public BlueprintSummary getTypeBlueprint() {
+	public UnresolvedBlueprint getTypeBlueprint() {
 		return this.typeBlueprint;
 	}
 

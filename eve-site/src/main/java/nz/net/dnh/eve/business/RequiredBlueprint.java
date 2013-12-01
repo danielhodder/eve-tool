@@ -12,12 +12,12 @@ import nz.net.dnh.eve.business.RequiredType.DecompositionState;
  * @see RequiredTypes
  */
 public class RequiredBlueprint {
-	private final BlueprintSummary typeBlueprint;
+	private final UnresolvedBlueprint typeBlueprint;
 	private final int requiredUnits;
 	private final int producedUnits;
 	private final int runs;
 
-	public RequiredBlueprint(final BlueprintSummary typeBlueprint, final int requiredUnits, final int producedUnits, final int runs) {
+	public RequiredBlueprint(final UnresolvedBlueprint typeBlueprint, final int requiredUnits, final int producedUnits, final int runs) {
 		this.typeBlueprint = typeBlueprint;
 		this.requiredUnits = requiredUnits;
 		this.producedUnits = producedUnits;
@@ -25,7 +25,7 @@ public class RequiredBlueprint {
 	}
 
 	/** @return The blueprint which must be made in order to make the parent blueprint */
-	public BlueprintSummary getTypeBlueprint() {
+	public UnresolvedBlueprint getTypeBlueprint() {
 		return this.typeBlueprint;
 	}
 
