@@ -32,6 +32,7 @@
 				</div>
 			</div>
 			
+			<%--TODO Add a spinner here to make is clear that the page is doing something (and probably update the button to be not clickabale) --%>
 			<div class="control-group">
 				<input type="hidden" name="quantity" value="1" />
 				<label class="control-label" for="saleValue">Sale Value per <span>1</span>:</label>
@@ -136,7 +137,8 @@
 			if (blueprintId == '')
 				return;
 			
-			$.get('/price/blueprint/'+blueprintId, function (data) {
+			var url = '<c:url value="/price/blueprint/" />';
+			$.get(url+blueprintId, function (data) {
 				if (data.value == -1)
 					alert('Error retrieving marker information');
 				else
