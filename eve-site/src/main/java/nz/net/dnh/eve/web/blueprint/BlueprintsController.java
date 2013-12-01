@@ -99,6 +99,6 @@ public final class BlueprintsController {
 			this.typeService.updateRequiredType(new BlueprintIdReference(id), new TypeIdReference(decomposition.getKey()), decomposition.getValue());
 		}
 
-		return new RedirectView("/blueprints/" + id);
+		return new RedirectView("/blueprints/" + id, true);
 	}
 }
