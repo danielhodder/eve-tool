@@ -66,7 +66,8 @@
 		else if ($(this).val() == "1") {
 			$saleValueField.prop('disabled', true);
 			
-			$.get('/price/'+typeId, function (data) {
+			var url = '<c:url value="/price/" />';
+			$.get(url+typeId, function (data) {
 				if (data.value == -1)
 					alert('Error retrieving market information');
 				else

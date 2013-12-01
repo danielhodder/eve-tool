@@ -63,6 +63,7 @@
 		</div>
 		
 		<div class="modal-footer">
+			<input type="hidden" name="blueprint-id" value="${blueprint.id}" />
 			<button type="reset" class="btn" data-dismiss="modal">Close</button>
 			<button type="submit" class="btn btn-primary" data-loading-text="Saving...">Save</button>
 		</div>
@@ -74,7 +75,7 @@
 		var $form = $('#update-blueprint-details form');
 		
 		$('[name="automaticPriceUpdate"]', $form).change(function () {
-			var $saleValueField = $('#new-blueprint [name="saleValue"]');
+			var $saleValueField = $('[name="saleValue"]', $form);
 			
 			if ($(this).val() == "0")
 				$saleValueField.prop('disabled', false);
@@ -85,13 +86,14 @@
 		});
 		
 		function updateSalePriceField() {
-			var blueprintId = $('#blueprint-id').val();
-			var producedQuantity = ${blueprint.producedQuantity}
+			var blueprintId = $('[name="blueprint-id"]', $form).val();
+			var producedQuantity = ${blueprint.producedQuantity};
 			
 			if (blueprintId == '')
 				return;
 			
-			$.get('/price/bluepring/'+blueprintId, function (data) {
+			var url = '<c:url value="/price/blueprint/" />';
+			$.get(url+blueprintId, function (data) {
 				if (data.value == -1)
 					alert('Error retrieving marker information');
 				else

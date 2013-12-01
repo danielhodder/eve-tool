@@ -75,7 +75,7 @@ public final class BlueprintsController {
 	}
 
 	@RequestMapping(value = "/blueprints/new", method = RequestMethod.POST)
-	public RedirectView addBluepring(
+	public RedirectView addBlueprint(
 			@RequestParam("return") final String returnUri,
 			@RequestParam("blueprint-id") final int blueprintId,
 			@ModelAttribute final BlueprintForm form) {
