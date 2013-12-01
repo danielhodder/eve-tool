@@ -96,10 +96,12 @@ public abstract class AbstractBlueprintSummary implements BlueprintSummary {
 	@Override
 	public BigDecimal getProfitPercentage() {
 		final BigDecimal profit = getProfit();
-		if (profit == null) {
+		final BigDecimal saleValue = getSaleValue();
+		// Return null if we don't know our profit, or if our sale value is zero
+		if (profit == null || saleValue.signum() == 0) {
 			return null;
 		}
-		return profit.divide(getSaleValue(), BigDecimal.ROUND_HALF_UP);
+		return profit.divide(saleValue, BigDecimal.ROUND_HALF_UP);
 	}
 
 	@Override
