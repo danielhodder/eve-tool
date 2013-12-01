@@ -64,6 +64,7 @@ public class BlueprintRequiredType implements Serializable {
 	@JoinColumn(name = "materialTypeID", insertable = false, updatable = false)
 	private Type type;
 
+	@Column(columnDefinition = "bigint")
 	private int units;
 
 	@OneToOne

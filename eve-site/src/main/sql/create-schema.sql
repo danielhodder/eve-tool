@@ -2,9 +2,9 @@
 
 -- Clear out the schema first (this is the reverse order that these objects are defined in this file)
 -- TODO check all the right ones are dropped...
-DROP VIEW IF EXISTS invBlueprintTypes, invCategories, invGroups, invTypes, BlueprintCosts, BlueprintTypeCosts;
+DROP VIEW IF EXISTS BlueprintSummary, invBlueprintTypes, invCategories, invGroups, invTypes, BlueprintCosts, BlueprintTypeCosts;
 DROP TABLE IF EXISTS Type;
-DROP VIEW IF EXISTS BlueprintTypes, BlueprintSubTypeRequirements;
+DROP VIEW IF EXISTS BlueprintTypes, BlueprintTypesRaw, BlueprintSubTypeRequirements;
 DROP TABLE IF EXISTS Blueprint, BlueprintTypeDecomposition;
 DROP FUNCTION IF EXISTS calculate_materials;
 DROP FUNCTION IF EXISTS calculate_production_time_hours;
@@ -62,6 +62,7 @@ CREATE TABLE BlueprintTypeDecomposition (
   PRIMARY KEY (blueprintTypeID,materialTypeID)
 ) ENGINE=InnoDB;
 
+# Requirements of sub-types are already added, they need to be subtracted so we collect them here
 CREATE VIEW BlueprintSubTypeRequirements AS
   SELECT
     bp.blueprintTypeID as blueprintTypeID,
@@ -80,10 +81,11 @@ CREATE VIEW BlueprintSubTypeRequirements AS
     AND ramG.groupName != 'Tool'
   GROUP BY bp.blueprintTypeID, itm.materialTypeID;
 
-CREATE VIEW BlueprintTypes AS
-SELECT
+CREATE VIEW BlueprintTypesRaw AS
+  SELECT
     bp.blueprintTypeID as blueprintTypeID,
     itm.materialTypeID as materialTypeID,
+    # Remove any materials that are only used to create sub-types (bstr.rawQuantity)
     calculate_materials(itm.quantity - ifnull(bstr.rawQuantity, 0), ibt.wasteFactor, bp.materialEfficiency) as units,
     mat.typeName,
     materialBlueprintType.blueprintTypeID as materialBlueprintTypeID,
@@ -99,7 +101,7 @@ SELECT
     LEFT OUTER JOIN `eve-dump`.invBlueprintTypes materialBlueprintType ON materialBlueprintType.productTypeID = itm.materialTypeID
     LEFT OUTER JOIN BlueprintTypeDecomposition btd ON btd.blueprintTypeID = bp.blueprintTypeID AND btd.materialTypeID = itm.materialTypeID
   WHERE
-    bstr.rawQuantity IS NULL OR itm.quantity - bstr.rawQuantity != 0
+    bstr.rawQuantity IS NULL OR itm.quantity - bstr.rawQuantity > 0
   UNION
   SELECT 
     bp.blueprintTypeID as blueprintTypeID,
@@ -119,11 +121,20 @@ SELECT
     LEFT OUTER JOIN `eve-dump`.invBlueprintTypes materialBlueprintType ON materialBlueprintType.productTypeID = ram.requiredTypeID
     LEFT OUTER JOIN BlueprintTypeDecomposition btd ON btd.blueprintTypeID = bp.blueprintTypeID AND btd.materialTypeID = ram.requiredTypeID
   WHERE
-    -- Filter out quantities already accounted for in the previous query TODO make this sucker actually work
-    NOT EXISTS (select * from `eve-dump`.invTypeMaterials itm where itm.typeID = ibt.productTypeID and itm.materialTypeID = ram.requiredTypeID)
-    AND ramA.activityName = 'Manufacturing'
+    ramA.activityName = 'Manufacturing'
     AND ramC.categoryName != 'Skill';
 
+# Materials can appear in both sides of the union in BlueprintTypesRaw, so sum them and group them so they appear as 1 row
+CREATE VIEW BlueprintTypes AS
+SELECT
+  blueprintTypeID,
+  materialTypeID,
+  cast(sum(units) as SIGNED) as units,
+  typeName,
+  materialBlueprintTypeID,
+  decomposed
+FROM BlueprintTypesRaw
+GROUP BY blueprintTypeID, materialTypeID;
 
 CREATE TABLE Type (
   typeID int(11) NOT NULL,
@@ -153,7 +164,8 @@ CREATE VIEW BlueprintCosts AS
   select
     bp.blueprintTypeID AS blueprintTypeID,
     # This makes my head hurt, MySQL doesn't return null if there are null values present, so we need to do it ourselves
-    if(sum(btc.cost is null),null,sum(btc.cost)) AS materialCost,
+    # Also, btc might return 0 rows, and MySQL returns null if there are 0 rows, so we convert that to 0 with coalesce
+    if(sum(btc.cost is null),null,coalesce(sum(btc.cost),0)) AS materialCost,
     calculate_production_time_hours(ibt.productionTime, ibt.productivityModifier, bp.productionEfficiency) as hoursForSingleRun,
     cast(ral.costPerHour AS decimal(19,2)) AS costPerHour,
     cast(ral.costInstall AS decimal(19,2)) AS installCost,
