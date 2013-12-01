@@ -9,8 +9,8 @@
 			<th style="width: 323px;" colspan="2">Name</th>
 			<th class="text-right">Number of runs</th>
 			<th class="text-right">Cost to run</th>
-			<th class="text-right">Number of items Produced</th>
-			<th class="text-right">Number of items left after production of	${view.blueprint.name}</th>
+			<th class="text-right"><abbr title="Number of items Produced">Produced</abbr></th>
+			<th class="text-right"><abbr title="Number of items left after production of ${view.blueprint.name}">Remaining</abbr></th>
 		</tr>
 	</thead>
 
