@@ -3,7 +3,7 @@ package nz.net.dnh.eve.business;
 import java.util.List;
 
 /** Represents a single type required by a blueprint for its construction */
-public class RequiredType<T extends AbstractType> implements Comparable<RequiredType<T>> {
+public class RequiredType<T extends AbstractType> implements Comparable<RequiredType<?>> {
 	/** Whether this required type is currently decomposed, or whether it could be decomposed in the future */
 	public static enum DecompositionState {
 		/**
@@ -84,7 +84,7 @@ public class RequiredType<T extends AbstractType> implements Comparable<Required
 	}
 
 	@Override
-	public int compareTo(final RequiredType<T> o) {
+	public int compareTo(final RequiredType<?> o) {
 		return this.type.compareTo(o.type);
 	}
 
