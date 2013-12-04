@@ -59,24 +59,48 @@ public class BlueprintCostSummary implements Serializable {
 		return this.materialCost;
 	}
 
+	public void setMaterialCost(final BigDecimal materialCost) {
+		this.materialCost = materialCost;
+	}
+
 	public BigDecimal getCostPerHour() {
 		return this.costPerHour;
+	}
+
+	public void setCostPerHour(final BigDecimal costPerHour) {
+		this.costPerHour = costPerHour;
 	}
 
 	public BigDecimal getInstallCost() {
 		return this.installCost;
 	}
 
+	public void setInstallCost(final BigDecimal installCost) {
+		this.installCost = installCost;
+	}
+
 	public BigDecimal getSaleValue() {
 		return this.saleValue;
+	}
+
+	public void setSaleValue(final BigDecimal saleValue) {
+		this.saleValue = saleValue;
 	}
 
 	public double getHoursForSingleRun() {
 		return this.hoursForSingleRun;
 	}
 
+	public void setHoursForSingleRun(final double hoursForSingleRun) {
+		this.hoursForSingleRun = hoursForSingleRun;
+	}
+
 	public boolean isContainsDecomposed() {
 		return this.containsDecomposed;
+	}
+
+	public void setContainsDecomposed(final boolean containsDecomposed) {
+		this.containsDecomposed = containsDecomposed;
 	}
 
 	@Override

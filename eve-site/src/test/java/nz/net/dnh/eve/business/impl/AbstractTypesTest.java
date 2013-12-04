@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 
 import nz.net.dnh.eve.model.domain.Blueprint;
 import nz.net.dnh.eve.model.domain.BlueprintRequiredType;
+import nz.net.dnh.eve.model.domain.BlueprintRequiredType.BlueprintRequiredTypeId;
 import nz.net.dnh.eve.model.domain.Type;
 import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import nz.net.dnh.eve.model.raw.InventoryType;
@@ -25,8 +26,7 @@ public abstract class AbstractTypesTest {
 	protected static BlueprintRequiredType createRequiredType(final Blueprint b, final Type type, final InventoryType inventoryType,
 			final int units, final boolean decomposed, final InventoryBlueprintType materialBlueprintType, final Blueprint materialBlueprint) {
 		final BlueprintRequiredType requiredType = new BlueprintRequiredType();
-		requiredType.setInventoryType(inventoryType);
-		requiredType.setBlueprint(b);
+		requiredType.setId(new BlueprintRequiredTypeId(b, inventoryType));
 		requiredType.setType(type);
 		requiredType.setUnits(units);
 		requiredType.setDecomposed(decomposed);

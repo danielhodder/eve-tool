@@ -55,10 +55,6 @@ public class Graph<K, T, Node extends AbstractNode<K, T>> {
 		return realChild;
 	}
 
-	public Collection<Node> getNodes() {
-		return this.nodes.values();
-	}
-
 	public void apply(final T state) {
 		final Collection<AbstractNode<?, ?>> done = new HashSet<>();
 		while (!done.containsAll(this.nodes.values())) {

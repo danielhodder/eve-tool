@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import nz.net.dnh.eve.business.AbstractType;
-import nz.net.dnh.eve.business.BlueprintSummary;
 import nz.net.dnh.eve.business.RequiredBlueprint;
 import nz.net.dnh.eve.business.RequiredType;
 import nz.net.dnh.eve.business.impl.dto.blueprint.RequiredBlueprintSummaryImpl;

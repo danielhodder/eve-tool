@@ -1,6 +1,7 @@
 package nz.net.dnh.eve.business.impl;
 
 import static org.junit.Assert.assertSame;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -21,9 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BlueprintResolverServiceTest {
@@ -34,21 +33,19 @@ public class BlueprintResolverServiceTest {
 	@Mock
 	private BlueprintRepository blueprintRepository;
 
+	@Mock
+	private BlueprintRequiredTypesService requiredTypesService;
+
 	@Before
 	public void setup() {
 		// Just return the value given when asked to refresh any blueprint
-		when(this.blueprintRepository.refresh(any(Blueprint.class))).thenAnswer(new Answer<Blueprint>() {
-			@Override
-			public Blueprint answer(final InvocationOnMock invocation) throws Throwable {
-				return (Blueprint) invocation.getArguments()[0];
-			}
-		});
+		when(this.blueprintRepository.refresh(any(Blueprint.class))).thenAnswer(returnsFirstArg());
 	}
 
 	@Test
 	public void toBlueprintWithSummary() {
 		final Blueprint b = mock(Blueprint.class);
-		final BlueprintSummary summary = new BlueprintSummaryImpl(b);
+		final BlueprintSummary summary = new BlueprintSummaryImpl(b, this.requiredTypesService);
 
 		final Blueprint out = this.service.toBlueprint(summary);
 

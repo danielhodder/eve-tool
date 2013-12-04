@@ -1,7 +1,7 @@
 package nz.net.dnh.eve.business.impl;
 
 import static nz.net.dnh.eve.HelpingMatchers.contains;
-import static nz.net.dnh.eve.HelpingMatchers.hasEntry;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -15,12 +15,13 @@ import java.util.Objects;
 import java.util.SortedMap;
 
 import nz.net.dnh.eve.business.AbstractType;
-import nz.net.dnh.eve.business.BlueprintSummary;
+import nz.net.dnh.eve.business.BlueprintReference;
 import nz.net.dnh.eve.business.RequiredBlueprint;
 import nz.net.dnh.eve.business.RequiredType;
 import nz.net.dnh.eve.business.RequiredType.DecompositionState;
 import nz.net.dnh.eve.business.RequiredTypes;
-import nz.net.dnh.eve.business.impl.dto.blueprint.BlueprintSummaryImpl;
+import nz.net.dnh.eve.business.UnresolvedBlueprint;
+import nz.net.dnh.eve.business.impl.dto.blueprint.RequiredBlueprintSummaryImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingComponentImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractMissingTypeImpl.MissingMineralImpl;
 import nz.net.dnh.eve.business.impl.dto.type.AbstractTypeImpl.ComponentImpl;
@@ -34,7 +35,13 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+
+@RunWith(MockitoJUnitRunner.class)
 public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 
 	@SafeVarargs
@@ -45,7 +52,7 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 			requiredTypesMatcher = nullValue();
 		else
 			requiredTypesMatcher = contains(requiredTypes);
-		final BlueprintSummary blueprintSummary = blueprint == null ? null : new BlueprintSummaryImpl(blueprint);
+		final UnresolvedBlueprint requiredBlueprint = blueprint == null ? null : new RequiredBlueprintSummaryImpl(blueprint, 1);
 		return new TypeSafeDiagnosingMatcher<RequiredType<?>>() {
 
 			@Override
@@ -70,7 +77,7 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 					mismatchDescription.appendText("Units was ").appendValue(item.getUnits());
 					return false;
 				}
-				if (!Objects.equals(blueprintSummary, item.getTypeBlueprint())) {
+				if (!Objects.equals(requiredBlueprint, item.getTypeBlueprint())) {
 					mismatchDescription.appendValue("Blueprint summary was ").appendValue(item.getTypeBlueprint());
 					return false;
 				}
@@ -95,18 +102,18 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 
 	private Matcher<RequiredBlueprint> requiredBlueprint(final int requiredUnits, final int producedUnits, final int runs,
 			final Blueprint blueprint) {
-		final BlueprintSummaryImpl blueprintSummary = blueprint == null ? null : new BlueprintSummaryImpl(blueprint);
+		final UnresolvedBlueprint requiredBlueprint = blueprint == null ? null : new RequiredBlueprintSummaryImpl(blueprint, runs);
 		return new TypeSafeDiagnosingMatcher<RequiredBlueprint>() {
 			@Override
 			public void describeTo(final Description description) {
 				description.appendText("Required blueprint ").appendValue(blueprint).appendText(" with required units ")
-						.appendValue(requiredUnits).appendText(" and produced units ").appendValue(producedUnits)
-						.appendText(" and runs ").appendValue(runs);
+						.appendValue(requiredUnits).appendText(" and produced units ").appendValue(producedUnits).appendText(" and runs ")
+						.appendValue(runs);
 			}
 
 			@Override
 			protected boolean matchesSafely(final RequiredBlueprint item, final Description mismatchDescription) {
-				if (!blueprintSummary.equals(item.getTypeBlueprint())) {
+				if (!requiredBlueprint.equals(item.getTypeBlueprint())) {
 					mismatchDescription.appendText("Invalid blueprint ").appendValue(item.getTypeBlueprint());
 					return false;
 				}
@@ -128,6 +135,10 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		};
 	}
 
+	@Mock
+	private BlueprintResolverService blueprintResolverService;
+
+	@InjectMocks
 	private final BlueprintRequiredTypesServiceImpl blueprintRequiredTypesService = new BlueprintRequiredTypesServiceImpl();
 
 	@Test
@@ -149,7 +160,10 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		final AbstractType type2Mineral = new MineralImpl(this.type2);
 		final AbstractType mineral2Mineral = new MissingMineralImpl(this.mineral2);
 
-		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(b);
+		final BlueprintReference ref = mock(BlueprintReference.class);
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+
+		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(ref);
 		assertThat(requiredTypes.getRequiredBlueprints(), contains(requiredBlueprint(1, 1, 1, b)));
 
 		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
@@ -196,7 +210,10 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		final AbstractType type2Mineral = new MineralImpl(this.type2);
 		final AbstractType mineral2Mineral = new MissingMineralImpl(this.mineral2);
 
-		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(b);
+		final BlueprintReference ref = mock(BlueprintReference.class);
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+
+		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(ref);
 
 		assertThat(requiredTypes.getRequiredBlueprints(),
 				contains(requiredBlueprint(3, 3, 3, b), requiredBlueprint(15, 16, 8, requiredComponentBlueprint)));
@@ -256,13 +273,17 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		final AbstractType requiredComponent2Type = new ComponentImpl(component2Type);
 		final AbstractType requiredMineralType = new MineralImpl(this.type2);
 
-		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(b);
+		final BlueprintReference ref = mock(BlueprintReference.class);
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+
+		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(ref);
 
 		final List<RequiredBlueprint> requiredBlueprints = requiredTypes.getRequiredBlueprints();
 		// 5 requiredComponent1 from A, requiredComponent1 produces 2 per run, so 6 should be produced from 3 runs
 		// 6 requiredComponent2 from A + 3*8 requiredComponent2 from 3 runs*requiredComponent1 = 30, requiredComponent2 produces 7 per run,
 		// so 35 should be produced from 5 runs
-		assertThat(requiredBlueprints,
+		assertThat(
+				requiredBlueprints,
 				contains(requiredBlueprint(1, 1, 1, b), requiredBlueprint(5, 6, 3, requiredBlueprint1),
 						requiredBlueprint(30, 35, 5, requiredBlueprint2)));
 
@@ -323,7 +344,11 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 		final AbstractType requiredComponent2Type = new ComponentImpl(component2Type);
 		final AbstractType requiredMineralType = new MineralImpl(this.type2);
 
-		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(b);
+
+		final BlueprintReference ref = mock(BlueprintReference.class);
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+
+		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(ref);
 		assertThat(requiredTypes.getRequiredBlueprints(),
 				contains(requiredBlueprint(134, 134, 2, b), requiredBlueprint(10, 10, 10, requiredBlueprint1)));
 

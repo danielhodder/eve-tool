@@ -295,16 +295,6 @@ public class TypeServiceTest extends AbstractTypesTest {
 	}
 
 	@Test
-	public void getRequiredTypes() {
-		final BlueprintReference ref = mock(BlueprintReference.class);
-		final Blueprint blueprint = mock(Blueprint.class);
-		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(blueprint);
-		this.typeService.getRequiredTypes(ref);
-
-		verify(this.blueprintRequiredTypesService).getRequiredTypes(blueprint);
-	}
-
-	@Test
 	public void enableDecompositionOnType() {
 		final BlueprintIdReference blueprintReference = new BlueprintIdReference(43);
 		final Blueprint b = mock(Blueprint.class);

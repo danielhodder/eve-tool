@@ -119,6 +119,10 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 		return this.costSummary;
 	}
 
+	public void setCostSummary(final BlueprintCostSummary costSummary) {
+		this.costSummary = costSummary;
+	}
+
 	/**
 	 * Convenience method which returns the name of the
 	 * {@link #getBlueprintType() Blueprint}'s
@@ -136,6 +140,10 @@ public class Blueprint extends AbstractLastUpdatedBean implements Serializable {
 					+ ". You may need to import an updated EVE dump.");
 		}
 		return this.blueprintType;
+	}
+
+	public void setBlueprintType(final InventoryBlueprintType blueprintType) {
+		this.blueprintType = blueprintType;
 	}
 
 	@Override
