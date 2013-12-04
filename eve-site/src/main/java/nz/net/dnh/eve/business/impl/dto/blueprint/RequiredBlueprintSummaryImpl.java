@@ -29,7 +29,7 @@ public class RequiredBlueprintSummaryImpl extends AbstractBlueprintImpl {
 		final BigDecimal installCost = costSummary.getInstallCost();
 		final BigDecimal hours = new BigDecimal(getHours());
 		final BigDecimal numberPerRun = new BigDecimal(getNumberPerRun());
-		return costPerHour.multiply(hours).add(installCost).divide(numberPerRun);
+		return costPerHour.multiply(hours).add(installCost).divide(numberPerRun, BigDecimal.ROUND_HALF_UP);
 	}
 
 	@Override
