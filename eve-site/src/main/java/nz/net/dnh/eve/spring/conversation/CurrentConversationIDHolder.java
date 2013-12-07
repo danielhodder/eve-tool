@@ -26,6 +26,7 @@ public class CurrentConversationIDHolder {
 	public void setConversationID(String conversationID) {
 		if (conversationID == null) {
 			conversationID = UUID.randomUUID().toString();
+			logger.trace("No conversation ID passed in. Assuming that this is a new conversation with id {}", conversationID);
 		}
 
 		// Warn if the CID is getting overwritten
