@@ -1,13 +1,20 @@
 package nz.net.dnh.eve.config;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nz.net.dnh.eve.spring.BeforeAfterRequestExecutionIntercepter;
+import nz.net.dnh.eve.spring.conversation.ConversationInterceptor;
+import nz.net.dnh.eve.spring.conversation.ConversationScope;
 import nz.net.dnh.eve.web.view.ContextBeanExposingView;
 
+import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -15,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
@@ -45,13 +53,36 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 	}
 
 	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public ConversationScope conversationScope() {
+		return new ConversationScope();
+	}
+
+	@Bean
+	public CustomScopeConfigurer customScopeConfigurer() {
+		final CustomScopeConfigurer customScopeConfigurer = new CustomScopeConfigurer();
+		final Map<String, Object> customScopes = new HashMap<>();
+		customScopes.put("conversation", conversationScope());
+
+		customScopeConfigurer.setScopes(customScopes);
+
+		return customScopeConfigurer;
+	}
+
+	@Bean
 	public BeforeAfterRequestExecutionIntercepter beforeAfterRequestExecutionIntercepter() {
 		return new BeforeAfterRequestExecutionIntercepter();
+	}
+
+	@Bean
+	public ConversationInterceptor conversationInterceptor() {
+		return new ConversationInterceptor();
 	}
 
 	@Override
 	protected void addInterceptors(final InterceptorRegistry registry) {
 		registry.addInterceptor(beforeAfterRequestExecutionIntercepter());
+		registry.addInterceptor(conversationInterceptor());
 	}
 
 	@Bean(name = "messageSource")

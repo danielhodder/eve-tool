@@ -11,11 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.MethodInvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,7 +27,7 @@ public class BeforeAfterRequestExecutionIntercepter implements HandlerIntercepto
 	private static final Logger logger = LoggerFactory.getLogger(BeforeAfterRequestExecutionIntercepter.class);
 
 	@Autowired
-	private WebMethodDataBinder methodArgumentResolver;
+	private BoundMethodInvoker methodInvoker;
 
 	/**
 	 * Parses the handler if it is a {@link HandlerMethod} and uses it to get the bean the code is executing on. Then it
@@ -51,17 +48,7 @@ public class BeforeAfterRequestExecutionIntercepter implements HandlerIntercepto
 		final HandlerMethod handlerMethod = (HandlerMethod) handler;
 
 		for (final Method methodToExecute : getMethodsToExecute(handlerMethod, BeforeRequest.class)) {
-			try {
-				final HandlerMethod handlerForTheMethodWeAreInvoking = new HandlerMethod(handlerMethod.getBean(), methodToExecute);
-
-				methodToExecute.invoke(handlerMethod.getBean(),
-										this.methodArgumentResolver.getMethodArgumentValues(new ServletWebRequest(request, response),
-																							new ModelAndViewContainer(),
-																							handlerForTheMethodWeAreInvoking));
-			} catch (final MethodInvocationException e) {
-				logger.error("Could not execute before handler method: {}", methodToExecute, e);
-				throw e;
-			}
+			this.methodInvoker.invokeMethodOnBean(handlerMethod.getBean(), methodToExecute, request, response);
 		}
 
 		return true;
@@ -81,17 +68,7 @@ public class BeforeAfterRequestExecutionIntercepter implements HandlerIntercepto
 		final HandlerMethod handlerMethod = (HandlerMethod) handler;
 
 		for (final Method methodToExecute : getMethodsToExecute(handlerMethod, AfterRequest.class)) {
-			try {
-				final HandlerMethod handlerForTheMethodWeAreInvoking = new HandlerMethod(handlerMethod.getBean(), methodToExecute);
-
-				methodToExecute.invoke(handlerMethod.getBean(),
-										this.methodArgumentResolver.getMethodArgumentValues(new ServletWebRequest(request, response),
-																							new ModelAndViewContainer(),
-																							handlerForTheMethodWeAreInvoking));
-			} catch (final MethodInvocationException e) {
-				logger.error("Could not execute before handler method: {}", methodToExecute, e);
-				throw e;
-			}
+			this.methodInvoker.invokeMethodOnBean(handlerMethod.getBean(), methodToExecute, request, response);
 		}
 	}
 

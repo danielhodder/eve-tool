@@ -17,4 +17,6 @@
 
 	<logger name="nz.net.dnh.eve" level="ALL" />
 	<logger name="nz.net.dnh.eve.web.view.ContextBeanExposingView" level="WARN" />
+	
+	<logger name="org.springframework" level="WARN" />
 </configuration>
