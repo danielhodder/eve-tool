@@ -2,9 +2,9 @@ package nz.net.dnh.eve.config;
 
 import java.util.List;
 
-import nz.net.dnh.eve.spring.BeforeAfterMethodInterceptorConfiguration;
-import nz.net.dnh.eve.spring.conversation.ConversationConfiguration;
 import nz.net.dnh.eve.web.view.ContextBeanExposingView;
+import nz.net.dnh.spring.BeforeAfterMethodInterceptorConfiguration;
+import nz.net.dnh.spring.conversation.ConversationConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

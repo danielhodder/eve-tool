@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nz.net.dnh.eve.spring.conversation;
+package nz.net.dnh.spring.conversation;
 
 import java.util.HashMap;
 import java.util.Map;

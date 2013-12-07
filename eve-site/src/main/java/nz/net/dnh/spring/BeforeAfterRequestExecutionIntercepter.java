@@ -1,4 +1,4 @@
-package nz.net.dnh.eve.spring;
+package nz.net.dnh.spring;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

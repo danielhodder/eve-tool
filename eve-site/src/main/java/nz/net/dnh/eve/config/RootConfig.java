@@ -21,7 +21,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 @Configuration
-@ComponentScan(basePackages = { "nz.net.dnh.eve" }, excludeFilters = { @Filter(value = AvoidComponentScan.class) })
+@ComponentScan(basePackages = { "nz.net.dnh.eve", "nz.net.dnh.spring" }, excludeFilters = { @Filter(value = AvoidComponentScan.class) })
 public class RootConfig {
 	private static final Resource EMPTY_RESOURCE = new ByteArrayResource(new byte[0]);
 

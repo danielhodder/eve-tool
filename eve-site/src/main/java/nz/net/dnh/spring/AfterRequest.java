@@ -1,4 +1,4 @@
-package nz.net.dnh.eve.spring;
+package nz.net.dnh.spring;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

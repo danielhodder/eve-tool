@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nz.net.dnh.eve.spring.conversation;
+package nz.net.dnh.spring.conversation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

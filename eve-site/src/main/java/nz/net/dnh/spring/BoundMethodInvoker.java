@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nz.net.dnh.eve.spring;
+package nz.net.dnh.spring;
 
 import java.lang.reflect.Method;
 
