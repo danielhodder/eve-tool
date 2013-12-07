@@ -1,20 +1,16 @@
 package nz.net.dnh.eve.config;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import nz.net.dnh.eve.spring.BeforeAfterRequestExecutionIntercepter;
-import nz.net.dnh.eve.spring.conversation.ConversationInterceptor;
-import nz.net.dnh.eve.spring.conversation.ConversationScope;
+import nz.net.dnh.eve.spring.BeforeAfterMethodInterceptorConfiguration;
+import nz.net.dnh.eve.spring.conversation.ConversationConfiguration;
 import nz.net.dnh.eve.web.view.ContextBeanExposingView;
 
-import org.springframework.beans.factory.config.CustomScopeConfigurer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -22,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
@@ -35,6 +30,7 @@ import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 
 @Configuration
+@Import({ ConversationConfiguration.class, BeforeAfterMethodInterceptorConfiguration.class })
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 	private static final String MESSAGE_SOURCE = "/WEB-INF/i18n/messages";
@@ -44,6 +40,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 	private static final String RESOURCES_HANDLER = "/resources/";
 	private static final String RESOURCES_LOCATION = RESOURCES_HANDLER + "**";
 
+	@Autowired
+	private ConversationConfiguration conversationConfiguration;
+	@Autowired
+	private BeforeAfterMethodInterceptorConfiguration beforeAfterMethodInterceptorConfiguration;
+
 	@Override
 	public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 		final RequestMappingHandlerMapping requestMappingHandlerMapping = super.requestMappingHandlerMapping();
@@ -52,37 +53,10 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 		return requestMappingHandlerMapping;
 	}
 
-	@Bean
-	@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public ConversationScope conversationScope() {
-		return new ConversationScope();
-	}
-
-	@Bean
-	public CustomScopeConfigurer customScopeConfigurer() {
-		final CustomScopeConfigurer customScopeConfigurer = new CustomScopeConfigurer();
-		final Map<String, Object> customScopes = new HashMap<>();
-		customScopes.put("conversation", conversationScope());
-
-		customScopeConfigurer.setScopes(customScopes);
-
-		return customScopeConfigurer;
-	}
-
-	@Bean
-	public BeforeAfterRequestExecutionIntercepter beforeAfterRequestExecutionIntercepter() {
-		return new BeforeAfterRequestExecutionIntercepter();
-	}
-
-	@Bean
-	public ConversationInterceptor conversationInterceptor() {
-		return new ConversationInterceptor();
-	}
-
 	@Override
 	protected void addInterceptors(final InterceptorRegistry registry) {
-		registry.addInterceptor(beforeAfterRequestExecutionIntercepter());
-		registry.addInterceptor(conversationInterceptor());
+		registry.addInterceptor(this.conversationConfiguration.conversationInterceptor());
+		registry.addInterceptor(this.beforeAfterMethodInterceptorConfiguration.beforeAfterRequestExecutionIntercepter());
 	}
 
 	@Bean(name = "messageSource")
