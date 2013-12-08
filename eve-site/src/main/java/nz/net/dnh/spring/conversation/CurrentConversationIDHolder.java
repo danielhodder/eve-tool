@@ -12,6 +12,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+/**
+ * A simple holder for the current request's conversation id.
+ * 
+ * @author Daniel Hodder (danielh)
+ * 
+ */
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentConversationIDHolder {
@@ -19,10 +25,29 @@ public class CurrentConversationIDHolder {
 
 	private String conversationID;
 
+	/**
+	 * Returns the current conversation ID.
+	 * 
+	 * @return The current conversation ID.
+	 */
 	public String getConversationID() {
 		return this.conversationID;
 	}
 
+	/**
+	 * Sets the current conversation ID. If the {@code conversationID} is {@code null} then a new conversation ID will
+	 * be generated.
+	 * <p>
+	 * If there was already a conversation ID assigned in the request then a warning will be emitted but the
+	 * conversation ID will be changed to the new one supplied by the caller. This may cause strange things to happen
+	 * when using conversation scoped beans.
+	 * <p>
+	 * NOTE: This method should only ever be called once in the code base and is designed to be invoked from the
+	 * {@link ConversationInterceptor}
+	 * 
+	 * @param conversationID
+	 *            The new conversation ID or {@code null} if a new conversation should be started.
+	 */
 	public void setConversationID(String conversationID) {
 		if (conversationID == null) {
 			conversationID = UUID.randomUUID().toString();

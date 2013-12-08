@@ -14,9 +14,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
+ * Configuration for the conversation listener and scope. the {@link #customScopeConfigurer()} is not static in
+ * convention of the spring java-config settings. This is required because the {@link #customScopeConfigurer()} bean
+ * requires the {@link #conversationScope()} bean to work and since it has to be injected it can't be static.
  * 
  * @author Daniel Hodder (danielh)
- *
+ * 
  */
 @Configuration
 public class ConversationConfiguration {
@@ -30,15 +33,10 @@ public class ConversationConfiguration {
 	public CustomScopeConfigurer customScopeConfigurer() {
 		final CustomScopeConfigurer customScopeConfigurer = new CustomScopeConfigurer();
 		final Map<String, Object> customScopes = new HashMap<>();
-		customScopes.put("conversation", conversationScope());
+		customScopes.put(ConversationScope.SCOPE_CONVERSATION, conversationScope());
 
 		customScopeConfigurer.setScopes(customScopes);
 
 		return customScopeConfigurer;
-	}
-
-	@Bean
-	public ConversationInterceptor conversationInterceptor() {
-		return new ConversationInterceptor();
 	}
 }

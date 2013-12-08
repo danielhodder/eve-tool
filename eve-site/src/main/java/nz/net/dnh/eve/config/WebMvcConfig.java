@@ -3,14 +3,13 @@ package nz.net.dnh.eve.config;
 import java.util.List;
 
 import nz.net.dnh.eve.web.view.ContextBeanExposingView;
-import nz.net.dnh.spring.BeforeAfterMethodInterceptorConfiguration;
-import nz.net.dnh.spring.conversation.ConversationConfiguration;
+import nz.net.dnh.spring.BeforeAfterRequestExecutionIntercepter;
+import nz.net.dnh.spring.conversation.ConversationInterceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -30,7 +29,6 @@ import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 
 @Configuration
-@Import({ ConversationConfiguration.class, BeforeAfterMethodInterceptorConfiguration.class })
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 	private static final String MESSAGE_SOURCE = "/WEB-INF/i18n/messages";
@@ -41,9 +39,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 	private static final String RESOURCES_LOCATION = RESOURCES_HANDLER + "**";
 
 	@Autowired
-	private ConversationConfiguration conversationConfiguration;
+	private ConversationInterceptor conversationInterceptor;
 	@Autowired
-	private BeforeAfterMethodInterceptorConfiguration beforeAfterMethodInterceptorConfiguration;
+	private BeforeAfterRequestExecutionIntercepter beforeAfterRequestExecutionIntercepter;
 
 	@Override
 	public RequestMappingHandlerMapping requestMappingHandlerMapping() {
@@ -55,8 +53,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 	@Override
 	protected void addInterceptors(final InterceptorRegistry registry) {
-		registry.addInterceptor(this.conversationConfiguration.conversationInterceptor());
-		registry.addInterceptor(this.beforeAfterMethodInterceptorConfiguration.beforeAfterRequestExecutionIntercepter());
+		registry.addInterceptor(this.conversationInterceptor);
+		registry.addInterceptor(this.beforeAfterRequestExecutionIntercepter);
 	}
 
 	@Bean(name = "messageSource")
