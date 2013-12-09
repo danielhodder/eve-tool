@@ -87,48 +87,6 @@ public class BlueprintServiceTest {
 	@Mock
 	private BlueprintRequiredTypesService blueprintRequiredTypesService;
 
-	// private static void assertBlueprintSummary(final BlueprintSummary summary, final MockBlueprint blueprint) {
-	// assertBlueprintSummary(summary, blueprint.getTypeName(), blueprint.getBlueprintTypeID(), blueprint.getProducedTypeId(),
-	// blueprint.getExpectedHours(), blueprint.getProductionEfficiency(), blueprint.getNumberPerRun(),
-	// blueprint.getMaterialEfficiency(),
-	// blueprint.getMaterialCost(), blueprint.getProfit(), blueprint.getProfitPercentage(), blueprint.getOtherCost(),
-	// blueprint.getTotalCost(), blueprint.getSaleValue(), blueprint.getLastUpdated());
-	// }
-	//
-	// private static void assertBlueprintSummary(final BlueprintSummary summary, final String name, final int id, final int producedTypeId,
-	// final int hours, final int productionEfficiency, final int numberPerRun,
-	// final int materialEfficiency, final BigDecimal materialCost, final BigDecimal profit, final BigDecimal profitPercentage, final
-	// BigDecimal runningCost,
-	// final BigDecimal totalCost, final BigDecimal saleValue, final Timestamp saleValueLastUpdated) {
-	// assertEquals(hours, summary.getHours());
-	// assertEquals(productionEfficiency, summary.getProductionEfficiency());
-	// assertEquals(id, summary.getId());
-	// assertEquals(producedTypeId, summary.getProducedTypeID());
-	// assertEquals(materialCost, summary.getMaterialCost());
-	// assertEquals(materialEfficiency, summary.getMaterialEfficiency());
-	// assertEquals(name, summary.getName());
-	// assertEquals(numberPerRun, summary.getNumberPerRun());
-	// assertEquals(profit, summary.getProfit());
-	// assertEquals(profitPercentage, summary.getProfitPercentage());
-	// assertEquals(runningCost, summary.getRunningCost());
-	// assertEquals(saleValue, summary.getSaleValue());
-	// assertEquals(saleValueLastUpdated, summary.getSaleValueLastUpdated());
-	// assertEquals(totalCost, summary.getTotalCost());
-	// }
-
-	// private static void assertCandidateBlueprint(final CandidateBlueprint blueprint, final InventoryBlueprintType inventoryBlueprint) {
-	// assertCandidateBlueprint(blueprint, inventoryBlueprint.getBlueprintTypeID(), inventoryBlueprint.getProductTypeID(),
-	// inventoryBlueprint.getProductType().getTypeName());
-	// }
-	//
-	// private static void assertCandidateBlueprint(final CandidateBlueprint blueprint, final int id, final int producedTypeId, final String
-	// name) {
-	// assertEquals(id, blueprint.getId());
-	// assertEquals(producedTypeId, blueprint.getProducedTypeID());
-	// assertEquals(name, blueprint.getName());
-	// }
-
-
 	@Test
 	public void getBlueprintWithSummary() {
 		final BlueprintSummary summary = mock(BlueprintSummary.class);

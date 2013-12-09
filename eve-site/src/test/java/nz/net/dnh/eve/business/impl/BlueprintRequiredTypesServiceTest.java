@@ -8,6 +8,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,7 @@ import nz.net.dnh.eve.model.raw.InventoryBlueprintType;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,6 +46,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
+	protected static final Timestamp LAST_UPDATED_2 = new Timestamp(11111111);
+	protected static final Timestamp LAST_UPDATED_1 = new Timestamp(1000);
+	protected static final BigDecimal COST_2 = new BigDecimal(40);
+	protected static final BigDecimal COST_1 = new BigDecimal(15);
 
 	@SafeVarargs
 	private static Matcher<RequiredType<? extends AbstractType>> requiredType(final AbstractType type, final int units,
@@ -140,6 +147,22 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 
 	@InjectMocks
 	private final BlueprintRequiredTypesServiceImpl blueprintRequiredTypesService = new BlueprintRequiredTypesServiceImpl();
+
+	@Before
+	public void setupRequiredTypes() {
+		when(this.type1.getTypeID()).thenReturn(1);
+		when(this.type2.getTypeID()).thenReturn(2);
+		when(this.type1.getTypeName()).thenReturn("Type 1");
+		when(this.type2.getTypeName()).thenReturn("Type 2");
+		when(this.component1.getTypeID()).thenReturn(11);
+		when(this.component1.getTypeName()).thenReturn("Component 1");
+		when(this.component2.getTypeID()).thenReturn(13);
+		when(this.component2.getTypeName()).thenReturn("Component 2");
+		when(this.mineral1.getTypeID()).thenReturn(12);
+		when(this.mineral1.getTypeName()).thenReturn("Mineral 1");
+		when(this.mineral2.getTypeID()).thenReturn(14);
+		when(this.mineral2.getTypeName()).thenReturn("Mineral 2");
+	}
 
 	@Test
 	public void getRequiredComponentsWithoutDecomposition() {
@@ -376,5 +399,65 @@ public class BlueprintRequiredTypesServiceTest extends AbstractTypesTest {
 						requiredType(requiredMineralType, 14, null, DecompositionState.NEVER_DECOMPOSED)));
 	}
 
-	// TODO test case where A->B and B->C where A->B is marked NOT_DECOMPOSED and B->C is marked DECOMPOSED
+	@Test
+	public void getRequiredComponentsWithShallowDecompositionDisabledAndDeepDecomposition() {
+		// Setup 3 required types A/B/C where A and B are configured blueprints, mainBlueprint->A,C, A->B,C and B->C where mainBlueprint->A
+		// is marked NOT_DECOMPOSED and A->B is marked DECOMPOSED
+		final Blueprint b = mock(Blueprint.class);
+		when(b.getProducedQuantity()).thenReturn(67);
+		when(b.getNumberPerRun()).thenReturn(2);
+		final Blueprint requiredBlueprint1 = mock(Blueprint.class);
+		final Blueprint requiredBlueprint2 = mock(Blueprint.class);
+		when(requiredBlueprint1.getProducedQuantity()).thenReturn(1);
+		when(requiredBlueprint2.getProducedQuantity()).thenReturn(1);
+		final BlueprintRequiredType requiredComponent1 = createRequiredType(b, this.type1, this.component1, 5, false,
+				mock(InventoryBlueprintType.class), requiredBlueprint1);
+		final Type component2Type = mock(Type.class);
+		when(component2Type.getTypeName()).thenReturn("Type 1.5");
+
+		final BlueprintRequiredType requiredMineral = createRequiredType(b, this.type2, this.mineral1, 14, false, null, null);
+		when(b.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1, requiredMineral));
+
+		final BlueprintRequiredType requiredComponent1Mineral = createRequiredType(requiredBlueprint1, this.type2, this.mineral1, 7, false,
+				null, null);
+		final BlueprintRequiredType requiredComponent1Component2 = createRequiredType(requiredBlueprint1, component2Type, this.component2,
+				8, true, mock(InventoryBlueprintType.class), requiredBlueprint2);
+		when(requiredBlueprint1.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent1Mineral, requiredComponent1Component2));
+
+		final BlueprintRequiredType requiredComponent2Mineral = createRequiredType(requiredBlueprint2, this.type2, this.mineral1, 9, false,
+				null, null);
+		when(requiredBlueprint2.getRequiredTypes()).thenReturn(Arrays.asList(requiredComponent2Mineral));
+
+		final AbstractType requiredComponent1Type = new ComponentImpl(this.type1);
+		final AbstractType requiredComponent2Type = new ComponentImpl(component2Type);
+		final AbstractType requiredMineralType = new MineralImpl(this.type2);
+
+		final BlueprintReference ref = mock(BlueprintReference.class);
+		when(this.blueprintResolverService.toBlueprint(ref)).thenReturn(b);
+
+		final RequiredTypes requiredTypes = this.blueprintRequiredTypesService.getRequiredTypes(ref);
+		assertThat(requiredTypes.getRequiredBlueprints(), contains(requiredBlueprint(134, 134, 2, b)));
+
+		final SortedMap<? extends AbstractType, Integer> resolvedRequiredTypes = requiredTypes.getResolvedRequiredTypes();
+		assertThat(resolvedRequiredTypes.keySet(), contains(requiredComponent1Type, requiredMineralType));
+		// 2*5 from the original required type
+		assertThat(resolvedRequiredTypes, hasEntry(requiredComponent1Type, 10));
+		// 2*14 from the original required type
+		assertThat(resolvedRequiredTypes, hasEntry(requiredMineralType, 28));
+
+		final List<RequiredType<? extends AbstractType>> requiredTypesTree = requiredTypes.getRequiredTypesTree();
+		assertThat(
+				requiredTypesTree,
+				contains(
+						requiredType(
+								requiredComponent1Type,
+								5,
+								requiredBlueprint1,
+								DecompositionState.NOT_DECOMPOSED,
+								requiredType(requiredComponent2Type, 8, requiredBlueprint2, DecompositionState.DECOMPOSED,
+										requiredType(requiredMineralType, 9, null, DecompositionState.NEVER_DECOMPOSED)),
+								requiredType(requiredMineralType, 7, null, DecompositionState.NEVER_DECOMPOSED)),
+						requiredType(requiredMineralType, 14, null, DecompositionState.NEVER_DECOMPOSED)));
+	}
+
 }
